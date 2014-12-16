@@ -1,5 +1,6 @@
 #include "cinder/app/AppBasic.h"
 #include "cinder/params/Params.h"
+#include "cinder/Thread.h"
 #include "Strands.h"
 #include <vector>
 
@@ -11,35 +12,38 @@ class ForestApp : public AppBasic {
   public:
     void prepareSettings( Settings *settings );
 	void setup();
-	void update();
 	void draw();
     void resetButton();
+    
+    void simThreadFn();
 
     params::InterfaceGlRef      mParams;
     cinder::Rand                mRand;
     StrandBox                   mStrandBox;
+    shared_ptr<thread>          mSimThread;
 };
 
 void ForestApp::prepareSettings( Settings *settings )
 {
     settings->setWindowSize(1280, 720);
-    settings->setFrameRate(60.0);
 }
 
 void ForestApp::setup()
 {
+    mSimThread = make_shared<thread>(bind( &ForestApp::simThreadFn, this ));
+
     mParams = params::InterfaceGl::create( getWindow(), "Forest parameters", toPixels(Vec2i(220, 400)) );
 
-    mParams->addButton("Reset", std::bind( &ForestApp::resetButton, this ), "key=R");
+    mParams->addButton("Reset", bind( &ForestApp::resetButton, this ), "key=r");
     mParams->addParam( "Number of strands", &mStrandBox.mNumStrands).min(0).max(1000).step(1);
     mParams->addParam( "Strand length", &mStrandBox.mStrandLength).min(1).max(1000).step(1);
-    mParams->addParam( "Growth probability", &mStrandBox.mGrowthProbability).min(0.f).max(1.f).step(0.001f);
+    mParams->addParam( "Growth probability", &mStrandBox.mGrowthProbability).min(0.f).max(0.1f).step(0.0001f);
     mParams->addParam( "Growth dir Y", &mStrandBox.mGrowthDirection.y).min(-1.f).max(1.f).step(0.01f);
 
-    mParams->addParam( "Spring length", &mStrandBox.mSpringLength).min(0.001f).max(0.01f).step(0.001f);
+    mParams->addParam( "Spring length", &mStrandBox.mSpringLength).min(0.0001f).max(0.01f).step(0.0001f);
     mParams->addParam( "Spring iters", &mStrandBox.mSpringIterations).min(0).max(10000).step(10);
-    mParams->addParam( "Spring K", &mStrandBox.mSpringK).min(0.001f).max(1.0f).step(0.001f);
-    mParams->addParam( "Straighten K", &mStrandBox.mStraightenK).min(0.001f).max(1.0f).step(0.001f);
+    mParams->addParam( "Spring K", &mStrandBox.mSpringK).min(0.f).max(1.0f).step(0.001f);
+    mParams->addParam( "Straighten K", &mStrandBox.mStraightenK).min(0.f).max(1.0f).step(0.001f);
 }
 
 void ForestApp::resetButton()
@@ -73,9 +77,12 @@ void ForestApp::draw()
     mParams->draw();
 }
 
-void ForestApp::update()
+void ForestApp::simThreadFn()
 {
-    mStrandBox.update();
+    while (true) {
+        mStrandBox.update();
+    }
 }
+
 
 CINDER_APP_BASIC( ForestApp, RendererGl )
