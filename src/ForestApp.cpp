@@ -10,6 +10,8 @@ using namespace std;
 
 class ForestApp : public AppBasic {
   public:
+    ~ForestApp();
+
     void prepareSettings( Settings *settings );
 	void setup();
 	void draw();
@@ -21,6 +23,7 @@ class ForestApp : public AppBasic {
     cinder::Rand                mRand;
     StrandBox                   mStrandBox;
     shared_ptr<thread>          mSimThread;
+    bool                        mSimRunning;
 };
 
 void ForestApp::prepareSettings( Settings *settings )
@@ -30,6 +33,7 @@ void ForestApp::prepareSettings( Settings *settings )
 
 void ForestApp::setup()
 {
+    mSimRunning = true;
     mSimThread = make_shared<thread>(bind( &ForestApp::simThreadFn, this ));
 
     mParams = params::InterfaceGl::create( getWindow(), "Forest parameters", toPixels(Vec2i(220, 400)) );
@@ -79,9 +83,15 @@ void ForestApp::draw()
 
 void ForestApp::simThreadFn()
 {
-    while (true) {
+    while (mSimRunning) {
         mStrandBox.update();
     }
+}
+
+ForestApp::~ForestApp()
+{
+    mSimRunning = false;
+    mSimThread->join();
 }
 
 
