@@ -87,11 +87,11 @@ void Strand::straightenForce(float k)
 
 
 StrandBox::StrandBox()
-    : mNumSeeds(5),
-      mNumStrands(60),
-      mStrandLength(150),
-      mGrowthProbability(0.01),
-      mGrowthDirection(0, 2.2),
+    : mNumSeeds(10),
+      mNumStrands(600),
+      mStrandLength(60),
+      mGrowthProbability(0.02),
+      mGrowthDirection(0, 1.25),
       mSpringLength(0.015),
       mSpringIterations(15),
       mSpringK(0.92),

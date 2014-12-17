@@ -60,8 +60,8 @@ void ForestApp::setup()
     mParams->addParam( "Number of strands", &mStrandBox.mNumStrands).min(0).max(1000).step(1);
     mParams->addParam( "Number of dots", &mDots.mNumDots).min(0).max(1000).step(1);
     mParams->addParam( "Strand length", &mStrandBox.mStrandLength).min(1).max(1000).step(1);
-    mParams->addParam( "Growth probability", &mStrandBox.mGrowthProbability).min(0.f).max(1.0f).step(0.01f);
-    mParams->addParam( "Growth dir Y", &mStrandBox.mGrowthDirection.y).min(-1.f).max(4.f).step(0.01f);
+    mParams->addParam( "Growth probability", &mStrandBox.mGrowthProbability).min(0.f).max(1.0f).step(0.001f);
+    mParams->addParam( "Growth dir Y", &mStrandBox.mGrowthDirection.y).min(-1.f).max(10.f).step(0.01f);
 
     mParams->addSeparator();
 

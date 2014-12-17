@@ -11,12 +11,12 @@ Dots::Dots(StrandBox &sb) :
     mLargestDotSize(1.5 / 32.0),
     mDotGravity(0.1),
     mDotSpacing(6.4),
-    mDotMinStrands(3),
-    mDotMaxStrands(5),
+    mDotMinStrands(9),
+    mDotMaxStrands(20),
     mRepelSpacing(1.4),
     mRepelK(0.1),
     mAttractK(0.1),
-    mRetainK(0.1)
+    mRetainK(0.5)
 {
     reset();
 }
@@ -182,6 +182,28 @@ void Dots::strandForces()
             }
         }
         
+        // The remaining ones are pulled closer toward the center with a constant force
+
+        for (unsigned hitId = 0; hitId < hits.size(); hitId++) {
+            shared_ptr<Strand> strand = hits[hitId];
+            vector<Vec2f> &strandPoints = strand->getPoints();
+            float k = mRetainK * 1e-4;
+            
+            for (unsigned i = 0; i < strandPoints.size(); i++) {
+                Vec2f d = strandPoints[i] - dotPoint;
+                d.normalize();
+
+                strandPoints[i] -= d * k;
+                dotPoint += d * k;
+            }
+        }
+
+        // If we need more strands, randomly search
+
+        if (hits.size() < mDotMinStrands) {
+            float k = mAttractK * 1e-2;
+            dotPoint += k * mSB.mRand.nextVec2f();
+        }
     }
 }
 
