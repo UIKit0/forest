@@ -48,11 +48,11 @@ void ForestApp::prepareSettings( Settings *settings )
 
 void ForestApp::setup()
 {
-    mParams = params::InterfaceGl::create( getWindow(), "Forest parameters", toPixels(Vec2i(220, 400)) );
+    mParams = params::InterfaceGl::create( getWindow(), "Forest parameters", toPixels(Vec2i(240, 600)) );
 
     mParams->addButton("Reset", bind( &ForestApp::resetButton, this ), "key=r");
     mParams->addButton("Stop sim", bind( &ForestApp::stopButton, this ), "key=s");
-    mParams->addParam("Simulation step", &mStrandBox.mSimulationStep, "readonly=true");
+    mParams->addParam("Sim step #", &mStrandBox.mSimulationStep, "readonly=true");
     
     mParams->addSeparator();
 
@@ -76,6 +76,17 @@ void ForestApp::setup()
 
     mParams->addParam( "Smallest dot", &mDots.mSmallestDotSize).min(0.f).max(0.2f).step(0.001f);
     mParams->addParam( "Largest dot", &mDots.mLargestDotSize).min(0.f).max(0.2f).step(0.001f);
+    mParams->addParam( "Dot gravity", &mDots.mDotGravity).min(0.f).max(20.0f).step(0.001f);
+    mParams->addParam( "Dot spacing", &mDots.mDotSpacing).min(0.f).max(20.0f).step(0.001f);
+
+    mParams->addSeparator();
+
+    mParams->addParam( "Min strands per dot", &mDots.mDotMinStrands).min(0).max(100).step(1);
+    mParams->addParam( "Max strands per dot", &mDots.mDotMaxStrands).min(0).max(100).step(1);
+    mParams->addParam( "Repel spacing", &mDots.mRepelSpacing).min(0.f).max(10.0f).step(0.001f);
+    mParams->addParam( "Repel K", &mDots.mRepelK).min(0.f).max(1.0f).step(0.001f);
+    mParams->addParam( "Attract K", &mDots.mAttractK).min(0.f).max(1.0f).step(0.001f);
+    mParams->addParam( "Retain K", &mDots.mRetainK).min(0.f).max(1.0f).step(0.001f);
 }
 
 
@@ -128,7 +139,7 @@ void ForestApp::draw()
     // Drawing should be safe without acquiring the mutex (performance)
     mStrandBox.draw();
     mDots.draw();
-    
+
     gl::popModelView();
     
     mParams->draw();

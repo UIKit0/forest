@@ -18,10 +18,18 @@ public:
     
     float getDotSize(int idx);
 
-    StrandBox  mSB;
+    StrandBox& mSB;
     unsigned   mNumDots;
     float      mSmallestDotSize;
     float      mLargestDotSize;
+    float      mDotGravity;
+    float      mDotSpacing;
+    unsigned   mDotMinStrands;
+    unsigned   mDotMaxStrands;
+    float      mRepelSpacing;
+    float      mRepelK;
+    float      mAttractK;
+    float      mRetainK;
 
     std::vector<ci::Vec2f>  mDotPoints;
 
@@ -29,4 +37,5 @@ private:
     void adjustDotCount();
     void edgeForces();
     void dotSpringForces();
+    void strandForces();
 };

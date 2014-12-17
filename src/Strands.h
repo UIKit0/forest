@@ -31,6 +31,9 @@ private:
 };
 
 
+typedef std::vector<std::shared_ptr<Strand> > StrandVector;
+
+
 // Simulation for many strands that interact with each other
 class StrandBox
 {
@@ -53,8 +56,6 @@ public:
     float           mStraightenK;
     float           mSmoothK;
     float           mAlignmentK;
-    
-    typedef std::vector<std::shared_ptr<Strand> > StrandVector;
 
     unsigned        mSimulationStep;
     StrandVector    mStrands;
