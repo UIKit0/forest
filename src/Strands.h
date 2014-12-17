@@ -6,35 +6,6 @@
 #include <vector>
 
 
-// Packed representation of one point on one strand
-struct StrandPoint
-{
-    uint32_t mPacked;
-    
-    StrandPoint(uint32_t packed = 0)
-        : mPacked(packed) {}
-   
-    StrandPoint(unsigned strandId, unsigned pointId)
-        : mPacked(((strandId+1) << 16) | (pointId + 1)) {}
-    
-    void setNull() {
-        mPacked = 0;
-    }
-    
-    bool isNull() const {
-        return mPacked == 0;
-    }
-
-    unsigned getStrandId() const {
-        return (mPacked >> 16) - 1;
-    }
-
-    unsigned getPointId() const {
-        return (mPacked & 0xffff) - 1;
-    }
-};
-
-
 // Simulation object for one strand
 class Strand
 {
@@ -52,15 +23,11 @@ public:
     
     const std::vector<ci::Vec2f>&    getPoints() const { return mCurrent->getPoints(); }
     std::vector<ci::Vec2f>&          getPoints() { return mCurrent->getPoints(); }
-
-    StrandPoint& nextPoint(unsigned pointId) { return mPointLinks[pointId]; }
     
 private:
     ci::PolyLine2f   mBuffers[2];
     ci::PolyLine2f*  mCurrent;
     ci::PolyLine2f*  mNext;
-
-    std::vector<StrandPoint> mPointLinks;
 };
 
 
@@ -93,10 +60,23 @@ public:
     uint64_t        mSimulationStep;
     StrandVector    mStrands;
     ci::Rand        mRand;
+    ci::Rectf       mRect;
+
+    struct GridElement {
+        ci::Vec2f flow;
+    };
+
+    std::vector<GridElement> mGrid;
+    unsigned mGridWidth, mGridHeight;
 
 private:
     void adjustStrandCount();
     void adjustStrandLength();
     void integrateStrandForces();
-    void clusterStrands();
+    void updateFlowGrid();
+    void smoothGrid();
+    void alignStrandsWithGrid();
+
+    int gridIndexFromPoint(ci::Vec2f point);
+    ci::Vec2f pointFromGridIndex(int idx);
 };

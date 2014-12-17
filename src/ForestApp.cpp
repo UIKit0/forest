@@ -75,8 +75,7 @@ void ForestApp::draw()
     gl::clear( Color::gray(0.9f) );
 
     float wallWidth = getWindowWidth() * 0.75;
-    float wallHeightRatio = 0.5;
-    float wallHeight = wallWidth * wallHeightRatio;
+    float wallHeight = wallWidth * mStrandBox.mRect.getHeight() / mStrandBox.mRect.getWidth();
     Vec2f wallSize(wallWidth, wallHeight);
     Vec2f wallTopLeft = getWindowCenter() - wallSize/2;
 
@@ -84,10 +83,6 @@ void ForestApp::draw()
     gl::pushModelView();
     gl::translate(wallTopLeft.x, wallTopLeft.y + wallHeight);
     gl::scale(wallWidth, -wallWidth);
-
-    // Background
-    gl::color( Color::gray(1.0f) );
-    gl::drawSolidRect( Rectf( 0.0f, 0.0f, 1.0f, wallHeightRatio ));
 
     // Drawing should be safe without acquiring the mutex (performance)
     mStrandBox.draw();
