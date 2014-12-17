@@ -39,17 +39,18 @@ void ForestApp::setup()
     mParams = params::InterfaceGl::create( getWindow(), "Forest parameters", toPixels(Vec2i(220, 400)) );
 
     mParams->addButton("Reset", bind( &ForestApp::resetButton, this ), "key=r");
+    mParams->addParam( "Number of seeds", &mStrandBox.mNumSeeds).min(0).max(16).step(1);
     mParams->addParam( "Number of strands", &mStrandBox.mNumStrands).min(0).max(1000).step(1);
     mParams->addParam( "Strand length", &mStrandBox.mStrandLength).min(1).max(1000).step(1);
     mParams->addParam( "Growth probability", &mStrandBox.mGrowthProbability).min(0.f).max(1.0f).step(0.01f);
-    mParams->addParam( "Growth dir Y", &mStrandBox.mGrowthDirection.y).min(-1.f).max(1.f).step(0.01f);
+    mParams->addParam( "Growth dir Y", &mStrandBox.mGrowthDirection.y).min(-1.f).max(4.f).step(0.01f);
 
     mParams->addParam( "Spring length", &mStrandBox.mSpringLength).min(0.0001f).max(0.01f).step(0.0001f);
     mParams->addParam( "Spring iters", &mStrandBox.mSpringIterations).min(0).max(10000).step(10);
     mParams->addParam( "Spring K", &mStrandBox.mSpringK).min(0.f).max(1.0f).step(0.001f);
     mParams->addParam( "Straighten K", &mStrandBox.mStraightenK).min(0.f).max(1.0f).step(0.001f);
     mParams->addParam( "Smooth K", &mStrandBox.mSmoothK).min(0.f).max(1.0f).step(0.001f);
-    mParams->addParam( "Align K", &mStrandBox.mAlignmentK).min(0.f).max(1.0f).step(0.001f);
+    mParams->addParam( "Align K", &mStrandBox.mAlignmentK).min(0.f).max(4.0f).step(0.001f);
 }
 
 void ForestApp::update()
@@ -73,7 +74,7 @@ void ForestApp::draw()
     gl::clear( Color::gray(0.9f) );
 
     float wallWidth = getWindowWidth() * 0.75;
-    float wallHeight = wallWidth * mStrandBox.mRect.getHeight() / mStrandBox.mRect.getWidth();
+    float wallHeight = wallWidth / mStrandBox.mBorderRect.getAspectRatio();
     Vec2f wallSize(wallWidth, wallHeight);
     Vec2f wallTopLeft = getWindowCenter() - wallSize/2;
 

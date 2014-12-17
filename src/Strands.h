@@ -41,6 +41,7 @@ public:
     void update();
     void draw();
     
+    unsigned        mNumSeeds;
     unsigned        mNumStrands;
     unsigned        mStrandLength;
     float           mGrowthProbability;
@@ -58,10 +59,11 @@ public:
     uint64_t        mSimulationStep;
     StrandVector    mStrands;
     ci::Rand        mRand;
-    ci::Rectf       mRect;
+    ci::Rectf       mBorderRect;
+    ci::Rectf       mGridRect;
 
     struct GridElement {
-        ci::Vec2f flow;
+        ci::Vec2f flow;     // Magnitude <= 1.0f
     };
 
     unsigned mGridWidth, mGridHeight;

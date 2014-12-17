@@ -87,19 +87,21 @@ void Strand::straightenForce(float k)
 
 
 StrandBox::StrandBox()
-    : mNumStrands(5),
-      mStrandLength(200),
+    : mNumSeeds(5),
+      mNumStrands(30),
+      mStrandLength(150),
       mGrowthProbability(0.01),
-      mGrowthDirection(0, 0.9),
-      mSpringLength(0.005),
+      mGrowthDirection(0, 2.2),
+      mSpringLength(0.015),
       mSpringIterations(15),
       mSpringK(0.92),
       mStraightenK(0.4),
-      mSmoothK(0.002),
-      mAlignmentK(0.218),
-      mRect(0, 0, 1, 0.5),
-      mGridWidth(80),
-      mGridHeight(40)
+      mSmoothK(0.02),
+      mAlignmentK(0.0),
+      mBorderRect(0, 0, 1, 0.5),
+      mGridRect(-0.5, -0.5, 1.5, 1.0),
+      mGridWidth(160),
+      mGridHeight(80)
 {
     reset();
 }
@@ -143,8 +145,14 @@ void StrandBox::adjustStrandCount()
 
     // Add new seeded strands
     while (mStrands.size() < mNumStrands) {
+    
+        float seedY = -0.02;
+        float seedRadius = 0.0001;
+        Vec2f seedVec((mStrands.size() % mNumSeeds) / (mNumSeeds - 1.0f), seedY);
+        seedVec += mRand.nextVec2f() * seedRadius;
+
         std::shared_ptr<Strand> newStrand = std::make_shared<Strand>();
-        newStrand->seed(Vec2f( mRand.nextFloat(), -0.01f ));
+        newStrand->seed(seedVec);
         mStrands.push_back(newStrand);
     }
 }
@@ -199,11 +207,10 @@ void StrandBox::updateFlowGrid()
             }
             GridElement& element = grid[idxA];
 
-            Vec2f flow = (b - a).safeNormalized();
+            Vec2f direction = (b - a).safeNormalized();
             float k = 0.1;
 
-            // Flow is normalized on update, but not on smoothing
-            element.flow += (flow - element.flow.safeNormalized()) * k;
+            element.flow += direction * k;
         }
     }
 }
@@ -225,6 +232,12 @@ void StrandBox::smoothGrid()
 
             if (x + 1 < mGridWidth) flow += src[idx + 1].flow * k;
             if (y + 1 < mGridHeight) flow += src[idx + mGridWidth].flow * k;
+
+            // Limit vector length
+            float l = flow.length();
+            if (l > 1.0f) {
+                flow *= 1.0f / l;
+            }
 
             dest[idx].flow = flow;
         }
@@ -255,9 +268,9 @@ void StrandBox::alignStrandsWithGrid()
 
             // Apply a balanced force in the same direction as the flow
             
-            Vec2f f = k * element.flow.safeNormalized();
+            Vec2f f = k * element.flow;
             b += f;
-            a -= f;
+//            a -= f;
         }
     }
 }
@@ -265,8 +278,8 @@ void StrandBox::alignStrandsWithGrid()
 
 int StrandBox::gridIndexFromPoint(ci::Vec2f point)
 {
-    int xi = (point.x - mRect.x1) * mGridWidth / (mRect.x2 - mRect.x1);
-    int yi = (point.y - mRect.y1) * mGridWidth / (mRect.y2 - mRect.y1);
+    int xi = (point.x - mGridRect.x1) * mGridWidth  / (mGridRect.x2 - mGridRect.x1);
+    int yi = (point.y - mGridRect.y1) * mGridHeight / (mGridRect.y2 - mGridRect.y1);
     if (xi < 0 || yi < 0 || xi >= mGridWidth || yi >= mGridHeight) {
         return -1;
     }
@@ -278,8 +291,8 @@ ci::Vec2f StrandBox::pointFromGridIndex(int idx)
 {
     int xi = idx % mGridWidth;
     int yi = idx / mGridWidth;
-    return Vec2f( mRect.x1 + (mRect.x2 - mRect.x1) * ((xi + 0.5f) / mGridWidth),
-                  mRect.y1 + (mRect.y2 - mRect.y1) * ((yi + 0.5f) / mGridHeight) );
+    return Vec2f( mGridRect.x1 + (mGridRect.x2 - mGridRect.x1) * ((xi + 0.5f) / mGridWidth),
+                  mGridRect.y1 + (mGridRect.y2 - mGridRect.y1) * ((yi + 0.5f) / mGridHeight) );
 }
 
 
@@ -287,7 +300,7 @@ void StrandBox::draw()
 {
     // Background
     gl::color(Color::gray(1.0f));
-    gl::drawSolidRect(mRect);
+    gl::drawSolidRect(mBorderRect);
 
     // Grid squares
     vector<GridElement> &grid = *mGridCurrent;
@@ -296,7 +309,7 @@ void StrandBox::draw()
         GridElement& element = grid[i];
         
         gl::color(Color(0.9f, 0.7f, 0.7f));
-        gl::drawLine(center, center + element.flow.safeNormalized() * 0.01);
+        gl::drawLine(center, center + element.flow * 0.02);
     }
     
     // Strands
