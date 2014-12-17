@@ -56,7 +56,7 @@ public:
     
     typedef std::vector<std::shared_ptr<Strand> > StrandVector;
 
-    uint64_t        mSimulationStep;
+    unsigned        mSimulationStep;
     StrandVector    mStrands;
     ci::Rand        mRand;
     ci::Rectf       mBorderRect;
