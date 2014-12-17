@@ -15,6 +15,8 @@ public:
     void reset();
     void update();
     void draw();
+  
+    void drawAffinityMatrix();
     
     float getDotSize(int idx);
 
@@ -24,15 +26,15 @@ public:
     float      mLargestDotSize;
     float      mDotGravity;
     float      mDotSpacing;
-    unsigned   mDotMinStrands;
     unsigned   mDotMaxStrands;
-    float      mRepelSpacing;
     float      mRepelK;
-    float      mAttractK;
     float      mRetainK;
+    float      mDecayK;
+    float      mAttractK;
 
-    std::vector<ci::Vec2f>  mDotPoints;
-
+    std::vector<ci::Vec2f>      mDotPoints;
+    std::vector<float>          mDotStrandAffinity;
+    
 private:
     void adjustDotCount();
     void edgeForces();

@@ -32,11 +32,15 @@ class ForestApp : public AppBasic {
     mutex                       mSimMutex;
     shared_ptr<thread>          mSimThread;
     bool                        mSimRunning;
+    
+    bool                        mShowMatrix;
 };
 
 
 ForestApp::ForestApp() :
-    mDots(mStrandBox)
+    mDots(mStrandBox),
+    mSimRunning(false),
+    mShowMatrix(false)
 {}
 
 
@@ -81,12 +85,12 @@ void ForestApp::setup()
 
     mParams->addSeparator();
 
-    mParams->addParam( "Min strands per dot", &mDots.mDotMinStrands).min(0).max(100).step(1);
+    mParams->addParam( "Show affinity matrix", &mShowMatrix, "key=m");
     mParams->addParam( "Max strands per dot", &mDots.mDotMaxStrands).min(0).max(100).step(1);
-    mParams->addParam( "Repel spacing", &mDots.mRepelSpacing).min(0.f).max(10.0f).step(0.001f);
-    mParams->addParam( "Repel K", &mDots.mRepelK).min(0.f).max(1.0f).step(0.001f);
-    mParams->addParam( "Attract K", &mDots.mAttractK).min(0.f).max(1.0f).step(0.001f);
-    mParams->addParam( "Retain K", &mDots.mRetainK).min(0.f).max(1.0f).step(0.001f);
+    mParams->addParam( "Affinity repel K", &mDots.mRepelK).min(0.f).max(1.0f).step(0.001f);
+    mParams->addParam( "Affinity retain K", &mDots.mRetainK).min(0.f).max(1.0f).step(0.001f);
+    mParams->addParam( "Affinity decay K", &mDots.mDecayK).min(0.f).max(1.0f).step(0.001f);
+    mParams->addParam( "Force attract K", &mDots.mAttractK).min(0.f).max(1.0f).step(0.001f);
 }
 
 
@@ -142,6 +146,9 @@ void ForestApp::draw()
 
     gl::popModelView();
     
+    if (mShowMatrix) {
+        mDots.drawAffinityMatrix();
+    }
     mParams->draw();
 }
 

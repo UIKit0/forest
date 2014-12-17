@@ -6,17 +6,16 @@ using namespace std;
 
 Dots::Dots(StrandBox &sb) :
     mSB(sb),
-    mNumDots(20),
-    mSmallestDotSize(1.0 / 32.0),
+    mNumDots(30),
+    mSmallestDotSize(1.25 / 32.0),
     mLargestDotSize(1.5 / 32.0),
-    mDotGravity(0.1),
-    mDotSpacing(6.4),
-    mDotMinStrands(9),
-    mDotMaxStrands(20),
-    mRepelSpacing(1.4),
-    mRepelK(0.1),
-    mAttractK(0.1),
-    mRetainK(0.5)
+    mDotGravity(1.0),
+    mDotSpacing(8.0),
+    mDotMaxStrands(5),
+    mRepelK(0.04),
+    mRetainK(0.36),
+    mDecayK(0.08),
+    mAttractK(0.3)
 {
     reset();
 }
@@ -31,6 +30,7 @@ float Dots::getDotSize(int idx)
 void Dots::reset()
 {
     mDotPoints.clear();
+    mDotStrandAffinity.clear();
 }
 
 
@@ -58,6 +58,17 @@ void Dots::adjustDotCount()
         seedVec += mSB.mRand.nextVec2f() * seedRadius;
 
         mDotPoints.push_back(seedVec);
+    }
+    
+    // Make sure the dot/strand affinity array is the right size, randomly init if
+    // the dimensions changed.
+    
+    unsigned dotStrandAffinitySize = mDotPoints.size() * mSB.mStrands.size();
+    if (mDotStrandAffinity.size() != dotStrandAffinitySize) {
+        mDotStrandAffinity.resize(dotStrandAffinitySize);
+        for (unsigned i = 0; i < dotStrandAffinitySize; i++) {
+            mDotStrandAffinity[i] = mSB.mRand.nextFloat();
+        }
     }
 }
 
@@ -142,9 +153,9 @@ void Dots::strandForces()
         float dotSize = getDotSize(dot);
         float dotSizeSquared = dotSize * dotSize;
         
-        // Remember which strands pass through this dot.
+        // Remember which strands pass through this dot
 
-        StrandVector hits;
+        vector<unsigned> hits;
 
         for (unsigned strandId = 0; strandId < mSB.mStrands.size(); strandId++) {
             shared_ptr<Strand> strand = mSB.mStrands[strandId];
@@ -152,57 +163,60 @@ void Dots::strandForces()
             for (unsigned i = 0; i < strandPoints.size(); i++) {
                 Vec2f d = strandPoints[i] - dotPoint;
                 if (d.lengthSquared() < dotSizeSquared) {
-                    hits.push_back(strand);
+                    hits.push_back(strandId);
                     break;
                 }
             }
         }
         
-        // If we have too many hits, choose strands at random to push away
-        
-        while (hits.size() > mDotMaxStrands) {
-            unsigned hitId = mSB.mRand.nextInt(hits.size());
-            shared_ptr<Strand> strand = hits[hitId];
-            hits.erase(hits.begin() + hitId);
+        // Is this dot overwhelmed? If we have more associations than we can handle,
+        // sort by descending affinity and diminish all below the top N.
 
-            vector<Vec2f> &strandPoints = strand->getPoints();
+        if (hits.size() > mDotMaxStrands) {
+            vector<pair<float, unsigned> > sortBuffer;
             float k = mRepelK * 1e-3;
+            
+            for (unsigned strandId = 0; strandId < mSB.mStrands.size(); strandId++) {
+                float &affinity = mDotStrandAffinity[dot * mSB.mStrands.size() + strandId];
+                sortBuffer.push_back(make_pair(-affinity, strandId));
+            }
+            sort(sortBuffer.begin(), sortBuffer.end());
 
-            for (unsigned i = 0; i < strandPoints.size(); i++) {
-                Vec2f d = strandPoints[i] - dotPoint;
-                float l2 = d.lengthSquared();
-                float t = l2 / (mRepelSpacing * dotSizeSquared);
-                
-                if (t < 1.0f && l2 > 0.0f) {
-                    // This point is closeby, push it away
-                    Vec2f f = (d / sqrtf(l2)) * (k * (1.0 - t));
-                    strandPoints[i] += f;
-                    dotPoint -= f;
-                }
+            for (unsigned i = mDotMaxStrands; i < sortBuffer.size(); i++) {
+                unsigned strandId = sortBuffer[i].second;
+                float &affinity = mDotStrandAffinity[dot * mSB.mStrands.size() + strandId];
+                affinity += (-1.0f - affinity) * k;
             }
         }
         
-        // The remaining ones are pulled closer toward the center with a constant force
-
+        // Any friendly strands that are hitting this dot will have their affinities nonlinearly boosted
+        
         for (unsigned hitId = 0; hitId < hits.size(); hitId++) {
-            shared_ptr<Strand> strand = hits[hitId];
+            unsigned strandId = hits[hitId];
+            float &affinity = mDotStrandAffinity[dot * mSB.mStrands.size() + strandId];
+            if (affinity > 0.0f) {
+                float k = affinity * mRetainK * 1e-2;
+                affinity += (1.0f - affinity) * k;
+            }
+        }
+
+        // Apply force based on affinities and distance
+
+        for (unsigned strandId = 0; strandId < mSB.mStrands.size(); strandId++) {
+            float &affinity = mDotStrandAffinity[dot * mSB.mStrands.size() + strandId];
+            shared_ptr<Strand> strand = mSB.mStrands[strandId];
             vector<Vec2f> &strandPoints = strand->getPoints();
-            float k = mRetainK * 1e-4;
-            
-            for (unsigned i = 0; i < strandPoints.size(); i++) {
+
+            affinity -= affinity * mDecayK * 1e-2;
+            float k = affinity * mAttractK * 1e-5;
+
+            for (unsigned i = 1; i < strandPoints.size(); i++) {
                 Vec2f d = strandPoints[i] - dotPoint;
                 d.normalize();
 
                 strandPoints[i] -= d * k;
                 dotPoint += d * k;
             }
-        }
-
-        // If we need more strands, randomly search
-
-        if (hits.size() < mDotMinStrands) {
-            float k = mAttractK * 1e-2;
-            dotPoint += k * mSB.mRand.nextVec2f();
         }
     }
 }
@@ -212,12 +226,39 @@ void Dots::draw()
 {
     gl::enableAlphaBlending();
     
+    // All dots
     for (unsigned dot = 0; dot < mDotPoints.size(); dot++) {
         Vec2f &dotPoint = mDotPoints[dot];
         float dotSize = getDotSize(dot);
         
-        gl::color(0,0,1,0.2);
+        gl::color(0.7, 0.7, 1.0, 0.8);
         gl::drawSolidCircle(dotPoint, dotSize, 64);
+    }
+    
+    gl::disableAlphaBlending();
+}
+
+
+void Dots::drawAffinityMatrix()
+{
+    gl::enableAlphaBlending();
+
+    for (unsigned dot = 0; dot < mDotPoints.size(); dot++) {
+        for (unsigned strandId = 0; strandId < mSB.mStrands.size(); strandId++) {
+            float affinity = mDotStrandAffinity[dot * mSB.mStrands.size() + strandId];
+            
+            if (affinity > 0) {
+                gl::color(0.0, 0.4, 0.0, 0.33);
+            } else {
+                gl::color(0.4, 0.0, 0.0, 0.33);
+            }
+
+            gl::drawSolidCircle( Vec2f(5, 5)
+                                 + dot * Vec2f(0, 5)
+                                 + strandId * Vec2f(5, 0),
+                                 fabsf(affinity) * 6,
+                                 16 );
+        }
     }
 
     gl::disableAlphaBlending();
