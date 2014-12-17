@@ -61,7 +61,7 @@ public:
     ci::Rand        mRand;
     ci::Rectf       mBorderRect;
     ci::Rectf       mGridRect;
-
+    
     struct GridElement {
         ci::Vec2f flow;     // Magnitude <= 1.0f
     };

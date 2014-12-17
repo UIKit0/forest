@@ -88,7 +88,7 @@ void Strand::straightenForce(float k)
 
 StrandBox::StrandBox()
     : mNumSeeds(5),
-      mNumStrands(30),
+      mNumStrands(60),
       mStrandLength(150),
       mGrowthProbability(0.01),
       mGrowthDirection(0, 2.2),
@@ -97,7 +97,7 @@ StrandBox::StrandBox()
       mSpringK(0.92),
       mStraightenK(0.4),
       mSmoothK(0.02),
-      mAlignmentK(0.0),
+      mAlignmentK(0.265),
       mBorderRect(0, 0, 1, 0.5),
       mGridRect(-0.5, -0.5, 1.5, 1.0),
       mGridWidth(160),
@@ -250,15 +250,15 @@ void StrandBox::smoothGrid()
 void StrandBox::alignStrandsWithGrid()
 {
     vector<GridElement> &grid = *mGridCurrent;
-    float k = mAlignmentK;
+    float k = mAlignmentK * 1e-3;
     
     for (int i = 0; i < mStrands.size(); i++) {
         std::shared_ptr<Strand> strand = mStrands[i];
         vector<Vec2f> &points = strand->getPoints();
         
         for (unsigned i = 1; i < points.size(); i++) {
-            Vec2f a = points[i-1];
-            Vec2f b = points[i];
+            Vec2f &a = points[i-1];
+            Vec2f &b = points[i];
             
             int idxA = gridIndexFromPoint(a);
             if (idxA < 0) {
@@ -267,10 +267,10 @@ void StrandBox::alignStrandsWithGrid()
             GridElement& element = grid[idxA];
 
             // Apply a balanced force in the same direction as the flow
-            
             Vec2f f = k * element.flow;
+
             b += f;
-//            a -= f;
+            a -= f;
         }
     }
 }
