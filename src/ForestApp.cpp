@@ -14,7 +14,8 @@ class ForestApp : public AppBasic {
 
     void prepareSettings( Settings *settings );
 	void setup();
-	void draw();
+    void draw();
+    void update();
     void resetButton();
     
     void simThreadFn();
@@ -22,6 +23,8 @@ class ForestApp : public AppBasic {
     params::InterfaceGlRef      mParams;
     cinder::Rand                mRand;
     StrandBox                   mStrandBox;
+
+    mutex                       mSimMutex;
     shared_ptr<thread>          mSimThread;
     bool                        mSimRunning;
 };
@@ -33,26 +36,38 @@ void ForestApp::prepareSettings( Settings *settings )
 
 void ForestApp::setup()
 {
-    mSimRunning = true;
-    mSimThread = make_shared<thread>(bind( &ForestApp::simThreadFn, this ));
-
     mParams = params::InterfaceGl::create( getWindow(), "Forest parameters", toPixels(Vec2i(220, 400)) );
 
     mParams->addButton("Reset", bind( &ForestApp::resetButton, this ), "key=r");
     mParams->addParam( "Number of strands", &mStrandBox.mNumStrands).min(0).max(1000).step(1);
     mParams->addParam( "Strand length", &mStrandBox.mStrandLength).min(1).max(1000).step(1);
-    mParams->addParam( "Growth probability", &mStrandBox.mGrowthProbability).min(0.f).max(0.1f).step(0.0001f);
+    mParams->addParam( "Growth probability", &mStrandBox.mGrowthProbability).min(0.f).max(1.0f).step(0.01f);
     mParams->addParam( "Growth dir Y", &mStrandBox.mGrowthDirection.y).min(-1.f).max(1.f).step(0.01f);
 
     mParams->addParam( "Spring length", &mStrandBox.mSpringLength).min(0.0001f).max(0.01f).step(0.0001f);
     mParams->addParam( "Spring iters", &mStrandBox.mSpringIterations).min(0).max(10000).step(10);
     mParams->addParam( "Spring K", &mStrandBox.mSpringK).min(0.f).max(1.0f).step(0.001f);
     mParams->addParam( "Straighten K", &mStrandBox.mStraightenK).min(0.f).max(1.0f).step(0.001f);
+
+    mParams->addParam( "Align R min", &mStrandBox.mAlignmentRadiusMin).min(0.f).max(1.0f).step(0.001f);
+    mParams->addParam( "Align R max", &mStrandBox.mAlignmentRadiusMax).min(0.f).max(1.0f).step(0.001f);
+    mParams->addParam( "Align K", &mStrandBox.mAlignmentK).min(0.f).max(1.0f).step(0.001f);
+}
+
+void ForestApp::update()
+{
+    // Start updating in the background
+    if (!mSimThread) {
+        mSimRunning = true;
+        mSimThread = make_shared<thread>(bind( &ForestApp::simThreadFn, this ));
+    }
 }
 
 void ForestApp::resetButton()
 {
+    mSimMutex.lock();
     mStrandBox.reset();
+    mSimMutex.unlock();
 }
 
 void ForestApp::draw()
@@ -74,8 +89,9 @@ void ForestApp::draw()
     gl::color( Color::gray(1.0f) );
     gl::drawSolidRect( Rectf( 0.0f, 0.0f, 1.0f, wallHeightRatio ));
 
+    // Drawing should be safe without acquiring the mutex (performance)
     mStrandBox.draw();
-
+    
     gl::popModelView();
     
     mParams->draw();
@@ -84,7 +100,11 @@ void ForestApp::draw()
 void ForestApp::simThreadFn()
 {
     while (mSimRunning) {
+        ci::ThreadSetup ciThread;
+        
+        mSimMutex.lock();
         mStrandBox.update();
+        mSimMutex.unlock();
     }
 }
 

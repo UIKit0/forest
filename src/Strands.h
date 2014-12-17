@@ -6,6 +6,36 @@
 #include <vector>
 
 
+// Packed representation of one point on one strand
+struct StrandPoint
+{
+    uint32_t mPacked;
+    
+    StrandPoint(uint32_t packed = 0)
+        : mPacked(packed) {}
+   
+    StrandPoint(unsigned strandId, unsigned pointId)
+        : mPacked(((strandId+1) << 16) | (pointId + 1)) {}
+    
+    void setNull() {
+        mPacked = 0;
+    }
+    
+    bool isNull() const {
+        return mPacked == 0;
+    }
+
+    unsigned getStrandId() const {
+        return (mPacked >> 16) - 1;
+    }
+
+    unsigned getPointId() const {
+        return (mPacked & 0xffff) - 1;
+    }
+};
+
+
+// Simulation object for one strand
 class Strand
 {
 public:
@@ -22,14 +52,19 @@ public:
     
     const std::vector<ci::Vec2f>&    getPoints() const { return mCurrent->getPoints(); }
     std::vector<ci::Vec2f>&          getPoints() { return mCurrent->getPoints(); }
+
+    StrandPoint& nextPoint(unsigned pointId) { return mPointLinks[pointId]; }
     
 private:
     ci::PolyLine2f   mBuffers[2];
     ci::PolyLine2f*  mCurrent;
     ci::PolyLine2f*  mNext;
+
+    std::vector<StrandPoint> mPointLinks;
 };
 
 
+// Simulation for many strands that interact with each other
 class StrandBox
 {
 public:
@@ -38,8 +73,6 @@ public:
     void reset();
     void update();
     void draw();
-    
-    typedef std::vector<std::shared_ptr<Strand> > StrandVector;
     
     unsigned        mNumStrands;
     unsigned        mStrandLength;
@@ -51,7 +84,19 @@ public:
     float           mSpringK;
     float           mStraightenK;
     
+    float           mAlignmentRadiusMin;
+    float           mAlignmentRadiusMax;
+    float           mAlignmentK;
+    
+    typedef std::vector<std::shared_ptr<Strand> > StrandVector;
+
     uint64_t        mSimulationStep;
     StrandVector    mStrands;
     ci::Rand        mRand;
+
+private:
+    void adjustStrandCount();
+    void adjustStrandLength();
+    void integrateStrandForces();
+    void clusterStrands();
 };
