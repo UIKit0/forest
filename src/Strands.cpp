@@ -87,20 +87,19 @@ void Strand::straightenForce(float k)
 
 
 StrandBox::StrandBox()
-    : mNumStrands(40),
-      mStrandLength(180),
-      mGrowthProbability(0.1),
-      mGrowthDirection(0, 0.68),
+    : mNumStrands(5),
+      mStrandLength(200),
+      mGrowthProbability(0.01),
+      mGrowthDirection(0, 0.9),
       mSpringLength(0.005),
-      mSpringIterations(120),
+      mSpringIterations(15),
       mSpringK(0.92),
-      mStraightenK(0.66),
-      mAlignmentRadiusMin(0.01),
-      mAlignmentRadiusMax(0.05),
-      mAlignmentK(0.008),
+      mStraightenK(0.4),
+      mSmoothK(0.002),
+      mAlignmentK(0.218),
       mRect(0, 0, 1, 0.5),
-      mGridWidth(100),
-      mGridHeight(100)
+      mGridWidth(80),
+      mGridHeight(40)
 {
     reset();
 }
@@ -111,8 +110,12 @@ void StrandBox::reset()
     mStrands.clear();
     mStrands.reserve(100);
 
-    mGrid.clear();
-    mGrid.resize(mGridWidth * mGridHeight);
+    for (int i = 0; i < 2; i++) {
+        mGrids[i].clear();
+        mGrids[i].resize(mGridWidth * mGridHeight);
+    }
+    mGridCurrent = &mGrids[0];
+    mGridNext = &mGrids[1];
     
     mSimulationStep = 0;
 }
@@ -180,6 +183,8 @@ void StrandBox::integrateStrandForces()
 
 void StrandBox::updateFlowGrid()
 {
+    vector<GridElement> &grid = *mGridCurrent;
+
     for (int i = 0; i < mStrands.size(); i++) {
         std::shared_ptr<Strand> strand = mStrands[i];
         vector<Vec2f> &points = strand->getPoints();
@@ -192,7 +197,7 @@ void StrandBox::updateFlowGrid()
             if (idxA < 0) {
                 continue;
             }
-            GridElement& element = mGrid[idxA];
+            GridElement& element = grid[idxA];
 
             Vec2f flow = (b - a).safeNormalized();
             float k = 0.1;
@@ -206,23 +211,55 @@ void StrandBox::updateFlowGrid()
 
 void StrandBox::smoothGrid()
 {
-    float k = 0.001;
+    vector<GridElement> &src = *mGridCurrent;
+    vector<GridElement> &dest = *mGridNext;
+    float k = mSmoothK / 10.0f;
 
-    for (int y = 1; y + 1 < mGridHeight; y++) {
-        for (int x = 1; x + 1 < mGridWidth; x++) {
+    for (int y = 0; y < mGridHeight; y++) {
+        for (int x = 0; x < mGridWidth; x++) {
             int idx = x + y * mGridWidth;
-            Vec2f scaledFlow = mGrid[idx].flow * k;
+            Vec2f flow = src[idx].flow;
 
-            mGrid[idx - 1].flow += scaledFlow;
-            mGrid[idx + 1].flow += scaledFlow;
-            mGrid[idx - mGridWidth].flow += scaledFlow;
-            mGrid[idx + mGridHeight].flow += scaledFlow;
+            if (x > 0) flow += src[idx - 1].flow * k;
+            if (y > 0) flow += src[idx - mGridWidth].flow * k;
+
+            if (x + 1 < mGridWidth) flow += src[idx + 1].flow * k;
+            if (y + 1 < mGridHeight) flow += src[idx + mGridWidth].flow * k;
+
+            dest[idx].flow = flow;
         }
     }
+    
+    swap(mGridCurrent, mGridNext);
 }
+
 
 void StrandBox::alignStrandsWithGrid()
 {
+    vector<GridElement> &grid = *mGridCurrent;
+    float k = mAlignmentK;
+    
+    for (int i = 0; i < mStrands.size(); i++) {
+        std::shared_ptr<Strand> strand = mStrands[i];
+        vector<Vec2f> &points = strand->getPoints();
+        
+        for (unsigned i = 1; i < points.size(); i++) {
+            Vec2f a = points[i-1];
+            Vec2f b = points[i];
+            
+            int idxA = gridIndexFromPoint(a);
+            if (idxA < 0) {
+                continue;
+            }
+            GridElement& element = grid[idxA];
+
+            // Apply a balanced force in the same direction as the flow
+            
+            Vec2f f = k * element.flow.safeNormalized();
+            b += f;
+            a -= f;
+        }
+    }
 }
 
 
@@ -253,9 +290,10 @@ void StrandBox::draw()
     gl::drawSolidRect(mRect);
 
     // Grid squares
-    for (int i = 0; i < mGrid.size(); i++) {
+    vector<GridElement> &grid = *mGridCurrent;
+    for (int i = 0; i < grid.size(); i++) {
         Vec2f center = pointFromGridIndex(i);
-        GridElement& element = mGrid[i];
+        GridElement& element = grid[i];
         
         gl::color(Color(0.9f, 0.7f, 0.7f));
         gl::drawLine(center, center + element.flow.safeNormalized() * 0.01);

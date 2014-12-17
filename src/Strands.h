@@ -50,9 +50,7 @@ public:
     unsigned        mSpringIterations;
     float           mSpringK;
     float           mStraightenK;
-    
-    float           mAlignmentRadiusMin;
-    float           mAlignmentRadiusMax;
+    float           mSmoothK;
     float           mAlignmentK;
     
     typedef std::vector<std::shared_ptr<Strand> > StrandVector;
@@ -66,8 +64,10 @@ public:
         ci::Vec2f flow;
     };
 
-    std::vector<GridElement> mGrid;
     unsigned mGridWidth, mGridHeight;
+    std::vector<GridElement> mGrids[2];
+    std::vector<GridElement> *mGridCurrent;
+    std::vector<GridElement> *mGridNext;
 
 private:
     void adjustStrandCount();

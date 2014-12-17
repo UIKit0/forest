@@ -48,9 +48,7 @@ void ForestApp::setup()
     mParams->addParam( "Spring iters", &mStrandBox.mSpringIterations).min(0).max(10000).step(10);
     mParams->addParam( "Spring K", &mStrandBox.mSpringK).min(0.f).max(1.0f).step(0.001f);
     mParams->addParam( "Straighten K", &mStrandBox.mStraightenK).min(0.f).max(1.0f).step(0.001f);
-
-    mParams->addParam( "Align R min", &mStrandBox.mAlignmentRadiusMin).min(0.f).max(1.0f).step(0.001f);
-    mParams->addParam( "Align R max", &mStrandBox.mAlignmentRadiusMax).min(0.f).max(1.0f).step(0.001f);
+    mParams->addParam( "Smooth K", &mStrandBox.mSmoothK).min(0.f).max(1.0f).step(0.001f);
     mParams->addParam( "Align K", &mStrandBox.mAlignmentK).min(0.f).max(1.0f).step(0.001f);
 }
 
