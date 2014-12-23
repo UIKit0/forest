@@ -7,7 +7,7 @@ using namespace std;
 StrandBox::StrandBox()
     : mNumSeeds(10),
       mNumStrands(200),
-      mStrandLength(60),
+      mStrandLength(40),
       mGrowthProbability(0.02),
       mGrowthDirection(0, 1.25),
       mSpringLength(0.015),

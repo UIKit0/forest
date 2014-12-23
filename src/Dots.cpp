@@ -6,7 +6,7 @@ using namespace std;
 
 Dots::Dots(StrandBox &sb) :
     mSB(sb),
-    mNumDots(30),
+    mNumDots(25),
     mSmallestDotSize(1.25 / 32.0),
     mLargestDotSize(1.5 / 32.0),
     mDotGravity(1.0),
