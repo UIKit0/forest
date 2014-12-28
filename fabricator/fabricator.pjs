@@ -211,16 +211,10 @@ Panel = function ( growth, scale, panelId )
         return result;
     }
 
-    this.placeHole = function (path)
-    {
-        this.frontHoles = this.frontHoles.unite(path);
-        path.remove();
-    }
-
     this.placeLargeDot = function (json)
     {
         this.collider.add(json.center, json.radius);
-        this.placeHole(new Path.Circle(json.center, json.radius));
+        this.frontHoles.push(new Path.Circle(json.center, json.radius));
     }
 
     this.canPlaceSmallDot = function (point)
@@ -238,7 +232,7 @@ Panel = function ( growth, scale, panelId )
     this.placeSmallDot = function (point)
     {
         this.collider.add(point, this.scale.smallDotRadius);
-        this.placeHole(new Path.Circle(point, this.scale.smallDotRadius));
+        this.frontHoles.push(new Path.Circle(point, this.scale.smallDotRadius));
     } 
 
     this.placeStrand = function (json)
@@ -276,26 +270,23 @@ Panel = function ( growth, scale, panelId )
     this.bounds = this.backLayer.bounds;
     this.collider = new DotCollider();
     this.keepOut = this.strokeOutline(this.scale.smallDotGap + this.scale.supportWidth);
-    this.frontHoles = new Path();
+    this.frontHoles = [];
 
     for (var i = 0; i < this.growth.json.dots.length; i++) {
-        console.log("Dot " + i + " / " + this.growth.json.dots.length);
         this.placeLargeDot(this.growth.json.dots[i]);
     }
 
     for (var i = 0; i < this.growth.json.strands.length; i++) {
-        console.log("Strand " + i + " / " + this.growth.json.strands.length);
         this.placeStrand(this.growth.json.strands[i]);
     }
 
     // Speed this up by subtracting all holes at once
-    this.frontLayer = this.frontLayer.subtract(this.frontHoles);
-    this.frontHoles.remove();
+    this.frontLayer = this.frontLayer.subtract(new CompoundPath(this.frontHoles));
 
     this.draw = function () {
-        this.backLayer.fillColor   = new Color(0.8, 0.2, 0.2, 0.4);
-        this.middleLayer.fillColor = new Color(0.2, 0.8, 0.2, 0.4);
-        this.frontLayer.fillColor  = new Color(0.2, 0.2, 0.8, 0.4);
+        this.backLayer.fillColor   = '#21abff';                     // Bright rear layer
+        this.middleLayer.fillColor = new Color(0, 0.6, 0, 0.8);     // Green support layer
+        this.frontLayer.fillColor  = new Color(0, 0.7);             // Dark front layer
 
         var group = new Group();
         group.addChild(this.backLayer);
