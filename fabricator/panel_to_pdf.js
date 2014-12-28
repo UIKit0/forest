@@ -5,7 +5,7 @@ var paper = require('paper'),
     fs = require('fs');
 
 var inFile = path.resolve(__dirname, '../layout/growth.json')
-var outFile = path.resolve(__dirname, 'growth.pdf')
+var outFile = path.resolve(__dirname, 'panel.pdf')
 
 var canvas = new paper.Canvas(612, 792, 'pdf');
 var fab = require('./fabricator.pjs')(canvas);
@@ -15,14 +15,15 @@ with (fab) {
         if (err) throw err;
         var growth = new Growth(JSON.parse(data));
         var scale = new Scale();
+
+        var panel = new Panel(growth, scale, 0);
+        var layer = panel.draw();
+
         var world = new Group();
+        world.addChild(scale.drawGrid(layer.bounds));
+        world.addChild(layer);
 
-        var growthLayer = growth.draw();
-
-        world.addChild(scale.drawGrid(growthLayer.bounds));
-        world.addChild(growthLayer);
-
-        world.fitBounds(view.bounds);
+        world.fitBounds(view.bounds.expand(-100));
         world.scale(1, -1);
 
         view.update();

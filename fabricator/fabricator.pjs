@@ -1,9 +1,41 @@
-Scale = function (modelWidthInFeet) {
+strokePath = function (path, radius)
+{
+    // Hack! Paper.js doesn't have outset/inset yet
 
+    var result = null;
+
+    for (var i = 0; i < path.segments.length - !path.closed; i++) {
+        var p1 = path.segments[i].point;
+        var p2 = path.segments[(i+1) % path.segments.length].point;
+
+        var p = new Path();
+        var d = p2 - p1;
+        var tangent = d.rotate(90).normalize(radius);
+        p.add( p1 + tangent );
+        p.add( p2 + tangent );
+        p.add( p2 - tangent );
+        p.add( p1 - tangent );
+        p.closePath();
+
+        result = result ? result.unite(p) : p;
+
+        result = result.unite(new Path.Circle(p1, radius * 0.999));
+        result = result.unite(new Path.Circle(p2, radius * 0.999));
+    }
+
+    return result;
+}
+
+
+Scale = function (modelWidthInFeet)
+{
     this.unitsToFt = modelWidthInFeet || 16.0;
     this.unitsToIn = this.unitsToFt * 12;
     this.ftToUnits = 1.0 / this.unitsToFt;
     this.inToUnits = 1.0 / this.unitsToIn;
+    this.supportWidth = this.inToUnits * 0.75;
+    this.smallDotRadius = this.inToUnits * 0.5 / 2;
+    this.smallDotGap = this.smallDotRadius * 2;
     this.bounds = new Rectangle(0, 0, 1, 0.5);
 
     this.clipToBounds = function ( item ) {
@@ -33,7 +65,7 @@ Scale = function (modelWidthInFeet) {
                 from: p,
                 to: p + (extended.bottomLeft - extended.topLeft),
                 strokeColor: new Color(0, 0.2),
-                strokeWidth: 0.1
+                strokeWidth: 0.2
             }));
         }
 
@@ -43,7 +75,7 @@ Scale = function (modelWidthInFeet) {
                 from: p,
                 to: p + (extended.bottomLeft - extended.topLeft),
                 strokeColor: new Color(0, 0.8),
-                strokeWidth: 0.1
+                strokeWidth: 0.5
             }));
         }
 
@@ -53,7 +85,7 @@ Scale = function (modelWidthInFeet) {
                 from: p,
                 to: p + (extended.topRight - extended.topLeft),
                 strokeColor: new Color(0, 0.2),
-                strokeWidth: 0.1
+                strokeWidth: 0.2
             }));
         }
 
@@ -63,7 +95,7 @@ Scale = function (modelWidthInFeet) {
                 from: p,
                 to: p + (extended.topRight - extended.topLeft),
                 strokeColor: new Color(0, 0.8),
-                strokeWidth: 0.1
+                strokeWidth: 0.5
             }));
         }
 
@@ -72,8 +104,8 @@ Scale = function (modelWidthInFeet) {
 }
 
 
-Growth = function (json) {
-
+Growth = function (json)
+{
     this.json = json;
 
     this.draw = function () {
@@ -88,11 +120,8 @@ Growth = function (json) {
                 strokeCap: 'round'
             });
 
-            for (var j = 0; j < panel.outline.length; j++) {
-                path.add(panel.outline[j]);
-            }
+            path.addSegments(panel.outline);
             path.closePath();
-
             group.addChild(path);
         }
 
@@ -117,13 +146,161 @@ Growth = function (json) {
                 strokeCap: 'round'
             });
 
-            for (var j = 0; j < strand.points.length; j++) {
-                path.add(strand.points[j]);
-            }
-
+            path.addSegments(strand.points);
             group.addChild(path);
         }
 
+        return group;
+    }
+}
+
+
+DotCollider = function ()
+{
+    this.list = [];
+
+    this.add = function (point, radius)
+    {
+        this.list.push({ point: new Point(point), radius: radius });
+    }
+
+    this.hitTest = function (point, radius)
+    {
+        for (var i = 0; i < this.list.length; i++) {
+            var dot = this.list[i];
+            var distSquared = point.getDistance(dot.point, true);
+            var r = dot.radius + radius;
+            if (distSquared < r*r) {
+                return true;
+            }
+        }
+        return false;
+    }
+}
+
+
+Panel = function ( growth, scale, panelId )
+{
+    this.growth = growth;
+    this.scale = scale;
+    this.panelId = panelId;
+    this.json = growth.json.panels[panelId];
+
+    this.drawOutline = function ()
+    {
+        var path = new Path(this.json.outline);
+        path.closePath(true);
+        return path;
+    }
+
+    this.strokeOutline = function (radius)
+    {
+        var outline = this.drawOutline();
+        var result = strokePath(outline, radius);
+        outline.remove();
+        return result;
+    }
+
+    this.outlineSupports = function ()
+    {
+        // Support pieces for the panel's outline
+
+        var outline = this.drawOutline();
+        var result = this.strokeOutline( this.scale.supportWidth ).intersect(outline);
+        outline.remove();
+        return result;
+    }
+
+    this.placeHole = function (path)
+    {
+        this.frontHoles = this.frontHoles.unite(path);
+        path.remove();
+    }
+
+    this.placeLargeDot = function (json)
+    {
+        this.collider.add(json.center, json.radius);
+        this.placeHole(new Path.Circle(json.center, json.radius));
+    }
+
+    this.canPlaceSmallDot = function (point)
+    {
+        if (!this.bounds.contains(point)) {
+            // Not on this panel, early out.
+            return false;
+        }
+
+        var testRadius = this.scale.smallDotRadius + this.scale.smallDotGap;
+        return !this.collider.hitTest(point, testRadius) &&
+               !this.keepOut.contains(point);
+    }
+
+    this.placeSmallDot = function (point)
+    {
+        this.collider.add(point, this.scale.smallDotRadius);
+        this.placeHole(new Path.Circle(point, this.scale.smallDotRadius));
+    } 
+
+    this.placeStrand = function (json)
+    {   
+        var path = new Path(json.points);
+        if (path.bounds.intersects(this.bounds)) {
+
+            var offset = 0;
+            var length = path.length;
+            var dotsToPlace = []
+
+            while (offset < length) {
+                var point = path.getPointAt(offset);
+                var tangent = path.getTangentAt(offset);
+
+                if (this.canPlaceSmallDot(point)) {
+                    // Place the dots later so we don't collide-test on the same strand
+                    dotsToPlace.push(point);
+                }
+
+                offset += this.scale.smallDotRadius * 2 + this.scale.smallDotGap;
+            }
+
+            for (var i = 0; i < dotsToPlace.length; i++) {
+                this.placeSmallDot(dotsToPlace[i]);
+            }
+        }
+        path.remove();
+    }
+
+    this.frontLayer = this.drawOutline();
+    this.middleLayer = this.outlineSupports();
+    this.backLayer = this.drawOutline();
+
+    this.bounds = this.backLayer.bounds;
+    this.collider = new DotCollider();
+    this.keepOut = this.strokeOutline(this.scale.smallDotGap + this.scale.supportWidth);
+    this.frontHoles = new Path();
+
+    for (var i = 0; i < this.growth.json.dots.length; i++) {
+        console.log("Dot " + i + " / " + this.growth.json.dots.length);
+        this.placeLargeDot(this.growth.json.dots[i]);
+    }
+
+    for (var i = 0; i < this.growth.json.strands.length; i++) {
+        console.log("Strand " + i + " / " + this.growth.json.strands.length);
+        this.placeStrand(this.growth.json.strands[i]);
+    }
+
+    // Speed this up by subtracting all holes at once
+    this.frontLayer = this.frontLayer.subtract(this.frontHoles);
+    this.frontHoles.remove();
+
+    this.draw = function () {
+        this.backLayer.fillColor   = new Color(0.8, 0.2, 0.2, 0.4);
+        this.middleLayer.fillColor = new Color(0.2, 0.8, 0.2, 0.4);
+        this.frontLayer.fillColor  = new Color(0.2, 0.2, 0.8, 0.4);
+
+        var group = new Group();
+        group.addChild(this.backLayer);
+        group.addChild(this.middleLayer);
+        group.addChild(this.frontLayer);
         return group;
     }
 }
