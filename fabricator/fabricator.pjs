@@ -1,51 +1,129 @@
+Scale = function (modelWidthInFeet) {
 
-DrawGrowth = function (obj) {
-    var world = new Group();
+    this.unitsToFt = modelWidthInFeet || 16.0;
+    this.unitsToIn = this.unitsToFt * 12;
+    this.ftToUnits = 1.0 / this.unitsToFt;
+    this.inToUnits = 1.0 / this.unitsToIn;
+    this.bounds = new Rectangle(0, 0, 1, 0.5);
 
-    for (var i = 0; i < obj.panels.length; i++) {
-        var panel = obj.panels[i];
-
-        var path = new Path({
-            strokeColor: '#242',
-            strokeWidth: 1,
-            strokeCap: 'round'
-        });
-
-        for (var j = 0; j < panel.outline.length; j++) {
-            path.add(panel.outline[j]);
-        }
-        path.closePath();
-
-        world.addChild(path);
+    this.clipToBounds = function ( item ) {
+        var bounds = new Path.Rectangle(this.bounds);
+        var group = new Group(bounds);
+        group.clipped = true;
+        group.addChild(item);
+        return group;
     }
 
-    for (var i = 0; i < obj.dots.length; i++) {
-        var dot = obj.dots[i];
+    this.drawGrid = function ( rectangleToCover, minorUnit, majorUnit ) { 
+        var group = new Group();
 
-        var path = new Path.Circle({
-            fillColor: '#422',
-            center: dot.center,
-            radius: dot.radius
-        });
+        minorUnit = minorUnit || this.inToUnits;
+        majorUnit = majorUnit || this.ftToUnits;
 
-        world.addChild(path);
-    }
+        var extended = new Rectangle(rectangleToCover);
+        extended.left = Math.floor(extended.left / majorUnit) * majorUnit;
+        extended.top = Math.floor(extended.top / majorUnit) * majorUnit;
+        extended.right = Math.ceil(extended.right / majorUnit) * majorUnit;
+        extended.bottom = Math.ceil(extended.bottom / majorUnit) * majorUnit;
+        extended = extended.intersect(this.bounds);
 
-    for (var i = 0; i < obj.strands.length; i++) {
-        var strand = obj.strands[i];
-
-        var path = new Path({
-            strokeColor: new Color(0, 0.4),
-            strokeWidth: 0.5,
-            strokeCap: 'round'
-        });
-
-        for (var j = 0; j < strand.points.length; j++) {
-            path.add(strand.points[j]);
+        // Minor axis, verticals
+        for (var p = new Point(extended.topLeft); p.x <= extended.right; p.x += minorUnit) {
+            group.addChild(new Path.Line({
+                from: p,
+                to: p + (extended.bottomLeft - extended.topLeft),
+                strokeColor: new Color(0, 0.2),
+                strokeWidth: 0.1
+            }));
         }
 
-        world.addChild(path);
-    }
+        // Major axis, verticals
+        for (var p = new Point(extended.topLeft); p.x <= extended.right; p.x += majorUnit) {
+            group.addChild(new Path.Line({
+                from: p,
+                to: p + (extended.bottomLeft - extended.topLeft),
+                strokeColor: new Color(0, 0.8),
+                strokeWidth: 0.1
+            }));
+        }
 
-    return world;
+        // Minor axis, horizontals
+        for (var p = new Point(extended.topLeft); p.y <= extended.bottom; p.y += minorUnit) {
+            group.addChild(new Path.Line({
+                from: p,
+                to: p + (extended.topRight - extended.topLeft),
+                strokeColor: new Color(0, 0.2),
+                strokeWidth: 0.1
+            }));
+        }
+
+        // Major axis, horizontals
+        for (var p = new Point(extended.topLeft); p.y <= extended.bottom; p.y += majorUnit) {
+            group.addChild(new Path.Line({
+                from: p,
+                to: p + (extended.topRight - extended.topLeft),
+                strokeColor: new Color(0, 0.8),
+                strokeWidth: 0.1
+            }));
+        }
+
+        return group;
+    }
+}
+
+
+Growth = function (json) {
+
+    this.json = json;
+
+    this.draw = function () {
+        var group = new Group();
+
+        for (var i = 0; i < this.json.panels.length; i++) {
+            var panel = this.json.panels[i];
+
+            var path = new Path({
+                strokeColor: '#242',
+                strokeWidth: 1,
+                strokeCap: 'round'
+            });
+
+            for (var j = 0; j < panel.outline.length; j++) {
+                path.add(panel.outline[j]);
+            }
+            path.closePath();
+
+            group.addChild(path);
+        }
+
+        for (var i = 0; i < this.json.dots.length; i++) {
+            var dot = this.json.dots[i];
+
+            var path = new Path.Circle({
+                fillColor: '#422',
+                center: dot.center,
+                radius: dot.radius
+            });
+
+            group.addChild(path);
+        }
+
+        for (var i = 0; i < this.json.strands.length; i++) {
+            var strand = this.json.strands[i];
+
+            var path = new Path({
+                strokeColor: new Color(0, 0.4),
+                strokeWidth: 0.5,
+                strokeCap: 'round'
+            });
+
+            for (var j = 0; j < strand.points.length; j++) {
+                path.add(strand.points[j]);
+            }
+
+            group.addChild(path);
+        }
+
+        return group;
+    }
 }

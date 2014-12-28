@@ -13,8 +13,14 @@ var fab = require('./fabricator.pjs')(canvas);
 with (fab) {
     fs.readFile(inFile, { encoding: 'utf8' }, function (err, data) {
         if (err) throw err;
-        var growth = JSON.parse(data);
-        var world = DrawGrowth(growth);
+        var growth = new Growth(JSON.parse(data));
+        var scale = new Scale();
+        var world = new Group();
+
+        var growthLayer = growth.draw();
+
+        world.addChild(scale.drawGrid(growthLayer.bounds));
+        world.addChild(scale.clipToBounds(growthLayer));
 
         world.fitBounds(view.bounds);
         world.scale(1, -1);
