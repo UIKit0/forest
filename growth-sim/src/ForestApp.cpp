@@ -22,6 +22,7 @@ class ForestApp : public AppBasic {
 
     void resetButton();
     void stopButton();
+    void writeButton();
     
     void simThreadFn();
 
@@ -59,6 +60,7 @@ void ForestApp::setup()
 
     mParams->addButton("Reset", bind( &ForestApp::resetButton, this ), "key=r");
     mParams->addButton("Stop sim", bind( &ForestApp::stopButton, this ), "key=s");
+    mParams->addButton("Write results", bind( &ForestApp::writeButton, this ), "key=w");
     mParams->addParam("Sim step #", &mStrandBox.mSimulationStep, "readonly=true");
     
     mParams->addSeparator();
@@ -131,6 +133,22 @@ void ForestApp::stopButton()
 {
     // Exits the simulation thread at the next chance we get
     mSimRunning = false;
+}
+
+
+void ForestApp::writeButton()
+{
+    // Exits the simulation thread at the next chance we get
+
+    JsonTree root = JsonTree::makeObject();
+
+    mSimMutex.lock();
+    root.addChild(mPanels.serialize());
+    root.addChild(mDots.serialize());
+    root.addChild(mStrandBox.serialize());
+    mSimMutex.unlock();
+
+    root.write(getSaveFilePath("growth.json"));
 }
 
 

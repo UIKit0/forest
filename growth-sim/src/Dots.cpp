@@ -1,4 +1,5 @@
 #include "Dots.h"
+#include "Util.h"
 
 using namespace ci;
 using namespace std;
@@ -269,4 +270,21 @@ void Dots::drawAffinityMatrix()
     }
 
     gl::disableAlphaBlending();
+}
+
+
+JsonTree Dots::serialize()
+{
+    JsonTree array = JsonTree::makeArray("dots");
+
+    for (unsigned i = 0; i < mDotPoints.size(); i++) {
+        JsonTree dot = JsonTree::makeObject();
+        
+        dot.addChild(toJson("center", mDotPoints[i]));
+        dot.addChild(JsonTree("radius", getDotSize(i)));
+        
+        array.addChild(dot);
+    }
+    
+    return array;
 }

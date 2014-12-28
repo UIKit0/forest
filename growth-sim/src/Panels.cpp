@@ -1,4 +1,5 @@
 #include "Panels.h"
+#include "Util.h"
 
 using namespace ci;
 using namespace std;
@@ -89,4 +90,20 @@ void Panels::draw()
     }
     
     gl::disableAlphaBlending();
+}
+
+
+JsonTree Panels::serialize()
+{
+    JsonTree array = JsonTree::makeArray("panels");
+
+    for (unsigned i = 0; i < mOutlines.size(); i++) {
+        JsonTree panel = JsonTree::makeObject();
+        
+        panel.addChild(toJson("outline", mOutlines[i]));
+        
+        array.addChild(panel);
+    }
+    
+    return array;
 }

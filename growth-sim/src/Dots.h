@@ -2,6 +2,7 @@
 
 #include "cinder/Vector.h"
 #include "cinder/Rand.h"
+#include "cinder/Json.h"
 #include "Strands.h"
 #include <vector>
 
@@ -12,6 +13,8 @@ class Dots
 public:
     Dots(StrandBox &sb);
     
+    ci::JsonTree serialize();
+
     void reset();
     void update();
     void draw();

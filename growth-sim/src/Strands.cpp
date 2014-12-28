@@ -1,4 +1,5 @@
 #include "Strands.h"
+#include "Util.h"
 
 using namespace ci;
 using namespace std;
@@ -245,6 +246,19 @@ void StrandBox::draw()
     }
 }
 
+
+ci::JsonTree StrandBox::serialize()
+{
+    JsonTree array = JsonTree::makeArray("strands");
+    
+    for (int i = 0; i < mStrands.size(); i++) {
+        array.addChild(mStrands[i]->serialize());
+    }
+    
+    return array;
+}
+
+
 Strand::Strand()
 : mCurrent(&mBuffers[0]),
 mNext(&mBuffers[1])
@@ -326,4 +340,13 @@ void Strand::straightenForce(float k)
     swap(mCurrent, mNext);
 }
 
+
+JsonTree Strand::serialize()
+{
+    JsonTree obj = JsonTree::makeObject();
+
+    obj.addChild(toJson("points", getPolyLine()));
+    
+    return obj;
+}
 

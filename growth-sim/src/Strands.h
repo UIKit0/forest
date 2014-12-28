@@ -3,6 +3,7 @@
 #include "cinder/Vector.h"
 #include "cinder/Rand.h"
 #include "cinder/PolyLine.h"
+#include "cinder/Json.h"
 #include <vector>
 
 
@@ -11,6 +12,8 @@ class Strand
 {
 public:
     Strand();
+
+    ci::JsonTree serialize();
 
     void seed(ci::Vec2f point);
     void grow(ci::Rand &rand, ci::Vec2f direction, float distance = 0.001);
@@ -40,6 +43,8 @@ class StrandBox
 public:
     StrandBox();
     
+    ci::JsonTree serialize();
+
     void reset();
     void update();
     void draw();

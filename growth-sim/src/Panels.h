@@ -2,6 +2,7 @@
 
 #include "Dots.h"
 #include "cinder/PolyLine.h"
+#include "cinder/Json.h"
 #include <vector>
 
 
@@ -10,6 +11,8 @@ class Panels
 {
 public:
     Panels(Dots &dots);
+    
+    ci::JsonTree serialize();
     
     void reset();
     void update();
