@@ -31,9 +31,13 @@ Scale = function (modelWidthInFeet)
 {
     this.unitsToFt = modelWidthInFeet || 16.0;
     this.unitsToIn = this.unitsToFt * 12;
+    this.unitsToM = this.unitsToIn * 2.54 / 100.0;
     this.ftToUnits = 1.0 / this.unitsToFt;
     this.inToUnits = 1.0 / this.unitsToIn;
+    this.mToUnits = 1.0 / this.unitsToM;
     this.supportWidth = this.inToUnits * 0.75;
+    this.ledSpacing = this.mToUnits / 60.0;
+    this.ledSpreadDistance = this.ledSpacing * 1.5;
     this.smallDotRadius = this.inToUnits * 0.5 / 2;
     this.smallDotGap = this.smallDotRadius * 2;
     this.bounds = new Rectangle(0, 0, 1, 0.5);
@@ -65,7 +69,8 @@ Scale = function (modelWidthInFeet)
                 from: p,
                 to: p + (extended.bottomLeft - extended.topLeft),
                 strokeColor: new Color(0, 0.2),
-                strokeWidth: 0.2
+                strokeWidth: 0.2,
+                strokeScaling: false
             }));
         }
 
@@ -75,7 +80,8 @@ Scale = function (modelWidthInFeet)
                 from: p,
                 to: p + (extended.bottomLeft - extended.topLeft),
                 strokeColor: new Color(0, 0.8),
-                strokeWidth: 0.5
+                strokeWidth: 0.5,
+                strokeScaling: false
             }));
         }
 
@@ -85,7 +91,8 @@ Scale = function (modelWidthInFeet)
                 from: p,
                 to: p + (extended.topRight - extended.topLeft),
                 strokeColor: new Color(0, 0.2),
-                strokeWidth: 0.2
+                strokeWidth: 0.2,
+                strokeScaling: false
             }));
         }
 
@@ -95,7 +102,8 @@ Scale = function (modelWidthInFeet)
                 from: p,
                 to: p + (extended.topRight - extended.topLeft),
                 strokeColor: new Color(0, 0.8),
-                strokeWidth: 0.5
+                strokeWidth: 0.5,
+                strokeScaling: false
             }));
         }
 
@@ -117,7 +125,8 @@ Growth = function (json)
             var path = new Path({
                 strokeColor: '#242',
                 strokeWidth: 1,
-                strokeCap: 'round'
+                strokeCap: 'round',
+                strokeScaling: false
             });
 
             path.addSegments(panel.outline);
@@ -131,7 +140,8 @@ Growth = function (json)
             var path = new Path.Circle({
                 fillColor: '#422',
                 center: dot.center,
-                radius: dot.radius
+                radius: dot.radius,
+                strokeScaling: false
             });
 
             group.addChild(path);
@@ -143,7 +153,8 @@ Growth = function (json)
             var path = new Path({
                 strokeColor: new Color(0, 0.4),
                 strokeWidth: 0.5,
-                strokeCap: 'round'
+                strokeCap: 'round',
+                strokeScaling: false
             });
 
             path.addSegments(strand.points);
@@ -211,10 +222,38 @@ Panel = function ( growth, scale, panelId )
         return result;
     }
 
+    this.nudgeLargeDot = function (json)
+    {
+        // The simulation may give us dots that need to move slightly in order to
+        // have enough clearance for support pieces. Do that in the JSON model before
+        // we use it for anything else.
+
+        // TODO: Assumes panels are rectangular and axis-aligned
+
+        var clearance = 0.001 + json.radius
+            + this.scale.supportWidth
+            + this.scale.ledSpreadDistance;
+
+        json.center.x = Math.max(json.center.x, this.bounds.left + clearance);
+        json.center.x = Math.min(json.center.x, this.bounds.right - clearance);
+
+        json.center.y = Math.max(json.center.y, this.bounds.top + clearance);
+        json.center.y = Math.min(json.center.y, this.bounds.bottom - clearance);
+    }
+
     this.placeLargeDot = function (json)
     {
-        this.collider.add(json.center, json.radius);
         this.frontHoles.push(new Path.Circle(json.center, json.radius));
+
+        // Support for fully isolated LED strip around the dot, pointed inward
+        var ledRadius = json.radius + this.scale.ledSpreadDistance;
+        var outerRadius = ledRadius + this.scale.supportWidth;
+
+        this.middleSupports.push(new Path.Circle(json.center, outerRadius));
+        this.middleHoles.push(new Path.Circle(json.center, ledRadius));
+
+        // Large keepout area
+        this.collider.add(json.center, outerRadius);
     }
 
     this.canPlaceSmallDot = function (point)
@@ -263,25 +302,31 @@ Panel = function ( growth, scale, panelId )
         path.remove();
     }
 
-    this.frontLayer = this.drawOutline();
-    this.middleLayer = this.outlineSupports();
-    this.backLayer = this.drawOutline();
-
-    this.bounds = this.backLayer.bounds;
+    this.bounds = this.drawOutline().bounds;
     this.collider = new DotCollider();
     this.keepOut = this.strokeOutline(this.scale.smallDotGap + this.scale.supportWidth);
+
     this.frontHoles = [];
+    this.middleSupports = [];
+    this.middleHoles = [];
 
     for (var i = 0; i < this.growth.json.dots.length; i++) {
-        this.placeLargeDot(this.growth.json.dots[i]);
+        var dot = this.growth.json.dots[i];
+        if (this.bounds.contains(dot.center)) {
+            this.nudgeLargeDot(dot);
+            this.placeLargeDot(dot);
+        }
     }
 
     for (var i = 0; i < this.growth.json.strands.length; i++) {
         this.placeStrand(this.growth.json.strands[i]);
     }
 
-    // Speed this up by subtracting all holes at once
-    this.frontLayer = this.frontLayer.subtract(new CompoundPath(this.frontHoles));
+    this.frontLayer = this.drawOutline().subtract(new CompoundPath(this.frontHoles));
+    this.middleLayer = new CompoundPath(this.middleSupports)
+        .subtract(new CompoundPath(this.middleHoles))
+        .unite(this.outlineSupports());
+    this.backLayer = this.drawOutline();
 
     this.draw = function () {
         this.backLayer.fillColor   = '#21abff';                     // Bright rear layer

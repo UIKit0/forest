@@ -16,15 +16,17 @@ with (fab) {
         var growth = new Growth(JSON.parse(data));
         var scale = new Scale();
         var world = new Group();
+        var panels = new Group();
 
         for (var panelNumber = 0; panelNumber < growth.json.panels.length; panelNumber++) {
             console.log('Panel ' + panelNumber);
 
             var panel = new Panel(growth, scale, panelNumber);
-            var layer = panel.draw();
-            world.addChild(scale.drawGrid(layer.bounds));
-            world.addChild(layer);
+            panels.addChild(panel.draw())
         }
+
+        world.addChild(panels);
+        world.addChild(scale.drawGrid(panels.bounds));
 
         world.fitBounds(view.bounds.expand(-100));
         world.scale(1, -1);
