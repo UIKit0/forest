@@ -1,0 +1,59 @@
+
+drawGrowth = function (obj) {
+    var world = new Group();
+
+    for (var i = 0; i < obj.panels.length; i++) {
+        var panel = obj.panels[i];
+
+        var path = new Path({
+            strokeColor: '#242',
+            strokeWidth: 2,
+            strokeCap: 'round'
+        });
+
+        for (var j = 0; j < panel.outline.length; j++) {
+            path.add(panel.outline[j]);
+        }
+        path.closePath();
+
+        world.addChild(path);
+    }
+
+    for (var i = 0; i < obj.dots.length; i++) {
+        var dot = obj.dots[i];
+
+        var path = new Path.Circle({
+            fillColor: '#422',
+            center: dot.center,
+            radius: dot.radius
+        });
+
+        world.addChild(path);
+    }
+
+    for (var i = 0; i < obj.strands.length; i++) {
+        var strand = obj.strands[i];
+
+        var path = new Path({
+            strokeColor: '#444',
+            strokeWidth: 0.2,
+            strokeCap: 'round'
+        });
+
+        for (var j = 0; j < strand.points.length; j++) {
+            path.add(strand.points[j]);
+        }
+
+        world.addChild(path);
+    }
+
+    var origin = new Point(30, 450);
+    var scale = 612 - origin.x * 2;
+    world.scale(scale, -scale, new Point(0, 0));
+    world.translate(origin);
+
+    var page = new Group();
+    page.addChild(world);
+
+    return page;
+}
