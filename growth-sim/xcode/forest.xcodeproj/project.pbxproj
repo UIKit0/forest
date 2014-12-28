@@ -19,7 +19,6 @@
 		7517CA9B1A408E0900DAC171 /* Strands.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7517CA981A408E0900DAC171 /* Strands.cpp */; };
 		7517CA9E1A412D6800DAC171 /* Dots.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7517CA9D1A412D6800DAC171 /* Dots.cpp */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
-		A75B97E76C8C4D01BB09FCF5 /* Cairo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 01420F6BB4B74D739B816401 /* Cairo.cpp */; };
 		E9B651FCD91544D5AA8947AA /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = BB0B3E7BDCBF4BAD9E20BB4A /* CinderApp.icns */; };
 /* End PBXBuildFile section */
 
@@ -29,8 +28,6 @@
 		00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		00B784B10FF439BC000DE1D7 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
 		00B784B20FF439BC000DE1D7 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
-		01420F6BB4B74D739B816401 /* Cairo.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = Cairo.cpp; path = ../../../../../../src/cinder_0.8.6_mac/blocks/Cairo/src/Cairo.cpp; sourceTree = "<group>"; };
-		024FF1B0CD0F489CB125DD75 /* Cairo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Cairo.h; path = ../../../../../../src/cinder_0.8.6_mac/blocks/Cairo/include/cinder/cairo/Cairo.h; sourceTree = "<group>"; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
@@ -72,7 +69,6 @@
 		01B97315FEAEA392516A2CEA /* Blocks */ = {
 			isa = PBXGroup;
 			children = (
-				9121E5D52690459D81C940F5 /* Cairo */,
 			);
 			name = Blocks;
 			sourceTree = "<group>";
@@ -120,14 +116,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		20032969C4674EB89EBA4FB3 /* cairo */ = {
-			isa = PBXGroup;
-			children = (
-				024FF1B0CD0F489CB125DD75 /* Cairo.h */,
-			);
-			name = cairo;
-			sourceTree = "<group>";
-		};
 		29B97314FDCFA39411CA2CEA /* forest */ = {
 			isa = PBXGroup;
 			children = (
@@ -169,39 +157,6 @@
 				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		9121E5D52690459D81C940F5 /* Cairo */ = {
-			isa = PBXGroup;
-			children = (
-				F14E02D1D715446398E4A535 /* src */,
-				E00BB5C9B9674A72BF5E6A17 /* include */,
-			);
-			name = Cairo;
-			sourceTree = "<group>";
-		};
-		E00BB5C9B9674A72BF5E6A17 /* include */ = {
-			isa = PBXGroup;
-			children = (
-				ED445622E7954A1EA028950F /* cinder */,
-			);
-			name = include;
-			sourceTree = "<group>";
-		};
-		ED445622E7954A1EA028950F /* cinder */ = {
-			isa = PBXGroup;
-			children = (
-				20032969C4674EB89EBA4FB3 /* cairo */,
-			);
-			name = cinder;
-			sourceTree = "<group>";
-		};
-		F14E02D1D715446398E4A535 /* src */ = {
-			isa = PBXGroup;
-			children = (
-				01420F6BB4B74D739B816401 /* Cairo.cpp */,
-			);
-			name = src;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -270,7 +225,6 @@
 			files = (
 				7517CA9B1A408E0900DAC171 /* Strands.cpp in Sources */,
 				7517CA9A1A408E0900DAC171 /* ForestApp.cpp in Sources */,
-				A75B97E76C8C4D01BB09FCF5 /* Cairo.cpp in Sources */,
 				7517CA9E1A412D6800DAC171 /* Dots.cpp in Sources */,
 				7511B4EF1A4F7B2400A5C100 /* Panels.cpp in Sources */,
 			);
@@ -282,6 +236,7 @@
 		C01FCF4B08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CINDER_PATH = ../../../cinder_0.8.6_mac;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEAD_CODE_STRIPPING = YES;
@@ -295,16 +250,13 @@
 					"$(inherited)",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/boost\"";
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
-				OTHER_LDFLAGS = (
-					"\"$(CINDER_PATH)/lib/libcinder_d.a\"",
-					../../../../../../src/cinder_0.8.6_mac/blocks/Cairo/lib/macosx/libcairo.a,
-					"\"../../../../../../src/cinder_0.8.6_mac/blocks/Cairo/lib/macosx/libpixman-1.a\"",
-					../../../../../../src/cinder_0.8.6_mac/blocks/Cairo/lib/macosx/libpng16.a,
-				);
+				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/libcinder_d.a\"";
 				PRODUCT_NAME = forest;
 				SYMROOT = ./build;
+				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -312,6 +264,7 @@
 		C01FCF4C08A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CINDER_PATH = ../../../cinder_0.8.6_mac;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -326,17 +279,14 @@
 					"$(inherited)",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/boost\"";
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
-				OTHER_LDFLAGS = (
-					"\"$(CINDER_PATH)/lib/libcinder.a\"",
-					../../../../../../src/cinder_0.8.6_mac/blocks/Cairo/lib/macosx/libcairo.a,
-					"\"../../../../../../src/cinder_0.8.6_mac/blocks/Cairo/lib/macosx/libpixman-1.a\"",
-					../../../../../../src/cinder_0.8.6_mac/blocks/Cairo/lib/macosx/libpng16.a,
-				);
+				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/libcinder.a\"";
 				PRODUCT_NAME = forest;
 				STRIP_INSTALLED_PRODUCT = YES;
 				SYMROOT = ./build;
+				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
