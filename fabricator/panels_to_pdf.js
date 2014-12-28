@@ -7,7 +7,7 @@ var paper = require('paper'),
 var inFile = path.resolve(__dirname, '../layout/growth.json');
 var outFile = path.resolve(__dirname, 'panels.pdf');
 
-var canvas = new paper.Canvas(612, 792, 'pdf');
+var canvas = new paper.Canvas(792, 612, 'pdf');
 var fab = require('./fabricator.pjs')(canvas);
 
 with (fab) {
