@@ -3,12 +3,14 @@
 using namespace ci;
 using namespace std;
 
+static const float kInches = 1.0f / (16 * 12);
+
 
 Dots::Dots(StrandBox &sb) :
     mSB(sb),
-    mNumDots(25),
-    mSmallestDotSize(1.25 / 32.0),
-    mLargestDotSize(1.5 / 32.0),
+    mNumDots(32),
+    mSmallestDotSize(8 * kInches/2),
+    mLargestDotSize(16 * kInches/2),
     mDotGravity(1.0),
     mDotSpacing(8.0),
     mDotMaxStrands(5),
@@ -53,10 +55,9 @@ void Dots::adjustDotCount()
     // Seed new dots randomly near the center
     while (mDotPoints.size() < mNumDots) {
         
-        float seedRadius = 0.0001;
         Vec2f seedVec = mSB.mBorderRect.getCenter();
-        seedVec += mSB.mRand.nextVec2f() * seedRadius;
-
+        seedVec += mSB.mRand.nextVec2f() * 0.5;
+        
         mDotPoints.push_back(seedVec);
     }
     

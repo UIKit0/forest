@@ -14,6 +14,7 @@
 		00B784B60FF439BC000DE1D7 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B20FF439BC000DE1D7 /* CoreAudio.framework */; };
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
 		5323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B50EAFCA7E003A9687 /* QTKit.framework */; };
+		7511B4EF1A4F7B2400A5C100 /* Panels.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7511B4EE1A4F7B2400A5C100 /* Panels.cpp */; };
 		7517CA9A1A408E0900DAC171 /* ForestApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7517CA971A408E0900DAC171 /* ForestApp.cpp */; };
 		7517CA9B1A408E0900DAC171 /* Strands.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7517CA981A408E0900DAC171 /* Strands.cpp */; };
 		7517CA9E1A412D6800DAC171 /* Dots.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7517CA9D1A412D6800DAC171 /* Dots.cpp */; };
@@ -36,6 +37,8 @@
 		5323E6B10EAFCA74003A9687 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
 		5323E6B50EAFCA7E003A9687 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = /System/Library/Frameworks/QTKit.framework; sourceTree = "<absolute>"; };
 		6976CE7CE6954B54AF41C76E /* forest_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = forest_Prefix.pch; sourceTree = "<group>"; };
+		7511B4ED1A4F7B1E00A5C100 /* Panels.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Panels.h; path = ../src/Panels.h; sourceTree = "<group>"; };
+		7511B4EE1A4F7B2400A5C100 /* Panels.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Panels.cpp; path = ../src/Panels.cpp; sourceTree = "<group>"; };
 		7517CA971A408E0900DAC171 /* ForestApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ForestApp.cpp; path = ../src/ForestApp.cpp; sourceTree = "<group>"; };
 		7517CA981A408E0900DAC171 /* Strands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Strands.cpp; path = ../src/Strands.cpp; sourceTree = "<group>"; };
 		7517CA991A408E0900DAC171 /* Strands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Strands.h; path = ../src/Strands.h; sourceTree = "<group>"; };
@@ -77,6 +80,7 @@
 		080E96DDFE201D6D7F000001 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				7511B4EE1A4F7B2400A5C100 /* Panels.cpp */,
 				7517CA971A408E0900DAC171 /* ForestApp.cpp */,
 				7517CA981A408E0900DAC171 /* Strands.cpp */,
 				7517CA9D1A412D6800DAC171 /* Dots.cpp */,
@@ -140,6 +144,7 @@
 		29B97315FDCFA39411CA2CEA /* Headers */ = {
 			isa = PBXGroup;
 			children = (
+				7511B4ED1A4F7B1E00A5C100 /* Panels.h */,
 				EB309F0E3DE74366AC955D96 /* Resources.h */,
 				6976CE7CE6954B54AF41C76E /* forest_Prefix.pch */,
 				7517CA991A408E0900DAC171 /* Strands.h */,
@@ -267,6 +272,7 @@
 				7517CA9A1A408E0900DAC171 /* ForestApp.cpp in Sources */,
 				A75B97E76C8C4D01BB09FCF5 /* Cairo.cpp in Sources */,
 				7517CA9E1A412D6800DAC171 /* Dots.cpp in Sources */,
+				7511B4EF1A4F7B2400A5C100 /* Panels.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -3,6 +3,7 @@
 #include "cinder/Thread.h"
 #include "Strands.h"
 #include "Dots.h"
+#include "Panels.h"
 #include <vector>
 
 using namespace ci;
@@ -28,6 +29,7 @@ class ForestApp : public AppBasic {
     cinder::Rand                mRand;
     StrandBox                   mStrandBox;
     Dots                        mDots;
+    Panels                      mPanels;
     
     mutex                       mSimMutex;
     shared_ptr<thread>          mSimThread;
@@ -39,6 +41,7 @@ class ForestApp : public AppBasic {
 
 ForestApp::ForestApp() :
     mDots(mStrandBox),
+    mPanels(mDots),
     mSimRunning(false),
     mShowMatrix(false)
 {}
@@ -82,6 +85,11 @@ void ForestApp::setup()
     mParams->addParam( "Largest dot", &mDots.mLargestDotSize).min(0.f).max(0.2f).step(0.001f);
     mParams->addParam( "Dot gravity", &mDots.mDotGravity).min(0.f).max(20.0f).step(0.001f);
     mParams->addParam( "Dot spacing", &mDots.mDotSpacing).min(0.f).max(20.0f).step(0.001f);
+
+    mParams->addSeparator();
+    
+    mParams->addParam( "Panel edge K", &mPanels.mEdgeK).min(0.f).max(1.0f).step(0.001f);
+    mParams->addParam( "Panel edge margin", &mPanels.mEdgeMargin).min(0.f).max(1.0f).step(0.001f);
 
     mParams->addSeparator();
 
@@ -143,6 +151,7 @@ void ForestApp::draw()
     // Drawing should be safe without acquiring the mutex (performance)
     mStrandBox.draw();
     mDots.draw();
+    mPanels.draw();
 
     gl::popModelView();
     
@@ -161,6 +170,7 @@ void ForestApp::simThreadFn()
         mSimMutex.lock();
         mStrandBox.update();
         mDots.update();
+        mPanels.update();
         mSimMutex.unlock();
     }
 }
