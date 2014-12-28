@@ -14,8 +14,10 @@ with (fab) {
     fs.readFile(inFile, { encoding: 'utf8' }, function (err, data) {
         if (err) throw err;
         var growth = JSON.parse(data);
+        var world = DrawGrowth(growth);
 
-        drawGrowth(growth);
+        world.fitBounds(view.bounds);
+        world.scale(1, -1);
 
         view.update();
         fs.writeFile(outFile, canvas.toBuffer(), function (err) {

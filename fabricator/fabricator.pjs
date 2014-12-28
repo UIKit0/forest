@@ -1,5 +1,5 @@
 
-drawGrowth = function (obj) {
+DrawGrowth = function (obj) {
     var world = new Group();
 
     for (var i = 0; i < obj.panels.length; i++) {
@@ -7,7 +7,7 @@ drawGrowth = function (obj) {
 
         var path = new Path({
             strokeColor: '#242',
-            strokeWidth: 2,
+            strokeWidth: 1,
             strokeCap: 'round'
         });
 
@@ -35,8 +35,8 @@ drawGrowth = function (obj) {
         var strand = obj.strands[i];
 
         var path = new Path({
-            strokeColor: '#444',
-            strokeWidth: 0.2,
+            strokeColor: new Color(0, 0.4),
+            strokeWidth: 0.5,
             strokeCap: 'round'
         });
 
@@ -47,13 +47,5 @@ drawGrowth = function (obj) {
         world.addChild(path);
     }
 
-    var origin = new Point(30, 450);
-    var scale = 612 - origin.x * 2;
-    world.scale(scale, -scale, new Point(0, 0));
-    world.translate(origin);
-
-    var page = new Group();
-    page.addChild(world);
-
-    return page;
+    return world;
 }
