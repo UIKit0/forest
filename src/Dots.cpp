@@ -11,13 +11,13 @@ Dots::Dots(StrandBox &sb) :
     mNumDots(32),
     mSmallestDotSize(8 * kInches/2),
     mLargestDotSize(16 * kInches/2),
-    mDotGravity(1.0),
-    mDotSpacing(8.0),
+    mDotGravity(0.194),
+    mDotSpacing(4.0),
     mDotMaxStrands(5),
     mRepelK(0.04),
     mRetainK(0.36),
     mDecayK(0.08),
-    mAttractK(0.3)
+    mAttractK(0.12)
 {
     reset();
 }
@@ -55,10 +55,14 @@ void Dots::adjustDotCount()
     // Seed new dots randomly near the center
     while (mDotPoints.size() < mNumDots) {
         
-        Vec2f seedVec = mSB.mBorderRect.getCenter();
-        seedVec += mSB.mRand.nextVec2f() * 0.5;
+        // Placement hack :(
         
-        mDotPoints.push_back(seedVec);
+        unsigned columns = 8;
+        unsigned x = mDotPoints.size() % columns;
+        unsigned y = mDotPoints.size() / columns;
+        
+        mDotPoints.push_back(Vec2f( (x + 1.0f) / (columns + 1.0f),
+                                    (y + 1.0f) / 16.0f ));
     }
     
     // Make sure the dot/strand affinity array is the right size, randomly init if
@@ -149,6 +153,8 @@ void Dots::strandForces()
     // Too few and we should look for friends nearby.
     // Any friends we keep, draw us toward each other.
     
+    float kPerStrand = 1.0f / mSB.mStrands.size();
+    
     for (unsigned dot = 0; dot < mDotPoints.size(); dot++) {
         Vec2f &dotPoint = mDotPoints[dot];
         float dotSize = getDotSize(dot);
@@ -209,7 +215,7 @@ void Dots::strandForces()
             vector<Vec2f> &strandPoints = strand->getPoints();
 
             affinity -= affinity * mDecayK * 1e-2;
-            float k = affinity * mAttractK * 1e-5;
+            float k = affinity * mAttractK * 1e-3 * kPerStrand;
 
             for (unsigned i = 1; i < strandPoints.size(); i++) {
                 Vec2f d = strandPoints[i] - dotPoint;

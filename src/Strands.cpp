@@ -5,10 +5,10 @@ using namespace std;
 
 
 StrandBox::StrandBox()
-    : mNumSeeds(9),
-      mNumStrands(200),
-      mStrandLength(40),
-      mGrowthProbability(0.02),
+    : mNumSeeds(16),
+      mNumStrands(500),
+      mStrandLength(60),
+      mGrowthProbability(0.019),
       mGrowthDirection(0, 1.25),
       mSpringLength(0.015),
       mSpringIterations(15),

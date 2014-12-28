@@ -10,8 +10,8 @@ const float kPanelSizeY = 4/16.0;
 
 Panels::Panels(Dots &dots) :
     mDots(dots),
-    mEdgeK(0.01),
-    mEdgeMargin(0.01)
+    mEdgeK(0.56),
+    mEdgeMargin(0.006)
 {
     reset();
 }
