@@ -31,6 +31,9 @@ Scale = function (modelWidthInFeet)
     this.ledSmallDotDistance = this.smallDotDiameter *
         this.ledStripThickness / this.topLayerThickness;
 
+    // Distance between small dots and added freeform supports
+    this.smallDotSupportGap = this.ledSmallDotDistance * 3;
+
     this.bounds = new Rectangle(0, 0, 1, 0.5);
 
     this.clipToBounds = function ( item ) {
@@ -100,35 +103,6 @@ Scale = function (modelWidthInFeet)
 
         return group;
     }
-}
-
-
-strokePath = function (path, radius)
-{
-    // Hack! Paper.js doesn't have outset/inset yet
-
-    var result = null;
-
-    for (var i = 0; i < path.segments.length - !path.closed; i++) {
-        var p1 = path.segments[i].point;
-        var p2 = path.segments[(i+1) % path.segments.length].point;
-
-        var p = new Path();
-        var d = p2 - p1;
-        var tangent = d.rotate(90).normalize(radius);
-        p.add( p1 + tangent );
-        p.add( p2 + tangent );
-        p.add( p2 - tangent );
-        p.add( p1 - tangent );
-        p.closePath();
-
-        result = result ? result.unite(p) : p;
-
-        result = result.unite(new Path.Circle(p1, radius * 0.999));
-        result = result.unite(new Path.Circle(p2, radius * 0.999));
-    }
-
-    return result;
 }
 
 
@@ -210,15 +184,6 @@ DotCollider = function ()
 }
 
 
-SupportGrid = function ( bounds, resolution )
-{
-    this.bounds = bounds;
-    this.resolution = resolution;
-    this.width = Math.ceil(bounds.width / resolution) | 0;
-    this.height = Math.ceil(bounds.height / resolution) | 0;
-}
-
-
 Panel = function ( growth, scale, panelId )
 {
     this.growth = growth;
@@ -233,32 +198,22 @@ Panel = function ( growth, scale, panelId )
         return path;
     }
 
-    this.strokeOutline = function (radius)
+    this.offsetOutline = function (radius)
     {
-        var outline = this.drawOutline();
-        var result = strokePath(outline, radius);
-        outline.remove();
-        return result;
+        // Hack! Paper.js doesn't have outset/inset. Assuming rectangular panels.
+        return new Path.Rectangle(this.bounds.expand(-2*radius));
     }
 
     this.outlineSupports = function ()
     {
         // Support pieces for the panel's outline
-
-        var outline = this.drawOutline();
-        var result = this.strokeOutline( this.scale.supportWidth ).intersect(outline);
-        outline.remove();
-        return result;
+        return this.drawOutline().subtract(this.offsetOutline( this.scale.supportWidth ));
     }
 
     this.insideSupports = function ()
     {
         // Calculate the area inside the panel's outer supports
-
-        var outline = this.drawOutline();
-        var result = outline.subtract(this.strokeOutline( this.scale.supportWidth ));
-        outline.remove();
-        return result;
+        return this.offsetOutline( this.scale.supportWidth );
     }
 
     this.nudgeLargeDot = function (json)
@@ -302,8 +257,8 @@ Panel = function ( growth, scale, panelId )
             return false;
         }
 
-        if (this.smallKeepout.contains(point)) {
-            // Too close to LEDs mounted on edge (distances baked into smallKeepout path)
+        if (!this.smallDotBounds.contains(point)) {
+            // Too close to LEDs mounted on edge
             return false;
         }
 
@@ -318,6 +273,26 @@ Panel = function ( growth, scale, panelId )
         }
 
         return true;
+    }
+
+    this.canPlaceSupportIsland = function (point)
+    {
+        if (!this.supportBounds.contains(point)) {
+            // Too close to border supports
+            return false;
+        }
+
+        if (this.largeCollider.hitTest(point, this.scale.smallDotSupportGap * 2)) {
+            // Too close to large dot supports
+            return false;
+        } 
+
+        if (this.smallCollider.hitTest(point, this.scale.smallDotSupportGap)) {
+            // Too close to a small dot
+            return false;
+        }
+
+        return true;        
     }
 
     this.placeSmallDot = function (point)
@@ -358,9 +333,14 @@ Panel = function ( growth, scale, panelId )
     this.bounds = this.outline.bounds;
     this.largeCollider = new DotCollider();
     this.smallCollider = new DotCollider();
-    this.smallKeepout = this.strokeOutline(
+
+    this.smallDotBounds = this.offsetOutline(
         this.scale.ledSmallDotDistance +
         this.scale.smallDotRadius +
+        this.scale.supportWidth);
+
+    this.supportBounds = this.offsetOutline(
+        this.scale.smallDotSupportGap * 2 +
         this.scale.supportWidth);
 
     // Paths to aggregate during dot placement
@@ -369,6 +349,7 @@ Panel = function ( growth, scale, panelId )
     this.middleHoles = [];
 
     // Place large dots
+
     for (var i = 0; i < this.growth.json.dots.length; i++) {
         var dot = this.growth.json.dots[i];
         if (this.bounds.contains(dot.center)) {
@@ -378,11 +359,29 @@ Panel = function ( growth, scale, panelId )
     }
 
     // Place small dots along strands
+
     for (var i = 0; i < this.growth.json.strands.length; i++) {
         this.placeStrand(this.growth.json.strands[i]);
     }
 
+    // Search a grid for additional support islands
+
+    this.supportIslands = new Group();
+    for (var x = this.bounds.left; x < this.bounds.right; x += this.scale.smallDotRadius) {
+        for (var y = this.bounds.top; y < this.bounds.bottom; y += this.scale.smallDotRadius) {
+            var point = new Point(x, y);
+            if (this.canPlaceSupportIsland(point)) {
+                this.supportIslands.addChild(new Path.Circle({
+                    center: point,
+                    radius: this.scale.smallDotRadius,
+                    fillColor: '#ff2',
+                }));
+            }
+        }
+    }
+
     // Construct layers from path lists
+
     this.frontLayer = this.outline.subtract(new CompoundPath(this.frontHoles));
     this.middleLayer = new CompoundPath(this.middleSupports)
         .subtract(new CompoundPath(this.middleHoles))
@@ -393,7 +392,7 @@ Panel = function ( growth, scale, panelId )
     this.ledStripPaths = this.middleLayer.clone();
  
     // Remove the outline path; don't put LEDs on the outside of the panel.
-    this.ledStripPaths.hitTest(this.outline.segments[0].point).item.remove();
+    // this.ledStripPaths.hitTest(this.outline.segments[0].point).item.remove();
 
     this.draw = function ()
     {
@@ -407,6 +406,8 @@ Panel = function ( growth, scale, panelId )
         group.addChild(this.middleLayer);
         group.addChild(this.frontLayer);
         group.addChild(this.ledStripPaths);
+        group.addChild(this.supportIslands);
+
         return group;
     }
 }
