@@ -1,45 +1,36 @@
-strokePath = function (path, radius)
-{
-    // Hack! Paper.js doesn't have outset/inset yet
-
-    var result = null;
-
-    for (var i = 0; i < path.segments.length - !path.closed; i++) {
-        var p1 = path.segments[i].point;
-        var p2 = path.segments[(i+1) % path.segments.length].point;
-
-        var p = new Path();
-        var d = p2 - p1;
-        var tangent = d.rotate(90).normalize(radius);
-        p.add( p1 + tangent );
-        p.add( p2 + tangent );
-        p.add( p2 - tangent );
-        p.add( p1 - tangent );
-        p.closePath();
-
-        result = result ? result.unite(p) : p;
-
-        result = result.unite(new Path.Circle(p1, radius * 0.999));
-        result = result.unite(new Path.Circle(p2, radius * 0.999));
-    }
-
-    return result;
-}
-
-
 Scale = function (modelWidthInFeet)
 {
+    ///////////////////// Unit conversions
+
     this.unitsToFt = modelWidthInFeet || 16.0;
     this.unitsToIn = this.unitsToFt * 12;
     this.unitsToM = this.unitsToIn * 2.54 / 100.0;
     this.ftToUnits = 1.0 / this.unitsToFt;
     this.inToUnits = 1.0 / this.unitsToIn;
     this.mToUnits = 1.0 / this.unitsToM;
+
+    ///////////////////// Fabrication parameters
+
+    // Minimum width of load-bearing pieces on middle layer
     this.supportWidth = this.inToUnits * 0.75;
+
+    // Density and width of LED strip
     this.ledSpacing = this.mToUnits / 60.0;
+
+    // Distance to let LED light spread nicely before entering large dots
     this.ledSpreadDistance = this.ledSpacing * 1.5;
-    this.smallDotRadius = this.inToUnits * 0.5 / 2;
-    this.smallDotGap = this.smallDotRadius * 2;
+
+    // Size and spacing of small dots
+    this.smallDotDiameter = this.inToUnits * 0.5;
+    this.smallDotRadius = this.smallDotDiameter / 2;
+    this.smallDotGap = this.smallDotDiameter;
+
+    // Distance to keep LED strips from small dots, to avoid glare.
+    this.topLayerThickness = 0.75 * this.inToUnits;
+    this.ledStripThickness = 12e-3 * this.mToUnits;
+    this.ledSmallDotDistance = this.smallDotDiameter *
+        this.ledStripThickness / this.topLayerThickness;
+
     this.bounds = new Rectangle(0, 0, 1, 0.5);
 
     this.clipToBounds = function ( item ) {
@@ -109,6 +100,35 @@ Scale = function (modelWidthInFeet)
 
         return group;
     }
+}
+
+
+strokePath = function (path, radius)
+{
+    // Hack! Paper.js doesn't have outset/inset yet
+
+    var result = null;
+
+    for (var i = 0; i < path.segments.length - !path.closed; i++) {
+        var p1 = path.segments[i].point;
+        var p2 = path.segments[(i+1) % path.segments.length].point;
+
+        var p = new Path();
+        var d = p2 - p1;
+        var tangent = d.rotate(90).normalize(radius);
+        p.add( p1 + tangent );
+        p.add( p2 + tangent );
+        p.add( p2 - tangent );
+        p.add( p1 - tangent );
+        p.closePath();
+
+        result = result ? result.unite(p) : p;
+
+        result = result.unite(new Path.Circle(p1, radius * 0.999));
+        result = result.unite(new Path.Circle(p2, radius * 0.999));
+    }
+
+    return result;
 }
 
 
