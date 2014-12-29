@@ -371,13 +371,19 @@ Panel = function ( growth, scale, panelId )
         for (var y = this.bounds.top; y < this.bounds.bottom; y += this.scale.smallDotRadius) {
             var point = new Point(x, y);
             if (this.canPlaceSupportIsland(point)) {
-                this.supportIslands.addChild(new Path.Circle({
-                    center: point,
-                    radius: this.scale.smallDotRadius,
-                    fillColor: '#ff2',
-                }));
+                var r = new Point(this.scale.smallDotRadius * 1.1,
+                                  this.scale.smallDotRadius * 1.1);
+                var part = new Path.Rectangle(point - r, point + r);
+                part.fillColor = '#ff2';
+                this.supportIslands.addChild(part);
             }
         }
+    }
+
+    for (var i = 0; i < this.supportIslands.children.length; i++) {
+        var island = this.supportIslands.children[i];
+        //island.simplify(5e-6);
+        console.log("Island " + i + ", area " + island.area);
     }
 
     // Construct layers from path lists
@@ -392,7 +398,15 @@ Panel = function ( growth, scale, panelId )
     this.ledStripPaths = this.middleLayer.clone();
  
     // Remove the outline path; don't put LEDs on the outside of the panel.
-    // this.ledStripPaths.hitTest(this.outline.segments[0].point).item.remove();
+    this.ledStripPaths.hitTest(this.outline.segments[0].point).item.remove();
+
+    for (var i = 0; i < this.ledStripPaths.children.length; i++) {
+        var path = this.ledStripPaths.children[i];
+        var length = path.length;
+        var maxLeds = Math.floor(length / this.scale.ledSpacing);
+        console.log("LED strip path " + i + ", length " + length + ", " + maxLeds + " LEDs max");
+    }
+
 
     this.draw = function ()
     {
