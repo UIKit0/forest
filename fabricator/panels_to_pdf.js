@@ -1,41 +1,22 @@
 #!/usr/bin/env node
 
-var paper = require('paper'),
-    path = require('path'),
-    fs = require('fs');
-
-var inFile = path.resolve(__dirname, '../layout/growth.json');
-var outFile = path.resolve(__dirname, 'panels.pdf');
-
+var paper = require('paper'), fs = require('fs');
 var canvas = new paper.Canvas(792, 612, 'pdf');
 var fab = require('./fabricator.pjs')(canvas);
 
 with (fab) {
-    fs.readFile(inFile, { encoding: 'utf8' }, function (err, data) {
-        if (err) throw err;
-        var growth = new Growth(JSON.parse(data));
-        var scale = new Scale();
-        var world = new Group();
-        var panels = new Group();
+    var growth = new Growth(JSON.parse(fs.readFileSync('../layout/growth.json')));
+    var scale = new Scale();
+    var panels = new Group();
 
-        for (var panelNumber = 0; panelNumber < growth.json.panels.length; panelNumber++) {
-            console.log('Panel ' + panelNumber);
+    for (var panelNumber = 0; panelNumber < growth.json.panels.length; panelNumber++) {
+        console.log('Panel ' + panelNumber);
 
-            var panel = new Panel(growth, scale, panelNumber);
-            panels.addChild(panel.draw())
-        }
+        var panel = new Panel(growth, scale, panelNumber);
+        panels.addChild(panel.draw())
+    }
 
-        world.addChild(panels);
-        world.addChild(scale.drawGrid(panels.bounds));
-
-        world.fitBounds(view.bounds.expand(-100));
-        world.scale(1, -1);
-
-        view.update();
-        fs.writeFile(outFile, canvas.toBuffer(), function (err) {
-            if (err)
-                throw err;
-            console.log('Saved!');
-        });
-    });
+    MakeDiagramPage(panels, scale);
+    view.update();
+    fs.writeFileSync('panels.pdf', canvas.toBuffer());
 }

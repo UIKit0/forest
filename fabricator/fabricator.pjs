@@ -5,11 +5,16 @@ Scale = function (modelWidthInFeet)
     this.unitsToFt = modelWidthInFeet || 16.0;
     this.unitsToIn = this.unitsToFt * 12;
     this.unitsToM = this.unitsToIn * 2.54 / 100.0;
+    this.unitsToPt = this.unitsToIn * 72;
     this.ftToUnits = 1.0 / this.unitsToFt;
     this.inToUnits = 1.0 / this.unitsToIn;
     this.mToUnits = 1.0 / this.unitsToM;
+    this.ptToUnits = 1.0 / this.unitsToPt;
 
     ///////////////////// Fabrication parameters
+
+    // Maximum size of panels to CNC
+    this.cncSize = new Point(18 * this.inToUnits, 24 * this.inToUnits); 
 
     // Minimum width of load-bearing pieces on middle layer
     this.supportWidth = this.inToUnits * 0.75;
@@ -329,6 +334,28 @@ Panel = function ( growth, scale, panelId )
         path.remove();
     }
 
+    this.splitIntoGrid = function (layer, maxSize)
+    {
+        var partSize = new Point(
+            layer.bounds.width / Math.ceil(layer.bounds.width / maxSize.x),
+            layer.bounds.height / Math.ceil(layer.bounds.height / maxSize.y));
+
+        var epsilon = new Point( this.scale.inToUnits * 0.01, this.scale.inToUnits * 0.01 ); 
+
+        var parts = []
+        var r = layer.bounds;
+
+        for (var y = r.top; y < r.bottom; y += partSize.y) {
+            for (var x = r.left; x < r.right; x += partSize.x) {
+                var p = new Point(x, y);
+                var cell = new Path.Rectangle( p + epsilon, p + partSize - epsilon );
+                parts.push(layer.intersect(cell));
+            }
+        }
+
+        return new Group(parts);
+    }
+
     this.outline = this.drawOutline();
     this.bounds = this.outline.bounds;
     this.largeCollider = new DotCollider();
@@ -407,6 +434,8 @@ Panel = function ( growth, scale, panelId )
         console.log("LED strip path " + i + ", length " + length + ", " + maxLeds + " LEDs max");
     }
 
+    // Split front layer into quadrants
+    this.frontLayer = this.splitIntoGrid(this.frontLayer, this.scale.cncSize);
 
     this.draw = function ()
     {
@@ -424,4 +453,25 @@ Panel = function ( growth, scale, panelId )
 
         return group;
     }
+}
+
+
+MakeDiagramPage = function (item, scale)
+{
+    var world = new Group();
+    world.addChild(item);
+    world.addChild(scale.drawGrid(item.bounds));
+
+    world.fitBounds(view.bounds.expand(-100));
+    world.scale(1, -1);
+}
+
+
+MakeActualSizePage = function (item, scale)
+{
+    var world = new Group();
+    world.addChild(item);
+
+    world.scale( scale.unitsToPt, -scale.unitsToPt );
+    world.translate( view.center - world.center );
 }
