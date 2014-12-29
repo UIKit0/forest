@@ -17,13 +17,7 @@ with (fab) {
         var scale = new Scale();
         var world = new Group();
 
-        var growthLayer = growth.draw();
-
-        world.addChild(scale.drawGrid(growthLayer.bounds));
-        world.addChild(growthLayer);
-
-        world.fitBounds(view.bounds);
-        world.scale(1, -1);
+        MakeDiagramPage(growth.draw(), scale);
 
         view.update();
         fs.writeFile(outFile, canvas.toBuffer(), function (err) {

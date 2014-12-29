@@ -453,6 +453,24 @@ Panel = function ( growth, scale, panelId )
 
         return group;
     }
+
+    this.drawFront = function ()
+    {
+        this.frontLayer.fillColor = '#000';
+        return this.frontLayer;
+    }
+
+    this.drawMiddle = function ()
+    {
+        this.middleLayer.fillColor = '#000';
+        return this.middleLayer;
+    }
+
+    this.drawBack = function ()
+    {
+        this.backLayer.fillColor = '#000';
+        return this.backLayer;
+    }
 }
 
 
@@ -464,6 +482,10 @@ MakeDiagramPage = function (item, scale)
 
     world.fitBounds(view.bounds.expand(-100));
     world.scale(1, -1);
+
+    var layer = new Layer(world);
+    layer.activate();
+    return layer;
 }
 
 
@@ -474,4 +496,8 @@ MakeActualSizePage = function (item, scale)
 
     world.scale( scale.unitsToPt, -scale.unitsToPt );
     world.translate( view.center - world.center );
+
+    var layer = new Layer(world);
+    layer.activate();
+    return layer;
 }
