@@ -1,3 +1,7 @@
+Numerical.TOLERANCE = 1e-20;
+Numerical.EPSILON = 1e-24;
+
+
 Scale = function (modelWidthInFeet)
 {
     ///////////////////// Unit conversions
@@ -16,11 +20,9 @@ Scale = function (modelWidthInFeet)
     // Maximum size of panels to CNC
     this.cncSize = new Point(18 * this.inToUnits, 24 * this.inToUnits); 
 
-    // Minimum material thickness between cuts
+    // Minimum material thickness between large dots and edge of 1x2 panel
     this.cncMaterialThickness = 0.25 * this.inToUnits;
 
-    // Kerf allowance between 1x2 panels
-    this.panelSawKerf = 1/16.0 * this.inToUnits;
 
     // Minimum width of load-bearing pieces on middle layer
     this.supportWidth = this.inToUnits * 0.75;
@@ -333,11 +335,7 @@ Panel = function ( growth, scale, panelId )
             var length = path.length;
             var dotsToPlace = []
 
-            var r = this.scale.smallDotRadius;
-            var b = this.bounds;
-            var mt = this.scale.cncMaterialThickness;
-
-            var stride = r * 2 + this.scale.smallDotGap;
+            var stride = this.scale.smallDotRadius * 2 + this.scale.smallDotGap;
             var offset = 0;
             if (length > 0) {
                 // Align the string of dots along the midline of the panel
@@ -374,7 +372,10 @@ Panel = function ( growth, scale, panelId )
             layer.bounds.width / Math.ceil(layer.bounds.width / maxSize.x),
             layer.bounds.height / Math.ceil(layer.bounds.height / maxSize.y));
 
-        var k = new Point( this.scale.panelSawKerf/2, this.scale.panelSawKerf/2 ); 
+        // BLAH. Tweak this until the boolean ops come out right.
+        var e = 1e-4;
+
+        var k = new Point( e, e ); 
 
         var parts = []
         var r = layer.bounds;
@@ -444,7 +445,7 @@ Panel = function ( growth, scale, panelId )
     for (var i = 0; i < this.supportIslands.children.length; i++) {
         var island = this.supportIslands.children[i];
         //island.simplify(5e-6);
-        console.log("Island " + i + ", area " + island.area);
+        //console.log("Island " + i + ", area " + island.area);
     }
 
     // Construct layers from path lists
