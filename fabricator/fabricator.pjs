@@ -19,6 +19,9 @@ Scale = function (modelWidthInFeet)
     // Minimum material thickness between cuts
     this.cncMaterialThickness = 0.25 * this.inToUnits;
 
+    // Kerf allowance between 1x2 panels
+    this.panelSawKerf = 1/16.0 * this.inToUnits;
+
     // Minimum width of load-bearing pieces on middle layer
     this.supportWidth = this.inToUnits * 0.75;
 
@@ -327,13 +330,25 @@ Panel = function ( growth, scale, panelId )
         var path = new Path(json.points);
         if (path.bounds.intersects(this.bounds)) {
 
-            var offset = 0;
             var length = path.length;
             var dotsToPlace = []
 
             var r = this.scale.smallDotRadius;
             var b = this.bounds;
             var mt = this.scale.cncMaterialThickness;
+
+            var stride = r * 2 + this.scale.smallDotGap;
+            var offset = 0;
+            if (length > 0) {
+                // Align the string of dots along the midline of the panel
+                // (Easy compromise between manufacturability and aesthetics for small dots)
+
+                for (var i = 0; i < 4; i++) {
+                    var point = path.getPointAt(offset);
+                    offset += this.bounds.center.y - point.y;
+                }
+                offset %= stride;
+            }
 
             while (offset < length) {
                 var point = path.getPointAt(offset);
@@ -343,7 +358,7 @@ Panel = function ( growth, scale, panelId )
                     dotsToPlace.push(point);
                 }
 
-                offset += r * 2 + this.scale.smallDotGap;
+                offset += stride;
             }
 
             for (var i = 0; i < dotsToPlace.length; i++) {
@@ -359,7 +374,7 @@ Panel = function ( growth, scale, panelId )
             layer.bounds.width / Math.ceil(layer.bounds.width / maxSize.x),
             layer.bounds.height / Math.ceil(layer.bounds.height / maxSize.y));
 
-        var epsilon = new Point( this.scale.inToUnits * 0.01, this.scale.inToUnits * 0.01 ); 
+        var k = new Point( this.scale.panelSawKerf/2, this.scale.panelSawKerf/2 ); 
 
         var parts = []
         var r = layer.bounds;
@@ -367,12 +382,12 @@ Panel = function ( growth, scale, panelId )
         for (var y = r.top; y < r.bottom; y += partSize.y) {
             for (var x = r.left; x < r.right; x += partSize.x) {
                 var p = new Point(x, y);
-                var cell = new Path.Rectangle( p + epsilon, p + partSize - epsilon );
+                var cell = new Path.Rectangle( p + k, p + partSize - k );
                 parts.push(layer.intersect(cell));
             }
         }
 
-        return new Group(parts);
+        return new CompoundPath(parts);
     }
 
     this.outline = this.drawOutline();
@@ -434,10 +449,11 @@ Panel = function ( growth, scale, panelId )
 
     // Construct layers from path lists
 
-    this.frontLayer = this.outline.subtract(new CompoundPath(this.frontHoles));
-    this.middleLayer = new CompoundPath(this.middleSupports)
-        .subtract(new CompoundPath(this.middleHoles))
-        .unite(this.outlineSupports());
+    this.frontLayer = this.splitIntoGrid(this.outline, this.scale.cncSize);
+    this.frontLayer = this.frontLayer.subtract(new CompoundPath(this.frontHoles));
+    this.middleLayer = new CompoundPath(this.middleSupports);
+    this.middleLayer = this.middleLayer.subtract(new CompoundPath(this.middleHoles));
+    this.middleLayer = this.middleLayer.unite(this.outlineSupports());
     this.backLayer = this.outline.clone();
 
     // Candidate locations for LED strip placement: Start with the middle layer
@@ -452,9 +468,6 @@ Panel = function ( growth, scale, panelId )
         var maxLeds = Math.floor(length / this.scale.ledSpacing);
         console.log("LED strip path " + i + ", length " + length + ", " + maxLeds + " LEDs max");
     }
-
-    // Split front layer into quadrants
-    this.frontLayer = this.splitIntoGrid(this.frontLayer, this.scale.cncSize);
 
     this.draw = function ()
     {
