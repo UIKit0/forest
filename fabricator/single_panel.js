@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 var paper = require('paper'), fs = require('fs');
-var panelNumber = parseInt(process.argv[2]);
+var panelNumber = parseInt(process.argv[2] || '0');
 
 function newDrawing() {
     var canvas = new paper.Canvas(5 * 12 * 72, 5 * 12 * 72, 'pdf');
