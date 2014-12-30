@@ -388,7 +388,7 @@ Panel = function ( growth, scale, panelId )
             }
         }
 
-        return new CompoundPath(parts);
+        return new Group(parts);
     }
 
     this.outline = this.drawOutline();
@@ -451,7 +451,12 @@ Panel = function ( growth, scale, panelId )
     // Construct layers from path lists
 
     this.frontLayer = this.splitIntoGrid(this.outline, this.scale.cncSize);
-    this.frontLayer = this.frontLayer.subtract(new CompoundPath(this.frontHoles));
+    var holes = new CompoundPath(this.frontHoles);
+    for (var i = 0; i < this.frontLayer.children.length; i++) {
+        this.frontLayer.children[i] = this.frontLayer.children[i].subtract(holes);
+    }
+    holes.remove();
+
     this.middleLayer = new CompoundPath(this.middleSupports);
     this.middleLayer = this.middleLayer.subtract(new CompoundPath(this.middleHoles));
     this.middleLayer = this.middleLayer.unite(this.outlineSupports());
