@@ -16,6 +16,9 @@ Scale = function (modelWidthInFeet)
     // Maximum size of panels to CNC
     this.cncSize = new Point(18 * this.inToUnits, 24 * this.inToUnits); 
 
+    // Minimum material thickness between cuts
+    this.cncMaterialThickness = 0.25 * this.inToUnits;
+
     // Minimum width of load-bearing pieces on middle layer
     this.supportWidth = this.inToUnits * 0.75;
 
@@ -229,15 +232,28 @@ Panel = function ( growth, scale, panelId )
 
         // TODO: Assumes panels are rectangular and axis-aligned
 
-        var clearance = 0.001 + json.radius
-            + this.scale.supportWidth
-            + this.scale.ledSpreadDistance;
+        var r = json.radius;
+        var c = json.center;
+        var b = this.bounds;
+        var mt = this.scale.cncMaterialThickness;
 
-        json.center.x = Math.max(json.center.x, this.bounds.left + clearance);
-        json.center.x = Math.min(json.center.x, this.bounds.right - clearance);
+        var clearance = 0.001 + r + this.scale.supportWidth + this.scale.ledSpreadDistance;
 
-        json.center.y = Math.max(json.center.y, this.bounds.top + clearance);
-        json.center.y = Math.min(json.center.y, this.bounds.bottom - clearance);
+        c.x = Math.max(c.x, b.left + clearance);
+        c.x = Math.min(c.x, b.right - clearance);
+
+        c.y = Math.max(c.y, b.top + clearance);
+        c.y = Math.min(c.y, b.bottom - clearance);
+
+        // Another reason to move large dots a tiny bit: edges too close to
+        // our front panel boundaries won't be manufacturable. Move inward
+        // a little in this case.
+        // TODO: assumptions about CNC layout should go elsewhere
+
+        if (c.x + r > b.center.x - mt) c.x = Math.max(c.x, b.center.x - r + mt);
+        if (c.y + r > b.center.y - mt) c.y = Math.max(c.y, b.center.y - r + mt);
+        if (c.x - r < b.center.x + mt) c.x = Math.min(c.x, b.center.x + r - mt);
+        if (c.y - r < b.center.y + mt) c.y = Math.min(c.y, b.center.y + r - mt);
     }
 
     this.placeLargeDot = function (json)
@@ -315,16 +331,19 @@ Panel = function ( growth, scale, panelId )
             var length = path.length;
             var dotsToPlace = []
 
+            var r = this.scale.smallDotRadius;
+            var b = this.bounds;
+            var mt = this.scale.cncMaterialThickness;
+
             while (offset < length) {
                 var point = path.getPointAt(offset);
-                var tangent = path.getTangentAt(offset);
 
                 if (this.canPlaceSmallDot(point)) {
                     // Place the dots later so we don't collide-test on the same strand
                     dotsToPlace.push(point);
                 }
 
-                offset += this.scale.smallDotRadius * 2 + this.scale.smallDotGap;
+                offset += r * 2 + this.scale.smallDotGap;
             }
 
             for (var i = 0; i < dotsToPlace.length; i++) {
@@ -448,8 +467,8 @@ Panel = function ( growth, scale, panelId )
         group.addChild(this.backLayer);
         group.addChild(this.middleLayer);
         group.addChild(this.frontLayer);
-        group.addChild(this.ledStripPaths);
-        group.addChild(this.supportIslands);
+        //group.addChild(this.ledStripPaths);
+        //group.addChild(this.supportIslands);
 
         return group;
     }
