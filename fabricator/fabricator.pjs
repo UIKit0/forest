@@ -466,7 +466,7 @@ Panel = function ( growth, scale, panelId )
             layer.bounds.height / Math.ceil(layer.bounds.height / maxSize.y));
 
         // BLAH. Tweak this until the boolean ops come out right.
-        var e = 1e-4;
+        var e = this.scale.inToUnits * 0.002;
 
         var k = new Point( e, e ); 
 
