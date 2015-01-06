@@ -37,6 +37,9 @@ Scale = function (modelWidthInFeet)
     this.drillMountingClearanceRadius = this.inToUnits * 1/4.0 / 2;
     this.cornerScrewDistance = this.drillMountingClearanceRadius + this.supportWidth;
 
+    // Mounting holes for spinners
+    this.drillSpinnerMountRadius = this.inToUnits * 1/4.0 / 2;
+
     // Density and width of LED strip
     this.ledSpacing = this.mToUnits / 60.0;
 
@@ -47,6 +50,11 @@ Scale = function (modelWidthInFeet)
     this.smallDotDiameter = this.inToUnits * 0.5;
     this.smallDotRadius = this.smallDotDiameter / 2;
     this.smallDotGap = this.smallDotDiameter;
+
+    // Geometry of spinners inside the large dots
+    this.spinnerWidthMin = this.inToUnits * 3.0;
+    this.spinnerCurveRatio = 2.0;
+    this.spinnerGap = this.inToUnits * 1/8.0;
 
     // Distance to keep LED strips from small dots, to avoid glare.
     this.topLayerThickness = 0.75 * this.inToUnits;
@@ -125,6 +133,51 @@ Scale = function (modelWidthInFeet)
         }
 
         return group;
+    }
+}
+
+
+Spinner = function (scale, json)
+{
+    this.scale = scale;
+    this.json = json;
+
+    this.drawMountingHoles = function() {
+        return [
+            new Path.Circle({
+                center: this.json.center,
+                radius: this.scale.drillSpinnerMountRadius,
+            }),
+        ];
+    }
+
+
+    this.draw = function () {
+
+        var p = new Point(this.json.center);
+        var outerRadius = this.json.radius - this.scale.spinnerGap * 2;
+        var sideRadius = outerRadius * this.scale.spinnerCurveRatio;
+        var sideDisplacement = new Point(sideRadius + this.scale.spinnerWidthMin / 2, 0);
+
+        var outer = new Path.Circle({
+            center: p,
+            radius: outerRadius,
+        });
+
+        var sides = new CompoundPath([
+            new Path.Circle({
+                center: p - sideDisplacement,
+                radius: sideRadius,
+            }),
+            new Path.Circle({
+                center: p + sideDisplacement,
+                radius: sideRadius,
+            }),
+        ]);
+
+        var holes = new CompoundPath(this.drawMountingHoles());
+
+        return outer.subtract(sides).subtract(holes);
     }
 }
 
@@ -213,6 +266,7 @@ Panel = function ( growth, scale, panelId )
     this.scale = scale;
     this.panelId = panelId;
     this.json = growth.json.panels[panelId];
+    this.spinners = [];
 
     this.drawOutline = function ()
     {
@@ -367,6 +421,8 @@ Panel = function ( growth, scale, panelId )
 
         // Large keepout area
         this.largeCollider.add(json.center, outerRadius);
+
+        this.spinners.push(new Spinner(this.scale, json));
     }
 
     this.canPlaceSmallDot = function (point)
@@ -565,6 +621,14 @@ Panel = function ( growth, scale, panelId )
     }
     frontPilotHoles.remove();
 
+    // Spinner layer
+
+    this.spinnerLayer = new Group();
+    for (var i = 0; i < this.spinners.length; i++) {
+        this.spinnerLayer.addChild(this.spinners[i].draw());
+        this.backHoles = this.backHoles.concat(this.spinners[i].drawMountingHoles());
+    }
+
     // Boolean ops for other layers
 
     this.middleLayer = new CompoundPath(this.middleSupports);
@@ -587,17 +651,20 @@ Panel = function ( growth, scale, panelId )
         }
     }
 
+
     this.draw = function ()
     {
-        this.backLayer.fillColor   = '#21abff';                     // Bright rear layer
-        this.middleLayer.fillColor = new Color(0, 0.6, 0, 0.8);     // Green support layer
-        this.frontLayer.fillColor  = new Color(0, 0.7);             // Dark front layer
+        this.backLayer.fillColor    = '#21abff';                     // Bright rear layer
+        this.middleLayer.fillColor  = new Color(0, 0.6, 0, 0.8);     // Green support layer
+        this.frontLayer.fillColor   = new Color(0, 0.7);             // Dark front layer
+        this.spinnerLayer.fillColor = new Color(0.5, 0.2, 0.2);      // Red spinner layer 
         this.ledStripPaths.selected = true;
 
         return new Group([
             this.backLayer,
             this.middleLayer,
             this.frontLayer,
+            this.spinnerLayer,
             //this.ledStripPaths,
             //this.supportIslands,
         ]);
@@ -606,10 +673,12 @@ Panel = function ( growth, scale, panelId )
     this.drawFront = function ()
     {
         this.frontLayer.fillColor = '#000';
+        this.spinnerLayer.fillColor = '#222';
         this.frontPilotHolesLayer.fillColor = '#f44';
 
         return new Group([
             this.frontLayer,
+            this.spinnerLayer,
             this.frontPilotHolesLayer,
         ]);
     }
