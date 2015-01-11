@@ -600,25 +600,21 @@ Panel = function ( growth, scale, panelId )
         path.remove();
     }
 
-    this.splitIntoGrid = function (layer, maxSize)
+    this.splitIntoGrid = function (r, maxSize)
     {
+        // BLAH. Treats layer as an AABB, ignores its shape.
+
         var partSize = new Point(
-            layer.bounds.width / Math.ceil(layer.bounds.width / maxSize.x),
-            layer.bounds.height / Math.ceil(layer.bounds.height / maxSize.y));
-
-        // BLAH. Tweak this until the boolean ops come out right.
-        var e = this.scale.inToUnits * 0.002;
-
-        var k = new Point( e, e ); 
+            r.width / Math.ceil(r.width / maxSize.x),
+            r.height / Math.ceil(r.height / maxSize.y));
 
         var parts = []
-        var r = layer.bounds;
 
         for (var y = r.top; y < r.bottom; y += partSize.y) {
             for (var x = r.left; x < r.right; x += partSize.x) {
                 var p = new Point(x, y);
-                var cell = new Path.Rectangle( p + k, p + partSize - k );
-                parts.push(layer.intersect(cell));
+                var cell = new Path.Rectangle( p, p + partSize );
+                parts.push(cell);
             }
         }
 
@@ -688,23 +684,28 @@ Panel = function ( growth, scale, panelId )
         //console.log("Island " + i + ", area " + island.area);
     }
 
+    var cutHolesInGroup = function (group, holes)
+    {
+        var newGroup = new Group();
+        var holePath = new CompoundPath(holes);
+
+        for (var i = 0; i < group.children.length; i++) {
+            var part = group.children[i];
+            newGroup.addChild(part.subtract(holePath));
+        }
+
+        holePath.remove();
+        group.remove();
+        return newGroup;
+    }
+
     // Front layer constructed separately for each CNC grid piece
 
-    this.frontLayer = this.splitIntoGrid(this.outline, this.scale.cncSize);
-    var frontHoles = new CompoundPath(this.frontHoles);
-    for (var i = 0; i < this.frontLayer.children.length; i++) {
-        this.frontLayer.children[i] = this.frontLayer.children[i].subtract(frontHoles);
-    }
-    frontHoles.remove();
+    this.frontLayer = cutHolesInGroup(this.splitIntoGrid(this.outline.bounds, this.scale.cncSize), this.frontHoles);
 
     // Front pilot holes grouped separately per CNC grid
 
-    this.frontPilotHolesLayer = this.splitIntoGrid(this.outline, this.scale.cncSize);
-    var frontPilotHoles = new CompoundPath(this.frontPilotHoles);
-    for (var i = 0; i < this.frontPilotHolesLayer.children.length; i++) {
-        this.frontPilotHolesLayer.children[i] = this.frontPilotHolesLayer.children[i].intersect(frontPilotHoles);
-    }
-    frontPilotHoles.remove();
+    this.frontPilotHolesLayer = cutHolesInGroup(this.splitIntoGrid(this.outline.bounds, this.scale.cncSize), this.frontPilotHoles);
 
     // Spinner layer
 
@@ -751,12 +752,12 @@ Panel = function ( growth, scale, panelId )
     {
         this.frontLayer.fillColor = '#000';
         this.spinnerLayer.fillColor = '#222';
-        this.frontPilotHolesLayer.fillColor = '#f44';
+        // this.frontPilotHolesLayer.fillColor = '#f44';
 
         return new Group([
             this.frontLayer,
             this.spinnerLayer,
-            this.frontPilotHolesLayer,
+            // this.frontPilotHolesLayer,
         ]);
     }
 
