@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-var paper = require('paper'), fs = require('fs');
+var paper = require('./lib/paper-node.js'), fs = require('fs');
 var panelNumber = parseInt(process.argv[2] || '0');
 
 function newDrawing(inchWidth, inchHeight) {

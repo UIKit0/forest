@@ -1,0 +1,8 @@
+{
+  "name": "fabricator",
+  "dependencies": {
+    "canvas": ">= 0.7.0",
+    "jsdom": ">= 0.6.0",
+    "request": "~2.27.0"
+  }
+}

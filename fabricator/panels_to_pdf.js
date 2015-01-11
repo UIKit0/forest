@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-var paper = require('paper'), fs = require('fs');
+var paper = require('./lib/paper-node.js'), fs = require('fs');
 var canvas = new paper.Canvas(792, 612, 'pdf');
 var fab = require('./fabricator.pjs')(canvas);
 
