@@ -54,7 +54,7 @@ Scale = function (modelWidthInFeet)
 
     // Geometry of spinners inside the large dots
     this.spinnerWidthMin = this.inToUnits * 3.0;
-    this.spinnerCurveRatio = 2.0;
+    this.spinnerCurveRatio = 3.0;
     this.spinnerGap = this.inToUnits * 1/8.0;
 
     // Distance to keep LED strips from small dots, to avoid glare.
