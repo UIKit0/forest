@@ -48,7 +48,7 @@ Scale = function (modelWidthInFeet)
     this.ledSpreadDistance = this.ledSpacing * 1.5;
 
     // Size and spacing of small dots
-    this.smallDotDiameter = this.inToUnits * 0.5;
+    this.smallDotDiameter = this.inToUnits * 5.0/8;
     this.smallDotRadius = this.smallDotDiameter / 2;
     this.smallDotGap = this.smallDotDiameter;
 
