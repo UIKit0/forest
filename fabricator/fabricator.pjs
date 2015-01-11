@@ -330,6 +330,8 @@ LedStripPlacer = function ( scale, paths )
                     from: point,
                     to: point + tangent,
                     strokeColor: color,
+                    strokeWidth: spacing * 125,
+                    strokeScaling: true
                 }));
 
                 group.addChild(new Path.Circle({
