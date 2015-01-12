@@ -432,14 +432,14 @@ Panel = function ( growth, scale, panelId )
 
         for (var x = 0; x < countX; x++) {
             var px = this.bounds.center.x - totalX/2 + spacing*x;
-            this.placeHiddenScrew(this.bounds.topLeft + new Point(px, w));
-            this.placeHiddenScrew(this.bounds.bottomLeft + new Point(px, -w));
+            this.placeHiddenScrew(new Point(px, this.bounds.y + w));
+            this.placeHiddenScrew(new Point(px, this.bounds.y + this.bounds.height - w));
         }
 
         for (var y = 0; y < countY; y++) {
             var py = this.bounds.center.y - totalY/2 + spacing*y;
-            this.placeHiddenScrew(this.bounds.topLeft + new Point(w, py));
-            this.placeHiddenScrew(this.bounds.topRight + new Point(-w, py));
+            this.placeHiddenScrew(new Point(this.bounds.x + w, py));
+            this.placeHiddenScrew(new Point(this.bounds.x + this.bounds.width - w, py));
         }
     }
 
