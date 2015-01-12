@@ -7,7 +7,7 @@ function newDrawing(inchWidth, inchHeight) {
     return require('./fabricator.pjs')(canvas);
 }
 
-with (newDrawing(8.5, 11)) {
+with (newDrawing(11, 8.5)) {
     var growth = new Growth(JSON.parse(fs.readFileSync('../layout/growth.json')));
     var scale = new Scale();
     var panels = new Group();
@@ -21,7 +21,7 @@ with (newDrawing(8.5, 11)) {
 
     MakeDiagramPage(panels, scale);
     view.update();
-    fs.writeFileSync('panels-diagram.pdf', view.element.toBuffer());
+    fs.writeFileSync('panels-drawing.pdf', view.element.toBuffer());
 }
 
 with (newDrawing(20*12, 12*12)) {
