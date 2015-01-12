@@ -48,7 +48,7 @@ Scale = function (modelWidthInFeet)
     this.ledSpreadDistance = this.ledSpacing * 1.5;
 
     // Size and spacing of small dots
-    this.smallDotDiameter = this.inToUnits * 5.0/8;
+    this.smallDotDiameter = this.inToUnits * 5/8.0;
     this.smallDotRadius = this.smallDotDiameter / 2;
     this.smallDotGap = this.smallDotDiameter;
 
@@ -58,7 +58,7 @@ Scale = function (modelWidthInFeet)
     this.spinnerGap = this.inToUnits * 1/8.0;
 
     // Distance to keep LED strips from small dots, to avoid glare.
-    this.topLayerThickness = 0.75 * this.inToUnits;
+    this.topLayerThickness = 0.5 * this.inToUnits;
     this.ledStripThickness = 12e-3 * this.mToUnits;
     this.ledSmallDotDistance = this.smallDotDiameter *
         this.ledStripThickness / this.topLayerThickness;
