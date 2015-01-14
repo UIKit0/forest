@@ -35,7 +35,7 @@ Scale = function (modelWidthInFeet)
 
     // Large mounting holes, all the way through all layers.
     this.drillMountingClearanceRadius = this.inToUnits * 1/4.0 / 2;
-    this.cornerScrewDistance = this.drillMountingClearanceRadius + this.supportWidth;
+    this.cornerScrewDistance = this.inToUnits * 0.75;   // Required for mounting cleats
 
     // Mounting holes for spinners
     this.drillSpinnerMountRadius = this.inToUnits * 1/4.0 / 2;
