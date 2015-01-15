@@ -28,14 +28,15 @@ Scale = function (modelWidthInFeet)
 
     // Hidden screws hold the front and middle layers together.
     // 1-1/4" length, #8
-    this.drillHiddenScrewPilotRadius = this.inToUnits * 7/64.0 / 2;
-    this.drillHiddenScrewClearanceRadius = this.inToUnits * 3/16.0 / 2;
+    this.drillHiddenScrewPilotRadius = this.inToUnits * 1/4.0 / 2;
+    this.drillHiddenScrewClearanceRadius = this.inToUnits * 1/4.0 / 2;
     this.drillHiddenScrewSpacing = this.inToUnits * 4.0;
     this.drillHiddenScrewMinimumSpacing = this.drillHiddenScrewSpacing / 3;
 
     // Large mounting holes, all the way through all layers.
-    this.drillMountingClearanceRadius = this.inToUnits * 1/4.0 / 2;
+    this.drillMountingClearanceRadius = this.inToUnits * 5/16.0 / 2;
     this.cornerScrewDistance = this.inToUnits * 0.75;   // Required for mounting cleats
+    this.drillMountingSupportRadius = this.cornerScrewDistance * 0.99;
 
     // Mounting holes for spinners
     this.drillSpinnerMountRadius = this.inToUnits * 1/4.0 / 2;
@@ -396,7 +397,7 @@ Panel = function ( growth, scale, panelId )
     {
         // Create a visible mounting screw, cut clear through all layers, and reinforce the middle layer.
 
-        this.middleSupports.push(new Path.Circle(point, this.scale.drillMountingClearanceRadius + this.scale.cncMaterialThickness));
+        this.middleSupports.push(new Path.Circle(point, this.scale.drillMountingSupportRadius));
 
         this.frontHoles.push(new Path.Circle(point, this.scale.drillMountingClearanceRadius));
         this.middleHoles.push(new Path.Circle(point, this.scale.drillMountingClearanceRadius));
