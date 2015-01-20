@@ -30,8 +30,8 @@ Scale = function (modelWidthInFeet)
     // 1-1/4" length, #8
     this.drillHiddenScrewPilotRadius = this.inToUnits * 1/4.0 / 2;
     this.drillHiddenScrewClearanceRadius = this.inToUnits * 1/4.0 / 2;
-    this.drillHiddenScrewSpacing = this.inToUnits * 4.0;
-    this.drillHiddenScrewMinimumSpacing = this.drillHiddenScrewSpacing / 3;
+    this.drillHiddenScrewSpacing = this.inToUnits * 8.0;
+    this.drillHiddenScrewMinimumSpacing = this.inToUnits * 2.0;
 
     // Large mounting holes, all the way through all layers.
     this.drillMountingClearanceRadius = this.inToUnits * 5/16.0 / 2;
