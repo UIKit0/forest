@@ -53,12 +53,10 @@ void CircleEngineApp::setup()
     gl::setMatricesWindow( getWindowSize() );
     gl::disable(GL_DEPTH_TEST);
     gl::disable(GL_CULL_FACE);
-    gl::enable(GL_PROGRAM_POINT_SIZE_EXT);
     gl::enableAdditiveBlending();
 
     mParticleShader = gl::GlslProg( loadAsset("particle.glslv"), loadAsset("particle.glslf") );
     mParticleShader.bind();
-    mParticleShader.uniform( "radius", mParticleSystem->GetRadius() / kPhysicsScale );
     mParticleShaderPosition = mParticleShader.getAttribLocation("position");
     mParticleShaderColor = mParticleShader.getAttribLocation("color");
 }
@@ -100,6 +98,7 @@ void CircleEngineApp::drawParticles()
     const b2ParticleColor* colorBuffer = mParticleSystem->GetColorBuffer();
     
     mParticleShader.bind();
+    glPointSize( mParticleSystem->GetRadius() / kPhysicsScale );
     glPushMatrix();
     glScalef(1.0f/kPhysicsScale, 1.0f/kPhysicsScale, 1.0f/kPhysicsScale);
     glVertexAttribPointer(mParticleShaderPosition, 2, GL_FLOAT, GL_FALSE, 0, &positionBuffer[0].x);
