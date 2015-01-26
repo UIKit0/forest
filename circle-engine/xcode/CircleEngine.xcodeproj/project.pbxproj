@@ -69,6 +69,7 @@
 		751542DF1A74B7A60012009D /* b2ParticleSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 751542A31A74B7A60012009D /* b2ParticleSystem.cpp */; };
 		751542E01A74B7A60012009D /* b2VoronoiDiagram.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 751542A61A74B7A60012009D /* b2VoronoiDiagram.cpp */; };
 		751542E11A74B7A60012009D /* b2Rope.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 751542A91A74B7A60012009D /* b2Rope.cpp */; };
+		751542E41A75D5000012009D /* CircleWorld.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 751542E21A75D5000012009D /* CircleWorld.cpp */; };
 		8685E9DD25B24ED3BA384259 /* CircleEngineApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D37DA78CBBF64CAAB6E7E9AF /* CircleEngineApp.cpp */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 /* End PBXBuildFile section */
@@ -199,6 +200,8 @@
 		751542A71A74B7A60012009D /* b2VoronoiDiagram.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = b2VoronoiDiagram.h; sourceTree = "<group>"; };
 		751542A91A74B7A60012009D /* b2Rope.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = b2Rope.cpp; sourceTree = "<group>"; };
 		751542AA1A74B7A60012009D /* b2Rope.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = b2Rope.h; sourceTree = "<group>"; };
+		751542E21A75D5000012009D /* CircleWorld.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CircleWorld.cpp; path = ../src/CircleWorld.cpp; sourceTree = "<group>"; };
+		751542E31A75D5000012009D /* CircleWorld.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CircleWorld.h; path = ../src/CircleWorld.h; sourceTree = "<group>"; };
 		7C98B10AF0FB40A49AD3EA7C /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* CircleEngine.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CircleEngine.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D37DA78CBBF64CAAB6E7E9AF /* CircleEngineApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = CircleEngineApp.cpp; path = ../src/CircleEngineApp.cpp; sourceTree = "<group>"; };
@@ -236,6 +239,8 @@
 			isa = PBXGroup;
 			children = (
 				D37DA78CBBF64CAAB6E7E9AF /* CircleEngineApp.cpp */,
+				751542E21A75D5000012009D /* CircleWorld.cpp */,
+				751542E31A75D5000012009D /* CircleWorld.h */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -595,6 +600,7 @@
 				751542D31A74B7A60012009D /* b2MotorJoint.cpp in Sources */,
 				751542B51A74B7A60012009D /* b2EdgeShape.cpp in Sources */,
 				751542AC1A74B7A60012009D /* b2CollideCircle.cpp in Sources */,
+				751542E41A75D5000012009D /* CircleWorld.cpp in Sources */,
 				751542B11A74B7A60012009D /* b2DynamicTree.cpp in Sources */,
 				751542DE1A74B7A60012009D /* b2ParticleGroup.cpp in Sources */,
 				751542C31A74B7A60012009D /* b2Island.cpp in Sources */,
