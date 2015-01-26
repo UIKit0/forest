@@ -76,4 +76,5 @@ void CircleWorld::setup(ci::svg::DocRef doc)
     mParticleSystem->SetGravityScale(0.4f);
     mParticleSystem->SetDensity(1.2f);
     mParticleSystem->SetRadius(vecToBox(findMetric("particle-radius")).y);
+    mParticleSystem->SetDestructionByAge(true);
 }

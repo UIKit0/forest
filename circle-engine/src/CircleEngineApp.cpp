@@ -18,7 +18,6 @@ class CircleEngineApp : public AppNative {
 public:
     void prepareSettings( Settings *settings );
     void setup();
-    void mouseDrag( MouseEvent event );
     void update();
     void draw();
 
@@ -48,24 +47,16 @@ void CircleEngineApp::setup()
     mParticleShaderColor = mParticleShader.getAttribLocation("color");
 }
 
-void CircleEngineApp::mouseDrag( MouseEvent event )
-{
-    b2CircleShape shape;
-    shape.m_p = mWorld.vecToBox(event.getPos());
-    shape.m_radius = mWorld.kMetersPerPoint * 10.0f;
-    b2Transform xf;
-    xf.SetIdentity();
-    
-    b2ParticleGroupDef pd;
-    pd.shape = &shape;
-    pd.flags = b2_colorMixingParticle | b2_tensileParticle;
-    pd.color.Set(255, 255, 0, 20);
-    mWorld.mParticleSystem->CreateParticleGroup(pd);
-}
-
 void CircleEngineApp::update()
 {
     mWorld.mB2World->Step( 1 / 60.0f, 1, 1, 1 );
+
+    b2ParticleDef pd;
+    pd.position = mWorld.vecToBox(getMousePos() - getWindowPos());
+    pd.flags = b2_colorMixingParticle | b2_tensileParticle;
+    pd.lifetime = 30.0f;
+    pd.color.Set(255, 255, 0, 20);
+    mWorld.mParticleSystem->CreateParticle(pd);
 }
 
 void CircleEngineApp::draw()
@@ -85,6 +76,10 @@ void CircleEngineApp::drawObstacles()
     gl::disableAlphaBlending();
     gl::color( Color( 0.33f, 0.33f, 0.33f ) );
     gl::draw(mWorld.mObstacles);
+    gl::enableWireframe();
+    gl::color( Color( 0.8f, 0.8f, 0.8f ) );
+    gl::draw(mWorld.mObstacles);
+    gl::disableWireframe();
 }
 
 void CircleEngineApp::drawParticles()
