@@ -59,13 +59,13 @@ void CircleEngineApp::mouseDrag( MouseEvent event )
     b2ParticleGroupDef pd;
     pd.shape = &shape;
     pd.flags = b2_colorMixingParticle | b2_tensileParticle;
-    pd.color.Set(255, 255, 0, 192);
+    pd.color.Set(255, 255, 0, 20);
     mWorld.mParticleSystem->CreateParticleGroup(pd);
 }
 
 void CircleEngineApp::update()
 {
-    mWorld.mB2World->Step( 1 / 30.0f, 10, 10 );
+    mWorld.mB2World->Step( 1 / 60.0f, 1, 1, 1 );
 }
 
 void CircleEngineApp::draw()
@@ -97,7 +97,7 @@ void CircleEngineApp::drawParticles()
     gl::enableAdditiveBlending();
 
     mParticleShader.bind();
-    glPointSize( particles.GetRadius() / mWorld.kMetersPerPoint );
+    glPointSize( 4.0f * particles.GetRadius() / mWorld.kMetersPerPoint );
     glPushMatrix();
     glScalef(1.0f/mWorld.kMetersPerPoint, 1.0f/mWorld.kMetersPerPoint, 1.0f/mWorld.kMetersPerPoint);
     glVertexAttribPointer(mParticleShaderPosition, 2, GL_FLOAT, GL_FALSE, 0, &positionBuffer[0].x);
