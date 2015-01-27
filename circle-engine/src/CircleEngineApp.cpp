@@ -24,6 +24,8 @@ public:
 
     void drawParticles();
     void drawObstacles();
+    void drawSpinners();
+    void drawForceGrid();
     
     CircleWorld         mWorld;
 
@@ -44,7 +46,8 @@ void CircleEngineApp::prepareSettings( Settings *settings )
 
 void CircleEngineApp::setup()
 {
-    mWorld.setup(svg::Doc::create(loadAsset("world.svg")));
+    mWorld.setup(svg::Doc::create(loadAsset("world.svg")),
+                 loadImage(loadAsset("colors.png")));
 
     mParams = params::InterfaceGl::create( getWindow(), "Engine parameters", toPixels(Vec2i(240, 600)) );
     
@@ -61,16 +64,7 @@ void CircleEngineApp::setup()
 
 void CircleEngineApp::update()
 {
-    for (unsigned i = 0; i < 4; i++) {
-        mWorld.mB2World->Step( 1 / 60.0f, 1, 1, 1 );
-        
-        b2ParticleDef pd;
-        pd.position = mWorld.vecToBox(getMousePos() - getWindowPos());
-        pd.flags = b2_colorMixingParticle | b2_tensileParticle;
-        pd.lifetime = 30.0f;
-        pd.color.Set(255, 255, 0, 20);
-        mWorld.mParticleSystem->CreateParticle(pd);
-    }
+    mWorld.update();
 
     mAverageFps = getAverageFps();
     mNumParticles = mWorld.mParticleSystem->GetParticleCount();
@@ -85,19 +79,45 @@ void CircleEngineApp::draw()
     gl::clear( Color( 0, 0, 0 ) );
     
     drawParticles();
+    drawForceGrid();
     drawObstacles();
-
+    drawSpinners();
+    
     mParams->draw();
 }
 
 void CircleEngineApp::drawObstacles()
 {
     gl::disableAlphaBlending();
-    gl::color( Color( 0.33f, 0.33f, 0.33f ) );
+    gl::color(0.33f, 0.33f, 0.33f);
     gl::draw(mWorld.mObstacles);
     gl::enableWireframe();
-    gl::color( Color( 0.8f, 0.8f, 0.8f ) );
+    gl::color(0.5f, 0.5f, 0.5f);
     gl::draw(mWorld.mObstacles);
+    gl::disableWireframe();
+}
+
+void CircleEngineApp::drawSpinners()
+{
+    gl::disableAlphaBlending();
+    gl::color(0.33f, 0.33f, 0.33f);
+    
+    for (unsigned i = 0; i < mWorld.mSpinnerBodies.size(); i++) {
+        b2Body *body = mWorld.mSpinnerBodies[i];
+        TriMesh2d &mesh = mWorld.mSpinnerMeshes[i];
+
+        gl::pushMatrices();
+        gl::translate(mWorld.vecFromBox(body->GetPosition()));
+        gl::rotate(body->GetAngle() * 180 / M_PI);
+        gl::draw(mesh);
+        gl::popMatrices();
+    }
+
+    gl::enableWireframe();
+    gl::color(0.5f, 0.5f, 0.5f);
+
+    gl::draw(mWorld.mObstacles);
+    
     gl::disableWireframe();
 }
 
@@ -123,6 +143,18 @@ void CircleEngineApp::drawParticles()
     glDisableVertexAttribArray(mParticleShaderColor);
     glPopMatrix();
     mParticleShader.unbind();
+}
+
+void CircleEngineApp::drawForceGrid()
+{
+    gl::color(1.0f, 1.0f, 1.0f, 0.25f);
+    gl::enableAlphaBlending();
+    for (unsigned idx = 0; idx < mWorld.mForceGrid.size(); idx++) {
+        Vec2f pos(idx % mWorld.mForceGridWidth, idx / mWorld.mForceGridWidth);
+        Vec2f force = mWorld.mForceGrid[idx];
+        pos = mWorld.mForceGridExtent.getUpperLeft() + pos * mWorld.mForceGridResolution;
+        gl::drawLine(pos, pos + force * 0.05);
+    }
 }
 
 CINDER_APP_NATIVE( CircleEngineApp, RendererGl )

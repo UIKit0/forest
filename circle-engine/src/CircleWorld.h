@@ -12,22 +12,38 @@
 
 class CircleWorld {
 public:
-    void setup(ci::svg::DocRef doc);
+    void setup(ci::svg::DocRef doc, ci::ImageSourceRef colorTable);
+    void update();
     
     const ci::svg::Node& findNode(const std::string &name);
     ci::Shape2d findShape(const std::string &name);
     ci::Vec2f findMetric(const std::string &name);
 
     b2Vec2 vecToBox(ci::Vec2f v);
-
+    ci::Vec2f vecFromBox(b2Vec2 v);
+    
     const float kMetersPerPoint         = 10.0;
     const float kMinTriangleArea        = 0.1;
     
-    ci::svg::DocRef         mSvg;
-    ci::TriMesh2d           mObstacles;
+    ci::svg::DocRef     mSvg;
+    ci::TriMesh2d       mObstacles;
+    ci::Surface         mColorTable;
+    float               mTriangulatePrecision;
+    
+    std::vector<ci::Vec2f>      mOriginPoints;
+    ci::Rectf                   mOriginBounds;
+    std::vector<b2Body*>        mSpinnerBodies;
+    std::vector<ci::TriMesh2d>  mSpinnerMeshes;
+    
+    ci::Rectf               mForceGridExtent;
+    float                   mForceGridResolution;
+    float                   mForceGridStrength;
+    unsigned                mForceGridWidth;
+    std::vector<ci::Vec2f>  mForceGrid;
     
     b2World				*mB2World;
     b2ParticleSystem    *mParticleSystem;
+    unsigned            mStepNumber;
 
     class ExcNodeNotFound : public cinder::Exception {
     public:
@@ -37,4 +53,12 @@ public:
         char mMessage[2048];
     };
 
+private:
+    void setupObstacles(const ci::Shape2d& shape);
+    void setupStrands(const ci::Shape2d& shape);
+    void setupSpinner(const ci::Shape2d& shape);
+    void addFixturesForMesh(b2Body *body, ci::TriMesh2d &mesh, float density = 1.0f);
+    void newParticle();
+    void updateSpinners();
+    void applyGridForces();
 };
