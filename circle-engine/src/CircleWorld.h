@@ -5,6 +5,7 @@
 
 #include "cinder/svg/Svg.h"
 #include "cinder/Exception.h"
+#include "cinder/Rand.h"
 #include "cinder/Triangulate.h"
 #include "cinder/TriMesh.h"
 #include "Box2D/Box2D.h"
@@ -24,11 +25,15 @@ public:
     
     const float kMetersPerPoint         = 10.0;
     const float kMinTriangleArea        = 0.1;
+    static const unsigned kMaxParticles = 32768;
     
     ci::svg::DocRef     mSvg;
     ci::TriMesh2d       mObstacles;
     ci::Surface         mColorTable;
+    ci::Rand            mRand;
     float               mTriangulatePrecision;
+    unsigned            mNewParticleRate;
+    float               mNewParticleLifetime;
     
     std::vector<ci::Vec2f>      mOriginPoints;
     ci::Rectf                   mOriginBounds;
@@ -45,6 +50,10 @@ public:
     b2ParticleSystem    *mParticleSystem;
     unsigned            mStepNumber;
 
+    b2Vec2              mPositionBuffer[kMaxParticles];
+    b2Vec2              mVelocityBuffer[kMaxParticles];
+    b2ParticleColor     mColorBuffer[kMaxParticles];
+    
     class ExcNodeNotFound : public cinder::Exception {
     public:
         ExcNodeNotFound(const std::string &name) throw();

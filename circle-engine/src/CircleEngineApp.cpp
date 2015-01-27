@@ -5,11 +5,13 @@
 #include "cinder/params/Params.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/GlslProg.h"
+#include "cinder/gl/Fbo.h"
 #include "cinder/svg/Svg.h"
 #include "cinder/Triangulate.h"
 #include "cinder/TriMesh.h"
 #include "Box2D/Box2D.h"
 #include "CircleWorld.h"
+#include "ParticleRender.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -19,23 +21,28 @@ class CircleEngineApp : public AppNative {
 public:
     void prepareSettings( Settings *settings );
     void setup();
+    void shutdown();
     void update();
     void draw();
 
-    void drawParticles();
+private:
     void drawObstacles();
     void drawSpinners();
     void drawForceGrid();
+
+    static void physicsThreadFn(CircleEngineApp *self);
     
+    thread              mPhysicsThread;
+    bool                mExiting;
     CircleWorld         mWorld;
-
-    gl::GlslProg        mParticleShader;
-    GLuint              mParticleShaderPosition;
-    GLuint              mParticleShaderColor;
-
+    ParticleRender      mParticleRender;
+    Rectf               mParticleRect;
+    
     params::InterfaceGlRef      mParams;
     float                       mAverageFps;
+    float                       mPhysicsHz;
     unsigned                    mNumParticles;
+    bool                        mDrawForceGrid;
 };
 
 void CircleEngineApp::prepareSettings( Settings *settings )
@@ -46,25 +53,53 @@ void CircleEngineApp::prepareSettings( Settings *settings )
 
 void CircleEngineApp::setup()
 {
+    mParticleRect = Rectf(0, 0, getWindowWidth(), getWindowHeight());
+    mParticleRender.setup( *this, getWindowWidth()/2, getWindowHeight()/2, 0.5f / mWorld.kMetersPerPoint );
+
     mWorld.setup(svg::Doc::create(loadAsset("world.svg")),
                  loadImage(loadAsset("colors.png")));
 
     mParams = params::InterfaceGl::create( getWindow(), "Engine parameters", toPixels(Vec2i(240, 600)) );
     
     mParams->addParam("FPS", &mAverageFps, "readonly=true");
+    mParams->addParam("Physics Hz", &mPhysicsHz, "readonly=true");
     mParams->addParam("# particles", &mNumParticles, "readonly=true");
-
-    gl::disableVerticalSync();
+    mParams->addSeparator();
+    mParams->addParam("Draw force grid", &mDrawForceGrid);
+    mParams->addParam("Particle rate", &mWorld.mNewParticleRate);
+    mParams->addParam("Particle lifetime", &mWorld.mNewParticleLifetime);
     
-    mParticleShader = gl::GlslProg( loadAsset("particle.glslv"), loadAsset("particle.glslf") );
-    mParticleShader.bind();
-    mParticleShaderPosition = mParticleShader.getAttribLocation("position");
-    mParticleShaderColor = mParticleShader.getAttribLocation("color");
+    gl::disableVerticalSync();
+    gl::disable(GL_DEPTH_TEST);
+    gl::disable(GL_CULL_FACE);
+
+    mDrawForceGrid = false;
+    mExiting = false;
+
+    mPhysicsThread = thread(physicsThreadFn, this);
+}
+
+void CircleEngineApp::physicsThreadFn(CircleEngineApp *self)
+{
+    const unsigned kStepsPerMeasurement = 50;
+
+    while (!self->mExiting) {
+        ci::Timer stepTimer(true);
+        for (unsigned i = kStepsPerMeasurement; i; i--) {
+            self->mWorld.update();
+        }
+        self->mPhysicsHz = kStepsPerMeasurement / stepTimer.getSeconds();
+    }
+}
+
+void CircleEngineApp::shutdown()
+{
+    mExiting = true;
+    mPhysicsThread.join();
 }
 
 void CircleEngineApp::update()
 {
-    mWorld.update();
 
     mAverageFps = getAverageFps();
     mNumParticles = mWorld.mParticleSystem->GetParticleCount();
@@ -72,14 +107,21 @@ void CircleEngineApp::update()
 
 void CircleEngineApp::draw()
 {
-    gl::setMatricesWindow( getWindowSize() );
-    gl::disable(GL_DEPTH_TEST);
-    gl::disable(GL_CULL_FACE);
+    mParticleRender.render(*mWorld.mParticleSystem);
 
-    gl::clear( Color( 0, 0, 0 ) );
+    gl::setViewport(Area(Vec2f(0,0), getWindowSize()));
+    gl::setMatricesWindow( getWindowSize() );
+    gl::clear(Color( 0, 0, 0 ));
+
+    gl::enable(GL_TEXTURE_2D);
+    mParticleRender.getTexture().bind();
+    gl::color(1,1,1,1);
+    gl::drawSolidRect(mParticleRect);
+    gl::disable(GL_TEXTURE_2D);
     
-    drawParticles();
-    drawForceGrid();
+    if (mDrawForceGrid) {
+        drawForceGrid();
+    }
     drawObstacles();
     drawSpinners();
     
@@ -119,30 +161,6 @@ void CircleEngineApp::drawSpinners()
     gl::draw(mWorld.mObstacles);
     
     gl::disableWireframe();
-}
-
-void CircleEngineApp::drawParticles()
-{
-    auto& particles = *mWorld.mParticleSystem;
-    int particleCount = particles.GetParticleCount();
-    const b2Vec2* positionBuffer = particles.GetPositionBuffer();
-    const b2ParticleColor* colorBuffer = particles.GetColorBuffer();
-
-    gl::enableAdditiveBlending();
-
-    mParticleShader.bind();
-    glPointSize( 4.0f * particles.GetRadius() / mWorld.kMetersPerPoint );
-    glPushMatrix();
-    glScalef(1.0f/mWorld.kMetersPerPoint, 1.0f/mWorld.kMetersPerPoint, 1.0f/mWorld.kMetersPerPoint);
-    glVertexAttribPointer(mParticleShaderPosition, 2, GL_FLOAT, GL_FALSE, 0, &positionBuffer[0].x);
-    glVertexAttribPointer(mParticleShaderColor, 4, GL_UNSIGNED_BYTE, GL_TRUE, 0, &colorBuffer[0].r);
-    glEnableVertexAttribArray(mParticleShaderPosition);
-    glEnableVertexAttribArray(mParticleShaderColor);
-    glDrawArrays(GL_POINTS, 0, particleCount);
-    glDisableVertexAttribArray(mParticleShaderPosition);
-    glDisableVertexAttribArray(mParticleShaderColor);
-    glPopMatrix();
-    mParticleShader.unbind();
 }
 
 void CircleEngineApp::drawForceGrid()

@@ -70,6 +70,13 @@
 		751542E01A74B7A60012009D /* b2VoronoiDiagram.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 751542A61A74B7A60012009D /* b2VoronoiDiagram.cpp */; };
 		751542E11A74B7A60012009D /* b2Rope.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 751542A91A74B7A60012009D /* b2Rope.cpp */; };
 		751542E41A75D5000012009D /* CircleWorld.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 751542E21A75D5000012009D /* CircleWorld.cpp */; };
+		756E5C771A77FC59008EA93E /* colors.png in Resources */ = {isa = PBXBuildFile; fileRef = 756E5C731A77FC59008EA93E /* colors.png */; };
+		756E5C7A1A77FC59008EA93E /* world.svg in Resources */ = {isa = PBXBuildFile; fileRef = 756E5C761A77FC59008EA93E /* world.svg */; };
+		756E5C7D1A780642008EA93E /* ParticleRender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 756E5C7B1A780642008EA93E /* ParticleRender.cpp */; };
+		756E5C821A780C11008EA93E /* particle.pass1.glslf in Resources */ = {isa = PBXBuildFile; fileRef = 756E5C7E1A780C11008EA93E /* particle.pass1.glslf */; };
+		756E5C831A780C11008EA93E /* particle.pass1.glslv in Resources */ = {isa = PBXBuildFile; fileRef = 756E5C7F1A780C11008EA93E /* particle.pass1.glslv */; };
+		756E5C841A780C11008EA93E /* particle.pass2.glslf in Resources */ = {isa = PBXBuildFile; fileRef = 756E5C801A780C11008EA93E /* particle.pass2.glslf */; };
+		756E5C851A780C11008EA93E /* particle.pass2.glslv in Resources */ = {isa = PBXBuildFile; fileRef = 756E5C811A780C11008EA93E /* particle.pass2.glslv */; };
 		8685E9DD25B24ED3BA384259 /* CircleEngineApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D37DA78CBBF64CAAB6E7E9AF /* CircleEngineApp.cpp */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 /* End PBXBuildFile section */
@@ -202,6 +209,14 @@
 		751542AA1A74B7A60012009D /* b2Rope.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = b2Rope.h; sourceTree = "<group>"; };
 		751542E21A75D5000012009D /* CircleWorld.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CircleWorld.cpp; path = ../src/CircleWorld.cpp; sourceTree = "<group>"; };
 		751542E31A75D5000012009D /* CircleWorld.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CircleWorld.h; path = ../src/CircleWorld.h; sourceTree = "<group>"; };
+		756E5C731A77FC59008EA93E /* colors.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = colors.png; sourceTree = "<group>"; };
+		756E5C761A77FC59008EA93E /* world.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = world.svg; sourceTree = "<group>"; };
+		756E5C7B1A780642008EA93E /* ParticleRender.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ParticleRender.cpp; path = ../src/ParticleRender.cpp; sourceTree = "<group>"; };
+		756E5C7C1A780642008EA93E /* ParticleRender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ParticleRender.h; path = ../src/ParticleRender.h; sourceTree = "<group>"; };
+		756E5C7E1A780C11008EA93E /* particle.pass1.glslf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = particle.pass1.glslf; sourceTree = "<group>"; };
+		756E5C7F1A780C11008EA93E /* particle.pass1.glslv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = particle.pass1.glslv; sourceTree = "<group>"; };
+		756E5C801A780C11008EA93E /* particle.pass2.glslf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = particle.pass2.glslf; sourceTree = "<group>"; };
+		756E5C811A780C11008EA93E /* particle.pass2.glslv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = particle.pass2.glslv; sourceTree = "<group>"; };
 		7C98B10AF0FB40A49AD3EA7C /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* CircleEngine.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CircleEngine.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D37DA78CBBF64CAAB6E7E9AF /* CircleEngineApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = CircleEngineApp.cpp; path = ../src/CircleEngineApp.cpp; sourceTree = "<group>"; };
@@ -241,6 +256,8 @@
 				D37DA78CBBF64CAAB6E7E9AF /* CircleEngineApp.cpp */,
 				751542E21A75D5000012009D /* CircleWorld.cpp */,
 				751542E31A75D5000012009D /* CircleWorld.h */,
+				756E5C7B1A780642008EA93E /* ParticleRender.cpp */,
+				756E5C7C1A780642008EA93E /* ParticleRender.h */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -283,6 +300,7 @@
 				01B97315FEAEA392516A2CEA /* Blocks */,
 				29B97315FDCFA39411CA2CEA /* Headers */,
 				080E96DDFE201D6D7F000001 /* Source */,
+				756E5C721A77FC59008EA93E /* assets */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
@@ -518,6 +536,20 @@
 			path = Rope;
 			sourceTree = "<group>";
 		};
+		756E5C721A77FC59008EA93E /* assets */ = {
+			isa = PBXGroup;
+			children = (
+				756E5C7E1A780C11008EA93E /* particle.pass1.glslf */,
+				756E5C7F1A780C11008EA93E /* particle.pass1.glslv */,
+				756E5C801A780C11008EA93E /* particle.pass2.glslf */,
+				756E5C811A780C11008EA93E /* particle.pass2.glslv */,
+				756E5C731A77FC59008EA93E /* colors.png */,
+				756E5C761A77FC59008EA93E /* world.svg */,
+			);
+			name = assets;
+			path = ../assets;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -571,7 +603,13 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				756E5C821A780C11008EA93E /* particle.pass1.glslf in Resources */,
+				756E5C841A780C11008EA93E /* particle.pass2.glslf in Resources */,
+				756E5C7A1A77FC59008EA93E /* world.svg in Resources */,
 				6D3A4433FAE64C268CD40228 /* CinderApp.icns in Resources */,
+				756E5C831A780C11008EA93E /* particle.pass1.glslv in Resources */,
+				756E5C771A77FC59008EA93E /* colors.png in Resources */,
+				756E5C851A780C11008EA93E /* particle.pass2.glslv in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -633,6 +671,7 @@
 				751542BE1A74B7A60012009D /* b2Timer.cpp in Sources */,
 				751542CE1A74B7A60012009D /* b2PolygonContact.cpp in Sources */,
 				751542B41A74B7A60012009D /* b2CircleShape.cpp in Sources */,
+				756E5C7D1A780642008EA93E /* ParticleRender.cpp in Sources */,
 				751542CF1A74B7A60012009D /* b2DistanceJoint.cpp in Sources */,
 				751542AD1A74B7A60012009D /* b2CollideEdge.cpp in Sources */,
 				751542C91A74B7A60012009D /* b2Contact.cpp in Sources */,

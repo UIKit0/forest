@@ -63,6 +63,14 @@ void CircleWorld::setup(svg::DocRef doc, ci::ImageSourceRef colorTable)
     mParticleSystem->SetDensity(1.2f);
     mParticleSystem->SetRadius(vecToBox(metricParticleRadius).y / 2);
     mParticleSystem->SetDestructionByAge(true);
+
+    // Statically allocated buffers, so we can safely share them across threads
+    mParticleSystem->SetPositionBuffer(mPositionBuffer, kMaxParticles);
+    mParticleSystem->SetVelocityBuffer(mVelocityBuffer, kMaxParticles);
+    mParticleSystem->SetColorBuffer(mColorBuffer, kMaxParticles);
+
+    mNewParticleRate = 10;
+    mNewParticleLifetime = 60.0;
     
     setupObstacles(findShape("obstacles"));
     setupStrands(findShape("strands"));
@@ -162,7 +170,7 @@ void CircleWorld::update()
 {
     updateSpinners();
 
-    for (unsigned i = 0; i < 20; i++) {
+    for (unsigned i = 0; i < mNewParticleRate; i++) {
         newParticle();
     }
 
@@ -204,7 +212,7 @@ void CircleWorld::applyGridForces()
 void CircleWorld::newParticle()
 {
     b2ParticleDef pd;
-    Vec2f pos = mOriginPoints[Rand::randInt(mOriginPoints.size())];
+    Vec2f pos = mOriginPoints[mRand.nextInt(mOriginPoints.size())];
 
     float x = (pos.x - mOriginBounds.getX1()) / mOriginBounds.getWidth();
     float y = 0.5 + 0.49 * sinf(mStepNumber * 0.001);
@@ -213,7 +221,7 @@ void CircleWorld::newParticle()
 
     pd.position = vecToBox(pos);
     pd.flags = b2_colorMixingParticle | b2_tensileParticle;
-    pd.lifetime = 20.0f;
+    pd.lifetime = mNewParticleLifetime;
     pd.color.Set(pix.r, pix.g, pix.b, pix.a);
 
     mParticleSystem->CreateParticle(pd);
