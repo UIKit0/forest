@@ -2,6 +2,7 @@
 // MIT license
 
 #include "cinder/app/AppNative.h"
+#include "cinder/params/Params.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/GlslProg.h"
 #include "cinder/svg/Svg.h"
@@ -29,6 +30,10 @@ public:
     gl::GlslProg        mParticleShader;
     GLuint              mParticleShaderPosition;
     GLuint              mParticleShaderColor;
+
+    params::InterfaceGlRef      mParams;
+    float                       mAverageFps;
+    unsigned                    mNumParticles;
 };
 
 void CircleEngineApp::prepareSettings( Settings *settings )
@@ -41,6 +46,13 @@ void CircleEngineApp::setup()
 {
     mWorld.setup(svg::Doc::create(loadAsset("world.svg")));
 
+    mParams = params::InterfaceGl::create( getWindow(), "Engine parameters", toPixels(Vec2i(240, 600)) );
+    
+    mParams->addParam("FPS", &mAverageFps, "readonly=true");
+    mParams->addParam("# particles", &mNumParticles, "readonly=true");
+
+    gl::disableVerticalSync();
+    
     mParticleShader = gl::GlslProg( loadAsset("particle.glslv"), loadAsset("particle.glslf") );
     mParticleShader.bind();
     mParticleShaderPosition = mParticleShader.getAttribLocation("position");
@@ -49,14 +61,19 @@ void CircleEngineApp::setup()
 
 void CircleEngineApp::update()
 {
-    mWorld.mB2World->Step( 1 / 60.0f, 1, 1, 1 );
+    for (unsigned i = 0; i < 4; i++) {
+        mWorld.mB2World->Step( 1 / 60.0f, 1, 1, 1 );
+        
+        b2ParticleDef pd;
+        pd.position = mWorld.vecToBox(getMousePos() - getWindowPos());
+        pd.flags = b2_colorMixingParticle | b2_tensileParticle;
+        pd.lifetime = 30.0f;
+        pd.color.Set(255, 255, 0, 20);
+        mWorld.mParticleSystem->CreateParticle(pd);
+    }
 
-    b2ParticleDef pd;
-    pd.position = mWorld.vecToBox(getMousePos() - getWindowPos());
-    pd.flags = b2_colorMixingParticle | b2_tensileParticle;
-    pd.lifetime = 30.0f;
-    pd.color.Set(255, 255, 0, 20);
-    mWorld.mParticleSystem->CreateParticle(pd);
+    mAverageFps = getAverageFps();
+    mNumParticles = mWorld.mParticleSystem->GetParticleCount();
 }
 
 void CircleEngineApp::draw()
@@ -69,6 +86,8 @@ void CircleEngineApp::draw()
     
     drawParticles();
     drawObstacles();
+
+    mParams->draw();
 }
 
 void CircleEngineApp::drawObstacles()
