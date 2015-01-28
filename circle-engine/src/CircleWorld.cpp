@@ -194,6 +194,7 @@ void CircleWorld::update()
     mSubRow = (mStepNumber % kStepsPerTableRow) / float(kStepsPerTableRow - 1);
 
     mB2World->Step( 1 / 60.0f, 1, 1, 2 );
+    mUpdatedSinceLastDraw = true;
 }
 
 void CircleWorld::updateSpinners()

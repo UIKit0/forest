@@ -139,8 +139,13 @@ void CircleEngineApp::draw()
     
     mParams->draw();
     
-    // Update LEDs from contents of the particle rendering FBO
-    mFadecandy.update(mParticleRender.getTexture());
+    // Update LEDs from contents of the particle rendering FBO.
+    // Only runs if the simulation has produced a new step; if the physics
+    // sim is running slower, rely on FC to interpolate between its frames.
+    if (mWorld.mUpdatedSinceLastDraw) {
+        mWorld.mUpdatedSinceLastDraw = false;
+        mFadecandy.update(mParticleRender.getTexture());
+    }
 }
 
 void CircleEngineApp::drawObstacles()

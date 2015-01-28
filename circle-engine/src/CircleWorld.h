@@ -58,6 +58,7 @@ public:
     b2Vec2              mPositionBuffer[kMaxParticles];
     b2Vec2              mVelocityBuffer[kMaxParticles];
     b2ParticleColor     mColorBuffer[kMaxParticles];
+    bool                mUpdatedSinceLastDraw;
     
     class ExcNodeNotFound : public cinder::Exception {
     public:
