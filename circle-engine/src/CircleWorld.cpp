@@ -45,10 +45,9 @@ Vec2f CircleWorld::vecFromBox(b2Vec2 v)
     return Vec2f( v.x / kMetersPerPoint, v.y / kMetersPerPoint );
 }
 
-void CircleWorld::setup(svg::DocRef doc, ci::ImageSourceRef colorTable)
+void CircleWorld::setup(svg::DocRef doc)
 {
     mSvg = doc;
-    mColorTable = colorTable;
 
     b2Vec2 gravity( 0.0f, vecToBox(findMetric("gravity")).y );
     mB2World = new b2World(gravity);
@@ -97,7 +96,14 @@ void CircleWorld::setup(svg::DocRef doc, ci::ImageSourceRef colorTable)
             break;
         }
     }
+}
 
+void CircleWorld::initColors(ci::ImageSourceRef colorTable)
+{
+    mColorTable = colorTable;
+    mCurrentTableRow = 0;
+    mSubRow = 0;
+    mStepNumber = 0;
 }
 
 void CircleWorld::setupObstacles(const Shape2d& shape)

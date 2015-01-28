@@ -31,11 +31,13 @@ private:
     void drawObstacles();
     void drawSpinners();
     void drawForceGrid();
+    void reloadColorTable();
     
     static void physicsThreadFn(CircleEngineApp *self);
     
     FadecandyGL         mFadecandy;
     thread              mPhysicsThread;
+    mutex               mPhysicsMutex;
     bool                mExiting;
     CircleWorld         mWorld;
     ParticleRender      mParticleRender;
@@ -59,7 +61,9 @@ void CircleEngineApp::setup()
 {
     Cinder::AppNap::BeginActivity("CircleEngine LED rendering");
 
-    mWorld.setup(svg::Doc::create(loadAsset("world.svg")), loadImage(loadAsset("colors.png")));
+    mWorld.setup(svg::Doc::create(loadAsset("world.svg")));
+    reloadColorTable();
+
     mFadecandy.setup(*this);
     mFadecandy.setModel(mWorld.mLedPoints);
     
@@ -80,6 +84,8 @@ void CircleEngineApp::setup()
     mParams->addParam("Draw LED buffer", &mDrawLedBuffer);
     mParams->addParam("Particle rate", &mWorld.mNewParticleRate);
     mParams->addParam("Particle lifetime", &mWorld.mNewParticleLifetime);
+    mParams->addSeparator();
+    mParams->addButton("Reload color table", bind( &CircleEngineApp::reloadColorTable, this ), "key=c");
     
     gl::disableVerticalSync();
     gl::disable(GL_DEPTH_TEST);
@@ -92,16 +98,26 @@ void CircleEngineApp::setup()
     mPhysicsThread = thread(physicsThreadFn, this);
 }
 
+void CircleEngineApp::reloadColorTable()
+{
+    // Do this with the lock held, since we're reallocating the image
+    mPhysicsMutex.lock();
+    mWorld.initColors(loadImage(loadAsset("colors.png")));
+    mPhysicsMutex.unlock();
+}
+
 void CircleEngineApp::physicsThreadFn(CircleEngineApp *self)
 {
-    const unsigned kStepsPerMeasurement = 50;
+    const unsigned kStepsPerMeasurement = 10;
 
     while (!self->mExiting) {
+        self->mPhysicsMutex.lock();
         ci::Timer stepTimer(true);
         for (unsigned i = kStepsPerMeasurement; i; i--) {
             self->mWorld.update();
         }
         self->mPhysicsHz = kStepsPerMeasurement / stepTimer.getSeconds();
+        self->mPhysicsMutex.unlock();
     }
 }
 

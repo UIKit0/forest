@@ -13,7 +13,8 @@
 
 class CircleWorld {
 public:
-    void setup(ci::svg::DocRef doc, ci::ImageSourceRef colorTable);
+    void setup(ci::svg::DocRef doc);
+    void initColors(ci::ImageSourceRef colorTable);
     void update();
     
     const ci::svg::Node& findNode(const std::string &name);
