@@ -20,9 +20,10 @@ void FadecandyGL::setup(ci::app::App &app, std::vector<ci::Vec2f>& points, const
     // This float texture is the same size as mFramebuffer, and contains sampling locations
     Surface32f modelPoints(kWidth, height, false);
     
+    // Red = X, Green = Y, Blue = Mask (1.0)
     for (unsigned i = 0; i < points.size(); i++) {
         Vec2f vec = transform.transformPoint(points[i]);
-        modelPoints.setPixel(Vec2i(i % kWidth, i / kWidth), ColorAf(vec.x, vec.y, 0.0, 1.0));
+        modelPoints.setPixel(Vec2i(i % kWidth, i / kWidth), ColorAf(vec.x, vec.y, 1.0, 1.0));
     }
             
     mModelPoints = gl::Texture(modelPoints);
