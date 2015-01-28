@@ -90,6 +90,7 @@
 		75DF8DAA1A788E00000E5A8E /* UdpServer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 75DF8D981A788E00000E5A8E /* UdpServer.cpp */; };
 		75DF8DAB1A788E00000E5A8E /* UdpSession.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 75DF8D9B1A788E00000E5A8E /* UdpSession.cpp */; };
 		75DF8DAC1A788E00000E5A8E /* WaitTimer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 75DF8D9E1A788E00000E5A8E /* WaitTimer.cpp */; };
+		75DF8DAF1A788FA7000E5A8E /* FadecandyGL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 75DF8DAD1A788FA7000E5A8E /* FadecandyGL.cpp */; };
 		8685E9DD25B24ED3BA384259 /* CircleEngineApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D37DA78CBBF64CAAB6E7E9AF /* CircleEngineApp.cpp */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 /* End PBXBuildFile section */
@@ -266,6 +267,8 @@
 		75DF8D9E1A788E00000E5A8E /* WaitTimer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WaitTimer.cpp; sourceTree = "<group>"; };
 		75DF8D9F1A788E00000E5A8E /* WaitTimer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WaitTimer.h; sourceTree = "<group>"; };
 		75DF8DA01A788E00000E5A8E /* WaitTimerEventHandlerInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WaitTimerEventHandlerInterface.h; sourceTree = "<group>"; };
+		75DF8DAD1A788FA7000E5A8E /* FadecandyGL.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FadecandyGL.cpp; path = ../src/FadecandyGL.cpp; sourceTree = "<group>"; };
+		75DF8DAE1A788FA7000E5A8E /* FadecandyGL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FadecandyGL.h; path = ../src/FadecandyGL.h; sourceTree = "<group>"; };
 		7C98B10AF0FB40A49AD3EA7C /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* CircleEngine.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CircleEngine.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D37DA78CBBF64CAAB6E7E9AF /* CircleEngineApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = CircleEngineApp.cpp; path = ../src/CircleEngineApp.cpp; sourceTree = "<group>"; };
@@ -303,6 +306,8 @@
 		080E96DDFE201D6D7F000001 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				75DF8DAD1A788FA7000E5A8E /* FadecandyGL.cpp */,
+				75DF8DAE1A788FA7000E5A8E /* FadecandyGL.h */,
 				75DF8D7B1A788D40000E5A8E /* OPCClient.cpp */,
 				D37DA78CBBF64CAAB6E7E9AF /* CircleEngineApp.cpp */,
 				751542E21A75D5000012009D /* CircleWorld.cpp */,
@@ -761,6 +766,7 @@
 				751542AB1A74B7A60012009D /* b2BroadPhase.cpp in Sources */,
 				751542B21A74B7A60012009D /* b2TimeOfImpact.cpp in Sources */,
 				751542B61A74B7A60012009D /* b2PolygonShape.cpp in Sources */,
+				75DF8DAF1A788FA7000E5A8E /* FadecandyGL.cpp in Sources */,
 				751542B31A74B7A60012009D /* b2ChainShape.cpp in Sources */,
 				751542C11A74B7A60012009D /* b2ContactManager.cpp in Sources */,
 				75DF8D7C1A788D40000E5A8E /* OPCClient.cpp in Sources */,

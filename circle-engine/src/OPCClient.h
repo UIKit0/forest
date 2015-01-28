@@ -39,51 +39,51 @@ public:
     {
         return ( OPCClientRef )( new OPCClient() );
     }
-
+    
     OPCClient();
     ~OPCClient();
-	
-	bool connect(std::string pHost, int pPort = 7890);
-	void	update();
+    
+    bool connect(std::string pHost, int pPort = 7890);
+    void	update();
     bool	isConnected();
-	bool	tryConnect();
-	void						write(std::string strBuffer);
-	void						write(std::vector<char> &data);
-	
-	template< typename T, typename Y >
-	inline void		connectConnectEventHandler( T eventHandler, Y* eventHandlerObject )
-	{
-		connectConnectEventHandler( std::bind( eventHandler, eventHandlerObject, std::placeholders::_1 ) );
-	}
-
-	void			connectConnectEventHandler( const std::function<void( TcpSessionRef )>& eventHandler );
-
-	template< typename T, typename Y >
-	inline void		connectErrorEventHandler( T eventHandler, Y* eventHandlerObject )
-	{
-		connectErrorEventHandler( std::bind( eventHandler, eventHandlerObject, std::placeholders::_1, std::placeholders::_2 ) );
-	}
-	void			connectErrorEventHandler( const std::function<void( std::string, size_t )>& eventHandler );
-
-	struct Header {
+    bool	tryConnect();
+    void						write(std::string strBuffer);
+    void						write(std::vector<char> &data);
+    
+    template< typename T, typename Y >
+    inline void		connectConnectEventHandler( T eventHandler, Y* eventHandlerObject )
+    {
+        connectConnectEventHandler( std::bind( eventHandler, eventHandlerObject, std::placeholders::_1 ) );
+    }
+    
+    void			connectConnectEventHandler( const std::function<void( TcpSessionRef )>& eventHandler );
+    
+    template< typename T, typename Y >
+    inline void		connectErrorEventHandler( T eventHandler, Y* eventHandlerObject )
+    {
+        connectErrorEventHandler( std::bind( eventHandler, eventHandlerObject, std::placeholders::_1, std::placeholders::_2 ) );
+    }
+    void			connectErrorEventHandler( const std::function<void( std::string, size_t )>& eventHandler );
+    
+    struct Header {
         uint8_t channel;
         uint8_t command;
         uint8_t length[2];
-
+        
         void init(uint8_t channel, uint8_t command, uint16_t length) {
             this->channel = channel;
             this->command = command;
             this->length[0] = length >> 8;
             this->length[1] = (uint8_t)length;
         }
-
+        
         uint8_t *data() {
             return (uint8_t*) &this[1];
         }
         const uint8_t *data() const {
             return (uint8_t*) &this[1];
         }
-
+        
         // Use a Header() to manipulate packet data in a std::vector
         static Header& view(std::vector<char> &data) {
             return *(Header*) &data[0];
@@ -92,22 +92,21 @@ public:
             return *(Header*) &data[0];
         }
     };
-
-	// Commands
+    
+    // Commands
     static const uint8_t SET_PIXEL_COLORS = 0;
-	
-	void						onConnect( TcpSessionRef session );
-	void						onError( std::string err, size_t bytesTransferred );
+    
+    void						onConnect( TcpSessionRef session );
+    void						onError( std::string err, size_t bytesTransferred );
 private:
     TcpClientRef				mClient;
-	TcpSessionRef				mSession;
-	std::string					mHost;
-	int32_t						mPort;
-	std::string					mRequest;
-	bool						mConnecting;
-	
-	void						onRead( ci::Buffer buffer );
-	void						onWrite( size_t bytesTransferred );
-
-	std::shared_ptr<boost::asio::io_service>	mIo;
+    TcpSessionRef				mSession;
+    std::string					mHost;
+    int32_t						mPort;
+    bool						mConnecting;
+    
+    void						onRead( ci::Buffer buffer );
+    void						onWrite( size_t bytesTransferred );
+    
+    std::shared_ptr<boost::asio::io_service>	mIo;
 };

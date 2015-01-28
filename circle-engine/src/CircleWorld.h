@@ -41,6 +41,7 @@ public:
     ci::Rectf                   mOriginBounds;
     std::vector<b2Body*>        mSpinnerBodies;
     std::vector<ci::TriMesh2d>  mSpinnerMeshes;
+    std::vector<ci::Vec2f>      mLedPoints;
     
     ci::Rectf               mForceGridExtent;
     float                   mForceGridResolution;

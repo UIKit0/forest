@@ -86,6 +86,18 @@ void CircleWorld::setup(svg::DocRef doc, ci::ImageSourceRef colorTable)
             break;
         }
     }
+
+    for (int index = 0;; index++) {
+        char name[64];
+        snprintf(name, sizeof name, "led-%d", index);
+        const svg::Node* node = mSvg->findNode(name);
+        if (node) {
+            mLedPoints.push_back(node->getShape().calcBoundingBox().getCenter());
+        } else {
+            break;
+        }
+    }
+
 }
 
 void CircleWorld::setupObstacles(const Shape2d& shape)

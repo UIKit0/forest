@@ -12,6 +12,7 @@
 #include "Box2D/Box2D.h"
 #include "CircleWorld.h"
 #include "ParticleRender.h"
+#include "FadecandyGL.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -29,33 +30,40 @@ private:
     void drawObstacles();
     void drawSpinners();
     void drawForceGrid();
-
+    void drawLeds();
+    
     static void physicsThreadFn(CircleEngineApp *self);
     
+    FadecandyGL         mFadecandy;
     thread              mPhysicsThread;
     bool                mExiting;
     CircleWorld         mWorld;
     ParticleRender      mParticleRender;
     Rectf               mParticleRect;
+    Matrix44f           mLedTransform;
     
     params::InterfaceGlRef      mParams;
     float                       mAverageFps;
     float                       mPhysicsHz;
     unsigned                    mNumParticles;
     bool                        mDrawForceGrid;
+    bool                        mDrawLedBuffer;
 };
 
 void CircleEngineApp::prepareSettings( Settings *settings )
 {
-    settings->setFrameRate( 60.0f );
+    settings->disableFrameRate();
     settings->setWindowSize( 1280, 720 );
 }
 
 void CircleEngineApp::setup()
 {
+    float scale = 2;
     mParticleRect = Rectf(0, 0, getWindowWidth(), getWindowHeight());
-    mParticleRender.setup( *this, getWindowWidth()/2, getWindowHeight()/2, 0.5f / mWorld.kMetersPerPoint );
-
+    mParticleRender.setup( *this, getWindowWidth() / scale, getWindowHeight() / scale, 1.0f / scale / mWorld.kMetersPerPoint );
+    mLedTransform.setToIdentity();
+    mLedTransform.scale(Vec2f(1.0f / getWindowWidth(), 1.0f / getWindowHeight()));
+    
     mWorld.setup(svg::Doc::create(loadAsset("world.svg")),
                  loadImage(loadAsset("colors.png")));
 
@@ -68,6 +76,7 @@ void CircleEngineApp::setup()
     mParams->addSeparator();
     mParams->addParam("Spin randomly", &mWorld.mMoveSpinnersRandomly);
     mParams->addParam("Draw force grid", &mDrawForceGrid);
+    mParams->addParam("Draw LED buffer", &mDrawLedBuffer);
     mParams->addParam("Particle rate", &mWorld.mNewParticleRate);
     mParams->addParam("Particle lifetime", &mWorld.mNewParticleLifetime);
     
@@ -75,6 +84,9 @@ void CircleEngineApp::setup()
     gl::disable(GL_DEPTH_TEST);
     gl::disable(GL_CULL_FACE);
 
+    mFadecandy.setup();
+    
+    mDrawLedBuffer = false;
     mDrawForceGrid = false;
     mExiting = false;
 
@@ -126,8 +138,12 @@ void CircleEngineApp::draw()
     }
     drawObstacles();
     drawSpinners();
+    drawLeds();
     
     mParams->draw();
+    
+    // Update LEDs from contents of the particle rendering FBO
+    mFadecandy.update(mParticleRender.getTexture(), mWorld.mLedPoints, mLedTransform);
 }
 
 void CircleEngineApp::drawObstacles()
@@ -174,6 +190,28 @@ void CircleEngineApp::drawForceGrid()
         Vec2f force = mWorld.mForceGrid[idx];
         pos = mWorld.mForceGridExtent.getUpperLeft() + pos * mWorld.mForceGridResolution;
         gl::drawLine(pos, pos + force * 0.05);
+    }
+}
+
+void CircleEngineApp::drawLeds()
+{
+    gl::enableAdditiveBlending();
+    gl::color(1.0f, 1.0f, 1.0f, 0.25f);
+    glPointSize(0.5f);
+    
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glVertexPointer(2, GL_FLOAT, 0, &mWorld.mLedPoints[0].x);
+    glDrawArrays(GL_POINTS, 0, mWorld.mLedPoints.size());
+    glDisableClientState(GL_VERTEX_ARRAY);
+
+    if (mDrawLedBuffer) {
+        const gl::Texture& tex = mFadecandy.getFramebufferTexture();
+        float scale = 4.0;
+        Vec2f topLeft(400, 10);
+ 
+        gl::disableAlphaBlending();
+        gl::color(1.0f, 1.0f, 1.0f, 1.0f);
+        gl::draw(tex, Rectf(topLeft, topLeft + tex.getSize() * scale));
     }
 }
 
