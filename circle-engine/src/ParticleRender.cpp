@@ -9,6 +9,7 @@ using namespace ci;
 void ParticleRender::setup(ci::app::App &app, unsigned width, unsigned height, float scale)
 {
     mScale = scale;
+    mBrightness = 1.75f;
 
     gl::Fbo::Format floatFormat;
     floatFormat.setColorInternalFormat(GL_RGBA32F_ARB);
@@ -21,6 +22,8 @@ void ParticleRender::setup(ci::app::App &app, unsigned width, unsigned height, f
 
     mSecondPassProg = gl::GlslProg( app.loadAsset("particle.pass2.glslv"),
                                     app.loadAsset("particle.pass2.glslf") );
+
+    mPointTexture = loadImage(app.loadAsset("particle.png"));
 }
 
 gl::Texture& ParticleRender::getTexture()
@@ -43,14 +46,18 @@ void ParticleRender::firstPass(const b2ParticleSystem &system)
     gl::setMatricesWindow(mFirstPassFbo.getSize());
     gl::clear();
     gl::enableAdditiveBlending();
+    gl::enable(GL_POINT_SPRITE);
 
     int particleCount = system.GetParticleCount();
-    float radius = system.GetRadius() * 4.0f * mScale;
+    float radius = system.GetRadius() * 8.0f * mScale;
     const b2Vec2* positionBuffer = system.GetPositionBuffer();
     const b2ParticleColor* colorBuffer = system.GetColorBuffer();
 
     GLint position = mFirstPassProg.getAttribLocation("position");
     GLint color = mFirstPassProg.getAttribLocation("color");
+
+    mFirstPassProg.uniform("texture", 0);
+    mPointTexture.bind();
     
     glPointSize(radius);
     glPushMatrix();
@@ -68,6 +75,7 @@ void ParticleRender::firstPass(const b2ParticleSystem &system)
     
     mFirstPassProg.unbind();
     mFirstPassFbo.unbindFramebuffer();
+    gl::disable(GL_POINT_SPRITE);
 }
 
 void ParticleRender::secondPass()
@@ -88,6 +96,8 @@ void ParticleRender::secondPass()
 
     GLint position = mSecondPassProg.getAttribLocation("position");
 
+    mSecondPassProg.uniform("brightness", mBrightness);
+    
     mSecondPassProg.uniform("firstPass", 0);
     mFirstPassFbo.getTexture().bind();
 

@@ -72,6 +72,7 @@ void CircleEngineApp::setup()
     mParams->addParam("# particles", &mNumParticles, "readonly=true");
     mParams->addParam("Current table row", &mWorld.mCurrentTableRow, "readonly=true");
     mParams->addSeparator();
+    mParams->addParam("Particle brightness", &mParticleRender.mBrightness).min(0.f).max(5.f).step(0.01f);
     mParams->addParam("Spin randomly", &mWorld.mMoveSpinnersRandomly);
     mParams->addParam("Draw force grid", &mDrawForceGrid);
     mParams->addParam("Draw LED buffer", &mDrawLedBuffer);

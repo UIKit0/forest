@@ -1,3 +1,5 @@
+#version 120
+
 attribute vec2 position;
 varying vec2 texcoord;
 

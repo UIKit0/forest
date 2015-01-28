@@ -17,6 +17,8 @@ public:
     void render(const b2ParticleSystem &system);
     ci::gl::Texture &getTexture();
     
+    float           mBrightness;
+    
 private:
     ci::gl::Fbo     mFirstPassFbo;
     ci::gl::Fbo     mSecondPassFbo;
@@ -24,6 +26,7 @@ private:
 
     ci::gl::GlslProg mFirstPassProg;
     ci::gl::GlslProg mSecondPassProg;
+    ci::gl::Texture  mPointTexture;
 
     void firstPass(const b2ParticleSystem &system);
     void secondPass();

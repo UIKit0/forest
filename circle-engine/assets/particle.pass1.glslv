@@ -1,3 +1,5 @@
+#version 120
+
 attribute vec2 position;
 attribute vec4 color;
 varying vec4 varying_color;
