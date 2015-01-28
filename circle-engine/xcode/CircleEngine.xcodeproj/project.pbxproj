@@ -91,6 +91,8 @@
 		75DF8DAB1A788E00000E5A8E /* UdpSession.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 75DF8D9B1A788E00000E5A8E /* UdpSession.cpp */; };
 		75DF8DAC1A788E00000E5A8E /* WaitTimer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 75DF8D9E1A788E00000E5A8E /* WaitTimer.cpp */; };
 		75DF8DAF1A788FA7000E5A8E /* FadecandyGL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 75DF8DAD1A788FA7000E5A8E /* FadecandyGL.cpp */; };
+		75DF8DB21A78B078000E5A8E /* fadecandy.glslf in Resources */ = {isa = PBXBuildFile; fileRef = 75DF8DB01A78B078000E5A8E /* fadecandy.glslf */; };
+		75DF8DB31A78B078000E5A8E /* fadecandy.glslv in Resources */ = {isa = PBXBuildFile; fileRef = 75DF8DB11A78B078000E5A8E /* fadecandy.glslv */; };
 		8685E9DD25B24ED3BA384259 /* CircleEngineApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D37DA78CBBF64CAAB6E7E9AF /* CircleEngineApp.cpp */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 /* End PBXBuildFile section */
@@ -269,6 +271,8 @@
 		75DF8DA01A788E00000E5A8E /* WaitTimerEventHandlerInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WaitTimerEventHandlerInterface.h; sourceTree = "<group>"; };
 		75DF8DAD1A788FA7000E5A8E /* FadecandyGL.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FadecandyGL.cpp; path = ../src/FadecandyGL.cpp; sourceTree = "<group>"; };
 		75DF8DAE1A788FA7000E5A8E /* FadecandyGL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FadecandyGL.h; path = ../src/FadecandyGL.h; sourceTree = "<group>"; };
+		75DF8DB01A78B078000E5A8E /* fadecandy.glslf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = fadecandy.glslf; sourceTree = "<group>"; };
+		75DF8DB11A78B078000E5A8E /* fadecandy.glslv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = fadecandy.glslv; sourceTree = "<group>"; };
 		7C98B10AF0FB40A49AD3EA7C /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* CircleEngine.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CircleEngine.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D37DA78CBBF64CAAB6E7E9AF /* CircleEngineApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = CircleEngineApp.cpp; path = ../src/CircleEngineApp.cpp; sourceTree = "<group>"; };
@@ -307,7 +311,6 @@
 			isa = PBXGroup;
 			children = (
 				75DF8DAD1A788FA7000E5A8E /* FadecandyGL.cpp */,
-				75DF8DAE1A788FA7000E5A8E /* FadecandyGL.h */,
 				75DF8D7B1A788D40000E5A8E /* OPCClient.cpp */,
 				D37DA78CBBF64CAAB6E7E9AF /* CircleEngineApp.cpp */,
 				751542E21A75D5000012009D /* CircleWorld.cpp */,
@@ -365,6 +368,7 @@
 		29B97315FDCFA39411CA2CEA /* Headers */ = {
 			isa = PBXGroup;
 			children = (
+				75DF8DAE1A788FA7000E5A8E /* FadecandyGL.h */,
 				75DF8D7A1A788D3B000E5A8E /* OPCClient.h */,
 				751542E31A75D5000012009D /* CircleWorld.h */,
 				756E5C7C1A780642008EA93E /* ParticleRender.h */,
@@ -596,6 +600,8 @@
 		756E5C721A77FC59008EA93E /* assets */ = {
 			isa = PBXGroup;
 			children = (
+				75DF8DB01A78B078000E5A8E /* fadecandy.glslf */,
+				75DF8DB11A78B078000E5A8E /* fadecandy.glslv */,
 				756E5C7E1A780C11008EA93E /* particle.pass1.glslf */,
 				756E5C7F1A780C11008EA93E /* particle.pass1.glslv */,
 				756E5C801A780C11008EA93E /* particle.pass2.glslf */,
@@ -712,7 +718,9 @@
 			files = (
 				75DF8DA11A788E00000E5A8E /* .gitignore in Resources */,
 				756E5C821A780C11008EA93E /* particle.pass1.glslf in Resources */,
+				75DF8DB31A78B078000E5A8E /* fadecandy.glslv in Resources */,
 				756E5C841A780C11008EA93E /* particle.pass2.glslf in Resources */,
+				75DF8DB21A78B078000E5A8E /* fadecandy.glslf in Resources */,
 				756E5C7A1A77FC59008EA93E /* world.svg in Resources */,
 				6D3A4433FAE64C268CD40228 /* CinderApp.icns in Resources */,
 				756E5C831A780C11008EA93E /* particle.pass1.glslv in Resources */,

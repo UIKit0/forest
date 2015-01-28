@@ -76,10 +76,8 @@ void ParticleRender::secondPass()
     mSecondPassProg.bind();
 
     gl::setViewport(Area(Vec2f(0,0), mSecondPassFbo.getSize()));
-    gl::setMatricesWindow(Vec2f(1, 1));
     gl::disableAlphaBlending();
     gl::enable(GL_TEXTURE_2D);
-    gl::clear( Color( 1, 0, 0 ));
     
     static const float positionData[8] = {
         0, 0,

@@ -4,25 +4,27 @@
 #pragma once
 
 #include "OPCClient.h"
-#include "cinder/Matrix44.h"
+#include "cinder/MatrixAffine2.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Fbo.h"
+#include "cinder/gl/GlslProg.h"
 
 class FadecandyGL {
 public:
     OPCClient opc;
 
-    void setup();
-    void update(const ci::gl::Texture& texture, std::vector<ci::Vec2f> points, const ci::Matrix44f& transform);
-    
+    void setup(ci::app::App &app, std::vector<ci::Vec2f>& points, const ci::MatrixAffine2f& transform);
+    void update(const ci::gl::Texture& sourceTexture);
+
     const ci::gl::Texture& getFramebufferTexture() { return mFramebuffer.getTexture(); }
     
 private:
-    static const unsigned kWidth = 64;
-    
+    const unsigned kWidth = 64;
+    const unsigned kMinHeight = 64;
+
     ci::gl::Fbo mFramebuffer;
-    std::vector<ci::Vec2f> mDrawPoints;
+    ci::gl::Texture mModelPoints;
     std::vector<char> mPacketBuffer;
-    
-    void setupFramebuffer(unsigned numPoints);
+    ci::gl::GlslProg mProg;
+    unsigned mNumPoints;
 };

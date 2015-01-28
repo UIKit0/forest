@@ -40,7 +40,6 @@ private:
     CircleWorld         mWorld;
     ParticleRender      mParticleRender;
     Rectf               mParticleRect;
-    Matrix44f           mLedTransform;
     
     params::InterfaceGlRef      mParams;
     float                       mAverageFps;
@@ -58,14 +57,13 @@ void CircleEngineApp::prepareSettings( Settings *settings )
 
 void CircleEngineApp::setup()
 {
+    mWorld.setup(svg::Doc::create(loadAsset("world.svg")),
+                 loadImage(loadAsset("colors.png")));
+
     float scale = 2;
     mParticleRect = Rectf(0, 0, getWindowWidth(), getWindowHeight());
     mParticleRender.setup( *this, getWindowWidth() / scale, getWindowHeight() / scale, 1.0f / scale / mWorld.kMetersPerPoint );
-    mLedTransform.setToIdentity();
-    mLedTransform.scale(Vec2f(1.0f / getWindowWidth(), 1.0f / getWindowHeight()));
-    
-    mWorld.setup(svg::Doc::create(loadAsset("world.svg")),
-                 loadImage(loadAsset("colors.png")));
+    mFadecandy.setup( *this, mWorld.mLedPoints, MatrixAffine2f::makeScale( Vec2f(1.0f / getWindowWidth(), 1.0f / getWindowHeight()) ));
 
     mParams = params::InterfaceGl::create( getWindow(), "Engine parameters", toPixels(Vec2i(240, 600)) );
     
@@ -83,8 +81,6 @@ void CircleEngineApp::setup()
     gl::disableVerticalSync();
     gl::disable(GL_DEPTH_TEST);
     gl::disable(GL_CULL_FACE);
-
-    mFadecandy.setup();
     
     mDrawLedBuffer = false;
     mDrawForceGrid = false;
@@ -143,7 +139,7 @@ void CircleEngineApp::draw()
     mParams->draw();
     
     // Update LEDs from contents of the particle rendering FBO
-    mFadecandy.update(mParticleRender.getTexture(), mWorld.mLedPoints, mLedTransform);
+    mFadecandy.update(mParticleRender.getTexture());
 }
 
 void CircleEngineApp::drawObstacles()
