@@ -93,6 +93,11 @@
 		75DF8DAF1A788FA7000E5A8E /* FadecandyGL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 75DF8DAD1A788FA7000E5A8E /* FadecandyGL.cpp */; };
 		75DF8DB21A78B078000E5A8E /* fadecandy.glslf in Resources */ = {isa = PBXBuildFile; fileRef = 75DF8DB01A78B078000E5A8E /* fadecandy.glslf */; };
 		75DF8DB31A78B078000E5A8E /* fadecandy.glslv in Resources */ = {isa = PBXBuildFile; fileRef = 75DF8DB11A78B078000E5A8E /* fadecandy.glslv */; };
+		75DF8DBC1A797A66000E5A8E /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 75DF8DB51A797A66000E5A8E /* .gitignore */; };
+		75DF8DBD1A797A66000E5A8E /* cinderblock.xml in Resources */ = {isa = PBXBuildFile; fileRef = 75DF8DB61A797A66000E5A8E /* cinderblock.xml */; };
+		75DF8DBE1A797A66000E5A8E /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = 75DF8DB71A797A66000E5A8E /* README.md */; };
+		75DF8DBF1A797A66000E5A8E /* Cinder-AppNap.mm in Sources */ = {isa = PBXBuildFile; fileRef = 75DF8DBA1A797A66000E5A8E /* Cinder-AppNap.mm */; };
+		75DF8DC01A797A66000E5A8E /* TODO.md in Sources */ = {isa = PBXBuildFile; fileRef = 75DF8DBB1A797A66000E5A8E /* TODO.md */; };
 		8685E9DD25B24ED3BA384259 /* CircleEngineApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D37DA78CBBF64CAAB6E7E9AF /* CircleEngineApp.cpp */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 /* End PBXBuildFile section */
@@ -273,6 +278,12 @@
 		75DF8DAE1A788FA7000E5A8E /* FadecandyGL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FadecandyGL.h; path = ../src/FadecandyGL.h; sourceTree = "<group>"; };
 		75DF8DB01A78B078000E5A8E /* fadecandy.glslf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = fadecandy.glslf; sourceTree = "<group>"; };
 		75DF8DB11A78B078000E5A8E /* fadecandy.glslv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = fadecandy.glslv; sourceTree = "<group>"; };
+		75DF8DB51A797A66000E5A8E /* .gitignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		75DF8DB61A797A66000E5A8E /* cinderblock.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = cinderblock.xml; sourceTree = "<group>"; };
+		75DF8DB71A797A66000E5A8E /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		75DF8DB91A797A66000E5A8E /* Cinder-AppNap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Cinder-AppNap.h"; sourceTree = "<group>"; };
+		75DF8DBA1A797A66000E5A8E /* Cinder-AppNap.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "Cinder-AppNap.mm"; sourceTree = "<group>"; };
+		75DF8DBB1A797A66000E5A8E /* TODO.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = TODO.md; sourceTree = "<group>"; };
 		7C98B10AF0FB40A49AD3EA7C /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* CircleEngine.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CircleEngine.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D37DA78CBBF64CAAB6E7E9AF /* CircleEngineApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = CircleEngineApp.cpp; path = ../src/CircleEngineApp.cpp; sourceTree = "<group>"; };
@@ -301,6 +312,7 @@
 		01B97315FEAEA392516A2CEA /* Blocks */ = {
 			isa = PBXGroup;
 			children = (
+				75DF8DB41A797A66000E5A8E /* Cinder-AppNap */,
 				75DF8D7D1A788E00000E5A8E /* Cinder-Asio */,
 				7515422E1A74B7A60012009D /* Box2D */,
 			);
@@ -663,6 +675,28 @@
 			path = src;
 			sourceTree = "<group>";
 		};
+		75DF8DB41A797A66000E5A8E /* Cinder-AppNap */ = {
+			isa = PBXGroup;
+			children = (
+				75DF8DB51A797A66000E5A8E /* .gitignore */,
+				75DF8DB61A797A66000E5A8E /* cinderblock.xml */,
+				75DF8DB71A797A66000E5A8E /* README.md */,
+				75DF8DB81A797A66000E5A8E /* src */,
+				75DF8DBB1A797A66000E5A8E /* TODO.md */,
+			);
+			name = "Cinder-AppNap";
+			path = "../blocks/Cinder-AppNap";
+			sourceTree = "<group>";
+		};
+		75DF8DB81A797A66000E5A8E /* src */ = {
+			isa = PBXGroup;
+			children = (
+				75DF8DB91A797A66000E5A8E /* Cinder-AppNap.h */,
+				75DF8DBA1A797A66000E5A8E /* Cinder-AppNap.mm */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -718,8 +752,10 @@
 			files = (
 				75DF8DA11A788E00000E5A8E /* .gitignore in Resources */,
 				756E5C821A780C11008EA93E /* particle.pass1.glslf in Resources */,
+				75DF8DBD1A797A66000E5A8E /* cinderblock.xml in Resources */,
 				75DF8DB31A78B078000E5A8E /* fadecandy.glslv in Resources */,
 				756E5C841A780C11008EA93E /* particle.pass2.glslf in Resources */,
+				75DF8DBC1A797A66000E5A8E /* .gitignore in Resources */,
 				75DF8DB21A78B078000E5A8E /* fadecandy.glslf in Resources */,
 				756E5C7A1A77FC59008EA93E /* world.svg in Resources */,
 				6D3A4433FAE64C268CD40228 /* CinderApp.icns in Resources */,
@@ -738,6 +774,7 @@
 			files = (
 				751542C21A74B7A60012009D /* b2Fixture.cpp in Sources */,
 				751542C01A74B7A60012009D /* b2Body.cpp in Sources */,
+				75DF8DBF1A797A66000E5A8E /* Cinder-AppNap.mm in Sources */,
 				751542DF1A74B7A60012009D /* b2ParticleSystem.cpp in Sources */,
 				751542B81A74B7A60012009D /* b2Draw.cpp in Sources */,
 				751542CB1A74B7A60012009D /* b2EdgeAndCircleContact.cpp in Sources */,
@@ -787,9 +824,11 @@
 				751542D71A74B7A60012009D /* b2RevoluteJoint.cpp in Sources */,
 				751542D81A74B7A60012009D /* b2RopeJoint.cpp in Sources */,
 				751542D61A74B7A60012009D /* b2PulleyJoint.cpp in Sources */,
+				75DF8DC01A797A66000E5A8E /* TODO.md in Sources */,
 				75DF8DA31A788E00000E5A8E /* DispatcherInterface.cpp in Sources */,
 				8685E9DD25B24ED3BA384259 /* CircleEngineApp.cpp in Sources */,
 				751542D91A74B7A60012009D /* b2WeldJoint.cpp in Sources */,
+				75DF8DBE1A797A66000E5A8E /* README.md in Sources */,
 				751542D51A74B7A60012009D /* b2PrismaticJoint.cpp in Sources */,
 				75DF8DA51A788E00000E5A8E /* SessionInterface.cpp in Sources */,
 				751542D11A74B7A60012009D /* b2GearJoint.cpp in Sources */,

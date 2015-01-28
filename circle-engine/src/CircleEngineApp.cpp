@@ -10,6 +10,7 @@
 #include "cinder/Triangulate.h"
 #include "cinder/TriMesh.h"
 #include "Box2D/Box2D.h"
+#include "Cinder-AppNap.h"
 #include "CircleWorld.h"
 #include "ParticleRender.h"
 #include "FadecandyGL.h"
@@ -57,6 +58,8 @@ void CircleEngineApp::prepareSettings( Settings *settings )
 
 void CircleEngineApp::setup()
 {
+    Cinder::AppNap::BeginActivity("CircleEngine LED rendering");
+
     mWorld.setup(svg::Doc::create(loadAsset("world.svg")),
                  loadImage(loadAsset("colors.png")));
 
@@ -107,6 +110,7 @@ void CircleEngineApp::shutdown()
 {
     mExiting = true;
     mPhysicsThread.join();
+    Cinder::AppNap::EndActivity();
 }
 
 void CircleEngineApp::update()
