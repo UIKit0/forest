@@ -24,6 +24,7 @@ public:
     ci::Vec2f vecFromBox(b2Vec2 v);
     
     const float kMetersPerPoint         = 10.0;
+    const unsigned kStepsPerTableRow    = 100;
     const float kMinTriangleArea        = 0.1;
     static const unsigned kMaxParticles = 32768;
     
@@ -34,6 +35,7 @@ public:
     float               mTriangulatePrecision;
     unsigned            mNewParticleRate;
     float               mNewParticleLifetime;
+    bool                mMoveSpinnersRandomly;
     
     std::vector<ci::Vec2f>      mOriginPoints;
     ci::Rectf                   mOriginBounds;
@@ -48,8 +50,10 @@ public:
     
     b2World				*mB2World;
     b2ParticleSystem    *mParticleSystem;
-    unsigned            mStepNumber;
-
+    uint64_t            mStepNumber;
+    unsigned            mCurrentTableRow;
+    float               mSubRow;
+    
     b2Vec2              mPositionBuffer[kMaxParticles];
     b2Vec2              mVelocityBuffer[kMaxParticles];
     b2ParticleColor     mColorBuffer[kMaxParticles];

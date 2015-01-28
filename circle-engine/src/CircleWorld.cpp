@@ -69,8 +69,9 @@ void CircleWorld::setup(svg::DocRef doc, ci::ImageSourceRef colorTable)
     mParticleSystem->SetVelocityBuffer(mVelocityBuffer, kMaxParticles);
     mParticleSystem->SetColorBuffer(mColorBuffer, kMaxParticles);
 
-    mNewParticleRate = 10;
-    mNewParticleLifetime = 60.0;
+    mNewParticleRate = 18;
+    mNewParticleLifetime = 20.0;
+    mMoveSpinnersRandomly = false;
     
     setupObstacles(findShape("obstacles"));
     setupStrands(findShape("strands"));
@@ -177,18 +178,22 @@ void CircleWorld::update()
     applyGridForces();
 
     mStepNumber++;
+    mCurrentTableRow = (mStepNumber / kStepsPerTableRow) % mColorTable.getHeight();
+    mSubRow = (mStepNumber % kStepsPerTableRow) / float(kStepsPerTableRow - 1);
+
     mB2World->Step( 1 / 60.0f, 1, 1, 2 );
 }
 
 void CircleWorld::updateSpinners()
 {
-    Perlin p(4, 0);
-    for (unsigned i = 0; i < mSpinnerBodies.size(); i++) {
-        b2Body *spinner = mSpinnerBodies[i];
-        float angle = p.fBm(mStepNumber * 0.002, i) * 50.0;
-        spinner->SetTransform(spinner->GetPosition(), angle);
+    if (mMoveSpinnersRandomly) {
+        Perlin p(4, 0);
+        for (unsigned i = 0; i < mSpinnerBodies.size(); i++) {
+            b2Body *spinner = mSpinnerBodies[i];
+            float angle = p.fBm(mStepNumber * 0.002, i) * 50.0;
+            spinner->SetTransform(spinner->GetPosition(), angle);
+        }
     }
-    
 }
 
 void CircleWorld::applyGridForces()
@@ -215,14 +220,21 @@ void CircleWorld::newParticle()
     Vec2f pos = mOriginPoints[mRand.nextInt(mOriginPoints.size())];
 
     float x = (pos.x - mOriginBounds.getX1()) / mOriginBounds.getWidth();
-    float y = 0.5 + 0.49 * sinf(mStepNumber * 0.001);
-    Vec2i loc( x * (mColorTable.getWidth() - 1), y * (mColorTable.getHeight() - 1) );
-    auto pix = mColorTable.getPixel(loc);
+    Vec2i loc( x * (mColorTable.getWidth() - 1), mCurrentTableRow );
 
+    auto pix1 = mColorTable.getPixel(loc);
+    loc.y = (loc.y + 1) % mColorTable.getHeight();
+    auto pix2 = mColorTable.getPixel(loc);
+    float a1 = 1.0f - mSubRow;
+    float a2 = mSubRow;
+    
     pd.position = vecToBox(pos);
     pd.flags = b2_colorMixingParticle | b2_tensileParticle;
     pd.lifetime = mNewParticleLifetime;
-    pd.color.Set(pix.r, pix.g, pix.b, pix.a);
+
+    pd.color.Set(pix1.r * a1 + pix2.r * a2,
+                 pix1.g * a1 + pix2.g * a2,
+                 pix1.b * a1 + pix2.b * a2, 255);
 
     mParticleSystem->CreateParticle(pd);
 }

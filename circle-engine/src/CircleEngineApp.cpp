@@ -64,7 +64,9 @@ void CircleEngineApp::setup()
     mParams->addParam("FPS", &mAverageFps, "readonly=true");
     mParams->addParam("Physics Hz", &mPhysicsHz, "readonly=true");
     mParams->addParam("# particles", &mNumParticles, "readonly=true");
+    mParams->addParam("Current table row", &mWorld.mCurrentTableRow, "readonly=true");
     mParams->addSeparator();
+    mParams->addParam("Spin randomly", &mWorld.mMoveSpinnersRandomly);
     mParams->addParam("Draw force grid", &mDrawForceGrid);
     mParams->addParam("Particle rate", &mWorld.mNewParticleRate);
     mParams->addParam("Particle lifetime", &mWorld.mNewParticleLifetime);

@@ -3,5 +3,5 @@ varying vec2 texcoord;
 
 void main() {
     vec4 texel = texture2D(firstPass, texcoord);
-    gl_FragColor = 5.0 * texel / texel.w;
+    gl_FragColor = texel / texel.w;
 }
