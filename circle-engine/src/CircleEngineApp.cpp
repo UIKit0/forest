@@ -31,7 +31,6 @@ private:
     void drawObstacles();
     void drawSpinners();
     void drawForceGrid();
-    void drawLeds();
     
     static void physicsThreadFn(CircleEngineApp *self);
     
@@ -52,22 +51,22 @@ private:
 
 void CircleEngineApp::prepareSettings( Settings *settings )
 {
-    settings->disableFrameRate();
     settings->setWindowSize( 1280, 720 );
+    settings->disableFrameRate();
 }
 
 void CircleEngineApp::setup()
 {
     Cinder::AppNap::BeginActivity("CircleEngine LED rendering");
 
-    mWorld.setup(svg::Doc::create(loadAsset("world.svg")),
-                 loadImage(loadAsset("colors.png")));
-
+    mWorld.setup(svg::Doc::create(loadAsset("world.svg")), loadImage(loadAsset("colors.png")));
+    mFadecandy.setup(*this);
+    mFadecandy.setModel(mWorld.mLedPoints);
+    
     float scale = 2;
     mParticleRect = Rectf(0, 0, getWindowWidth(), getWindowHeight());
     mParticleRender.setup( *this, getWindowWidth() / scale, getWindowHeight() / scale, 1.0f / scale / mWorld.kMetersPerPoint );
-    mFadecandy.setup( *this, mWorld.mLedPoints, MatrixAffine2f::makeScale( Vec2f(1.0f / getWindowWidth(), 1.0f / getWindowHeight()) ));
-
+ 
     mParams = params::InterfaceGl::create( getWindow(), "Engine parameters", toPixels(Vec2i(240, 600)) );
     
     mParams->addParam("FPS", &mAverageFps, "readonly=true");
@@ -137,10 +136,21 @@ void CircleEngineApp::draw()
     if (mDrawForceGrid) {
         drawForceGrid();
     }
+
     drawObstacles();
     drawSpinners();
-    drawLeds();
+
+    mFadecandy.drawModel();
     
+    if (mDrawLedBuffer) {
+        const gl::Texture& tex = mFadecandy.getFramebufferTexture();
+        float scale = 4.0;
+        Vec2f topLeft(400, 10);
+        gl::disableAlphaBlending();
+        gl::color(1.0f, 1.0f, 1.0f, 1.0f);
+        gl::draw(tex, Rectf(topLeft, topLeft + tex.getSize() * scale));
+    }
+
     mParams->draw();
     
     // Update LEDs from contents of the particle rendering FBO.
@@ -148,7 +158,9 @@ void CircleEngineApp::draw()
     // sim is running slower, rely on FC to interpolate between its frames.
     if (mWorld.mUpdatedSinceLastDraw) {
         mWorld.mUpdatedSinceLastDraw = false;
-        mFadecandy.update(mParticleRender.getTexture());
+        mFadecandy.update(mParticleRender.getTexture(),
+                Matrix33f::createScale( Vec2f(1.0f / mParticleRect.getWidth(),
+                                              1.0f / mParticleRect.getHeight()) ));
     }
 }
 
@@ -196,28 +208,6 @@ void CircleEngineApp::drawForceGrid()
         Vec2f force = mWorld.mForceGrid[idx];
         pos = mWorld.mForceGridExtent.getUpperLeft() + pos * mWorld.mForceGridResolution;
         gl::drawLine(pos, pos + force * 0.05);
-    }
-}
-
-void CircleEngineApp::drawLeds()
-{
-    gl::enableAdditiveBlending();
-    gl::color(1.0f, 1.0f, 1.0f, 0.25f);
-    glPointSize(0.5f);
-    
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glVertexPointer(2, GL_FLOAT, 0, &mWorld.mLedPoints[0].x);
-    glDrawArrays(GL_POINTS, 0, mWorld.mLedPoints.size());
-    glDisableClientState(GL_VERTEX_ARRAY);
-
-    if (mDrawLedBuffer) {
-        const gl::Texture& tex = mFadecandy.getFramebufferTexture();
-        float scale = 4.0;
-        Vec2f topLeft(400, 10);
- 
-        gl::disableAlphaBlending();
-        gl::color(1.0f, 1.0f, 1.0f, 1.0f);
-        gl::draw(tex, Rectf(topLeft, topLeft + tex.getSize() * scale));
     }
 }
 
