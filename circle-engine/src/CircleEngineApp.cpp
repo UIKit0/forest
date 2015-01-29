@@ -6,6 +6,7 @@
 #include "cinder/gl/gl.h"
 #include "cinder/gl/GlslProg.h"
 #include "cinder/gl/Fbo.h"
+#include "cinder/gl/Vbo.h"
 #include "cinder/svg/Svg.h"
 #include "cinder/Triangulate.h"
 #include "cinder/TriMesh.h"
@@ -42,6 +43,7 @@ private:
     CircleWorld         mWorld;
     ParticleRender      mParticleRender;
     Rectf               mParticleRect;
+    gl::VboMeshRef      mObstaclesVbo;
     
     params::InterfaceGlRef      mParams;
     float                       mAverageFps;
@@ -62,6 +64,7 @@ void CircleEngineApp::setup()
     Cinder::AppNap::BeginActivity("CircleEngine LED rendering");
 
     mWorld.setup(svg::Doc::create(loadAsset("world.svg")));
+    mObstaclesVbo = gl::VboMesh::create(mWorld.mObstacles);
     reloadColorTable();
 
     mFadecandy.setup(*this);
@@ -184,10 +187,11 @@ void CircleEngineApp::drawObstacles()
 {
     gl::disableAlphaBlending();
     gl::color(0.33f, 0.33f, 0.33f);
-    gl::draw(mWorld.mObstacles);
+    gl::draw(mObstaclesVbo);
+
     gl::enableWireframe();
     gl::color(0.5f, 0.5f, 0.5f);
-    gl::draw(mWorld.mObstacles);
+    gl::draw(mObstaclesVbo);
     gl::disableWireframe();
 }
 
@@ -206,13 +210,6 @@ void CircleEngineApp::drawSpinners()
         gl::draw(mesh);
         gl::popMatrices();
     }
-
-    gl::enableWireframe();
-    gl::color(0.5f, 0.5f, 0.5f);
-
-    gl::draw(mWorld.mObstacles);
-    
-    gl::disableWireframe();
 }
 
 void CircleEngineApp::drawForceGrid()
