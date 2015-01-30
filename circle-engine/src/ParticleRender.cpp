@@ -52,9 +52,14 @@ void ParticleRender::firstPass(const b2ParticleSystem &system)
     float radius = system.GetRadius() * 8.0f * mScale;
     const b2Vec2* positionBuffer = system.GetPositionBuffer();
     const b2ParticleColor* colorBuffer = system.GetColorBuffer();
+    const int32* expirationBuffer = system.GetExpirationTimeBuffer();
 
     GLint position = mFirstPassProg.getAttribLocation("position");
     GLint color = mFirstPassProg.getAttribLocation("color");
+    GLint expiration = mFirstPassProg.getAttribLocation("expiration");
+
+    mFirstPassProg.uniform("currentTime", system.GetQuantizedTimeElapsed());
+    mFirstPassProg.uniform("fadeDuration", 30);
 
     mFirstPassProg.uniform("texture", 0);
     mPointTexture.bind();
@@ -64,13 +69,16 @@ void ParticleRender::firstPass(const b2ParticleSystem &system)
     glScalef(mScale, mScale, mScale);
     glVertexAttribPointer(position, 2, GL_FLOAT, GL_FALSE, 0, &positionBuffer[0].x);
     glVertexAttribPointer(color, 4, GL_UNSIGNED_BYTE, GL_TRUE, 0, &colorBuffer[0].r);
+    glVertexAttribPointer(expiration, 4, GL_UNSIGNED_BYTE, GL_FALSE, 0, &expirationBuffer[0]);
     glEnableVertexAttribArray(position);
     glEnableVertexAttribArray(color);
+    glEnableVertexAttribArray(expiration);
 
     glDrawArrays(GL_POINTS, 0, particleCount);
 
     glDisableVertexAttribArray(position);
     glDisableVertexAttribArray(color);
+    glDisableVertexAttribArray(expiration);
     glPopMatrix();
     
     mFirstPassProg.unbind();

@@ -4275,12 +4275,18 @@ float32 b2ParticleSystem::GetParticleLifetime(const int32 index)
 
 /// Get the array of particle lifetimes indexed by particle index.
 /// GetParticleCount() items are in the returned array.
-const int32* b2ParticleSystem::GetExpirationTimeBuffer()
+int32* b2ParticleSystem::GetExpirationTimeBuffer()
 {
 	m_expirationTimeBuffer.data = RequestBuffer(
 		m_expirationTimeBuffer.data);
 	return m_expirationTimeBuffer.data;
 }
+
+const int32* b2ParticleSystem::GetExpirationTimeBuffer() const
+{
+    return ((b2ParticleSystem *)this)->GetExpirationTimeBuffer();
+}
+
 
 /// Get the array of particle indices ordered by lifetime.
 /// GetExpirationTimeBuffer(
@@ -4358,6 +4364,12 @@ void b2ParticleSystem::SetColorBuffer(b2ParticleColor* buffer,
 											  int32 capacity)
 {
 	SetUserOverridableBuffer(&m_colorBuffer, buffer, capacity);
+}
+
+void b2ParticleSystem::SetExpirationTimeBuffer(int32* buffer,
+											   int32 capacity)
+{
+	SetUserOverridableBuffer(&m_expirationTimeBuffer, buffer, capacity);
 }
 
 void b2ParticleSystem::SetUserDataBuffer(void** buffer, int32 capacity)
