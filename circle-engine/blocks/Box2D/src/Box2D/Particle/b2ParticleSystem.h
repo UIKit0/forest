@@ -513,6 +513,7 @@ public:
 	void SetPositionBuffer(b2Vec2* buffer, int32 capacity);
 	void SetVelocityBuffer(b2Vec2* buffer, int32 capacity);
 	void SetColorBuffer(b2ParticleColor* buffer, int32 capacity);
+	void SetExpirationTimeBuffer(int32* buffer, int32 capacity);
 	void SetUserDataBuffer(void** buffer, int32 capacity);
 
 	/// Get contacts between particles
@@ -612,8 +613,15 @@ public:
 
 	/// Get the array of particle expiration times indexed by particle index.
 	/// GetParticleCount() items are in the returned array.
-	const int32* GetExpirationTimeBuffer();
-	/// Convert a expiration time value in returned by
+    int32* GetExpirationTimeBuffer();
+    const int32* GetExpirationTimeBuffer() const;
+
+    /// Get the time elapsed in b2ParticleSystemDef::lifetimeGranularity.
+    int32 GetQuantizedTimeElapsed() const;
+    /// Convert a lifetime in seconds to an expiration time.
+    int64 LifetimeToExpirationTime(const float32 lifetime) const;
+
+    /// Convert a expiration time value in returned by
 	/// GetExpirationTimeBuffer() to a time in seconds relative to the
 	/// current simulation time.
 	float32 ExpirationTimeToLifetime(const int32 expirationTime) const;
@@ -1035,11 +1043,6 @@ private:
 
 	/// Determine whether a particle index is valid.
 	bool ValidateParticleIndex(const int32 index) const;
-
-	/// Get the time elapsed in b2ParticleSystemDef::lifetimeGranularity.
-	int32 GetQuantizedTimeElapsed() const;
-	/// Convert a lifetime in seconds to an expiration time.
-	int64 LifetimeToExpirationTime(const float32 lifetime) const;
 
 	bool ForceCanBeApplied(uint32 flags) const;
 	void PrepareForceBuffer();
