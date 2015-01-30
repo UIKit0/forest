@@ -67,6 +67,7 @@ void CircleWorld::setup(svg::DocRef doc)
     mParticleSystem->SetPositionBuffer(mPositionBuffer, kMaxParticles);
     mParticleSystem->SetVelocityBuffer(mVelocityBuffer, kMaxParticles);
     mParticleSystem->SetColorBuffer(mColorBuffer, kMaxParticles);
+    mParticleSystem->SetExpirationTimeBuffer(mExpirationTimeBuffer, kMaxParticles);
 
     mNewParticleRate = 18;
     mNewParticleLifetime = 20.0;
