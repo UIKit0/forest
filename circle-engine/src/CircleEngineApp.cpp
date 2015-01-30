@@ -85,6 +85,7 @@ void CircleEngineApp::setup()
     mParams->addParam("Spin randomly", &mWorld.mMoveSpinnersRandomly);
     mParams->addParam("Draw force grid", &mDrawForceGrid);
     mParams->addParam("Draw LED buffer", &mDrawLedBuffer);
+    mParams->addParam("LED sampling radius", &mFadecandy.samplingRadius).min(0.f).max(500.f).step(0.1f);
     mParams->addParam("Particle rate", &mWorld.mNewParticleRate);
     mParams->addParam("Particle lifetime", &mWorld.mNewParticleLifetime);
     mParams->addSeparator();

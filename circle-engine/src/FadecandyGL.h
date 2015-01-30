@@ -19,9 +19,6 @@ public:
     //! One point for each LED, in arbitrary coordinates
     void setModel(const std::vector<ci::Vec2f>& points);
 
-    //! Radius of the sampling circle, in model coordinates
-    void setSamplingRadius(float r);
-
     //! Sample a source texture, updating our framebuffer and transmitting it over OPC
     void update(const ci::gl::Texture& sourceTexture, const ci::Matrix33f& sourceTransform = ci::Matrix33f::identity());
 
@@ -29,6 +26,9 @@ public:
     void drawModel(const ci::Matrix33f& windowTransform = ci::Matrix33f::identity());
     
     const ci::gl::Texture& getFramebufferTexture() { return mFramebuffer.getTexture(); }
+
+    //! Radius of the sampling circle, in model coordinates
+    float samplingRadius;
     
 private:
     const unsigned kWidth = 64;
@@ -42,5 +42,4 @@ private:
     unsigned mNumPoints;
 
     ci::gl::GlslProg mProg;             // Sampling shader
-    float mSamplingRadius;
 };
