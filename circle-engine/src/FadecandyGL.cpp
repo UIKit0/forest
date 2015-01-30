@@ -12,7 +12,7 @@ void FadecandyGL::setup(ci::app::App &app)
     opc.connectConnectEventHandler(&OPCClient::onConnect, &opc);
     opc.connectErrorEventHandler(&OPCClient::onError, &opc);
 
-    samplingRadius = 2.0;
+    samplingRadius = 8.0;
     mProg = gl::GlslProg( app.loadAsset("fadecandy.glslv"), app.loadAsset("fadecandy.glslf") );
 }
 
@@ -89,7 +89,7 @@ void FadecandyGL::update(const ci::gl::Texture& sourceTexture, const ci::Matrix3
 
 void FadecandyGL::drawModel(const ci::Matrix33f& windowTransform)
 {
-    gl::enableAdditiveBlending();
+    gl::enableAlphaBlending();
     gl::color(1.0f, 1.0f, 1.0f, 0.25f);
     glPointSize((windowTransform * Vec3f(samplingRadius, 1.0, 1.0)).xy().length());
 
