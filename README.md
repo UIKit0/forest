@@ -1,5 +1,5 @@
-Forest
-======
+Circle Forest
+=============
 
 An interactive light art installation.
 

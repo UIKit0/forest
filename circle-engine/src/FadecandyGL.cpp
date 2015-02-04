@@ -12,7 +12,7 @@ void FadecandyGL::setup(ci::app::App &app)
     opc.connectConnectEventHandler(&OPCClient::onConnect, &opc);
     opc.connectErrorEventHandler(&OPCClient::onError, &opc);
 
-    mSamplingRadius = 2.0;
+    samplingRadius = 8.0;
     mProg = gl::GlslProg( app.loadAsset("fadecandy.glslv"), app.loadAsset("fadecandy.glslf") );
 }
 
@@ -39,11 +39,6 @@ void FadecandyGL::setModel(const vector<Vec2f>& points)
     mModelVbo.bufferData(mNumPoints * 2 * sizeof(GLfloat), &points[0].x, GL_STATIC_DRAW);
 }
 
-void FadecandyGL::setSamplingRadius(float r)
-{
-    mSamplingRadius = r;
-}
-
 void FadecandyGL::update(const ci::gl::Texture& sourceTexture, const ci::Matrix33f& sourceTransform)
 {
     mFramebuffer.bindFramebuffer();
@@ -68,7 +63,7 @@ void FadecandyGL::update(const ci::gl::Texture& sourceTexture, const ci::Matrix3
     mModelTexture.bind(1);
     
     mProg.uniform("sourceTransform", sourceTransform);
-    mProg.uniform("sampleRadius", (sourceTransform * Vec3f(mSamplingRadius, 1.0f, 1.0f)).xy().length());
+    mProg.uniform("sampleRadius", (sourceTransform * Vec3f(samplingRadius, 1.0f, 1.0f)).xy().length());
     
     glVertexAttribPointer(position, 2, GL_FLOAT, GL_FALSE, 0, &positionData[0]);
     glEnableVertexAttribArray(position);
@@ -94,9 +89,9 @@ void FadecandyGL::update(const ci::gl::Texture& sourceTexture, const ci::Matrix3
 
 void FadecandyGL::drawModel(const ci::Matrix33f& windowTransform)
 {
-    gl::enableAdditiveBlending();
+    gl::enableAlphaBlending();
     gl::color(1.0f, 1.0f, 1.0f, 0.25f);
-    glPointSize((windowTransform * Vec3f(mSamplingRadius, 1.0, 1.0)).xy().length());
+    glPointSize((windowTransform * Vec3f(samplingRadius, 1.0, 1.0)).xy().length());
 
     mModelVbo.bind();
     glEnableClientState(GL_VERTEX_ARRAY);
