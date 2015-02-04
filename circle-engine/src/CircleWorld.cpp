@@ -223,9 +223,11 @@ void CircleWorld::updateSpinners(midi::Hub& midi)
                 static int temp[8];
                 temp[msg.channel-1] = msg.byteTwo;
                 if (msg.channel == 8) {
-                    mSpinnerColorCube.add(temp[0] | (temp[1] << 8),
-                                          temp[2] | (temp[3] << 8),
-                                          temp[4] | (temp[5] << 8));
+                    float r = temp[0] | (temp[1] << 7);
+                    float g = temp[2] | (temp[3] << 7);
+                    float b = temp[4] | (temp[5] << 7);
+                    float c = temp[6] | (temp[7] << 7);
+                    mSpinnerColorCube.add(r, g, b);
                 }
 
             } else {
