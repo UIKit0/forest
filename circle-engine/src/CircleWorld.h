@@ -9,13 +9,15 @@
 #include "cinder/Triangulate.h"
 #include "cinder/TriMesh.h"
 #include "Box2D/Box2D.h"
+#include "MidiHub.h"
+#include "ColorCubePoints.h"
 #include <string>
 
 class CircleWorld {
 public:
     void setup(ci::svg::DocRef doc);
     void initColors(ci::ImageSourceRef colorTable);
-    void update();
+    void update(ci::midi::Hub& midi);
     
     const ci::svg::Node& findNode(const std::string &name);
     ci::Shape2d findShape(const std::string &name);
@@ -37,6 +39,8 @@ public:
     unsigned            mNewParticleRate;
     float               mNewParticleLifetime;
     bool                mMoveSpinnersRandomly;
+    
+    ColorCubePoints     mSpinnerColorCube;
     
     std::vector<ci::Vec2f>      mOriginPoints;
     ci::Rectf                   mOriginBounds;
@@ -76,6 +80,6 @@ private:
     void setupSpinner(const ci::Shape2d& shape);
     void addFixturesForMesh(b2Body *body, ci::TriMesh2d &mesh, float density = 1.0f);
     void newParticle();
-    void updateSpinners();
+    void updateSpinners(ci::midi::Hub& midi);
     void applyGridForces();
 };

@@ -57,6 +57,8 @@ Scale = function (modelWidthInFeet)
     this.spinnerWidthMin = this.inToUnits * 3.0;
     this.spinnerCurveRatio = 3.0;
     this.spinnerGap = this.inToUnits * 1/8.0;
+    this.spinnerStickerOuterRadius = this.spinnerWidthMin/2 - this.inToUnits / 16.0;
+    this.spinnerStickerInnerRadius = this.drillSpinnerMountRadius + this.inToUnits / 4.0;
 
     // Distance to keep LED strips from small dots, to avoid glare.
     this.topLayerThickness = 0.5 * this.inToUnits;
@@ -804,4 +806,78 @@ MakeActualSizePage = function (item, scale)
     var layer = new Layer(world);
     layer.activate();
     return layer;
+}
+
+
+Sticker = function ( scale )
+{
+    this.scale = scale;
+    this.center = new Point(0, 0);
+    this.dpi = 72;
+
+    this.drawAlignmentMarks = function ()
+    {
+        var overhang = this.scale.inToUnits / 8.0;
+        return new Group(
+            new Path.Line({
+                from: new Point(0, this.scale.spinnerStickerOuterRadius + overhang),
+                to: new Point(0, -this.scale.spinnerStickerOuterRadius - overhang),
+                strokeWidth: 2.0,
+                strokeColor: new Color(0,0,0,0.5),
+                strokeCap: 'round',
+            }),
+            new Path.Line({
+                from: new Point(this.scale.spinnerStickerOuterRadius + overhang, 0),
+                to: new Point(-this.scale.spinnerStickerOuterRadius - overhang, 0),
+                strokeWidth: 0.5,
+                strokeColor: new Color(0,0,0,0.5),
+                strokeCap: 'round',
+            })
+        );
+    }
+
+    this.draw = function ()
+    {
+        var outer = new Path.Circle(this.center, this.scale.spinnerStickerOuterRadius);
+        var inner = new Path.Circle(this.center, this.scale.spinnerStickerInnerRadius);
+        var mask = outer.subtract(inner);
+        var pattern = outer.rasterize();
+
+        var pixelWidth = 0|(this.dpi * outer.bounds.width * this.scale.unitsToIn);
+        var pixelHeight = 0|(this.dpi * outer.bounds.height * this.scale.unitsToIn);
+        console.log(pixelWidth + "x" + pixelHeight + " image");
+
+        pattern.setSize(pixelWidth, pixelHeight);
+        pattern.scale(1.0 / this.dpi / this.scale.unitsToIn);
+
+        mask.strokeWidth = 1.0;
+        mask.strokeColor = 'black';
+
+        for (var y = 0; y < pixelHeight; y++) {
+            for (var x = 0; x < pixelWidth; x++) {
+                
+                var nx = x / (pattern.width - 1);
+                var ny = y / (pattern.height - 1);
+                var angle = Math.atan2(ny - 0.5, nx - 0.5);
+
+                var bright = 0.5;
+                var contrast = 0.5;
+
+                var p0 = Math.cos(angle * 2);
+                var p1 = Math.cos(angle * 2 + Math.PI/2);
+                var p2 = Math.cos(angle * 2 - Math.PI/2);
+
+                var r = bright + contrast * p0;
+                var g = bright + contrast * p1;
+                var b = bright + contrast * p2;
+
+                pattern.setPixel(x, y, new Color(r,g,b));
+            }
+        }
+
+        var group = new Group(mask, pattern, mask.clone());
+        group.clipped = true;
+
+        return group;
+    }
 }

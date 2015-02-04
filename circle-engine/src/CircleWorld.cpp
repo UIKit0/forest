@@ -186,9 +186,9 @@ void CircleWorld::addFixturesForMesh(b2Body *body, ci::TriMesh2d &mesh, float de
     }
 }
 
-void CircleWorld::update()
+void CircleWorld::update(ci::midi::Hub& midi)
 {
-    updateSpinners();
+    updateSpinners(midi);
 
     for (unsigned i = 0; i < mNewParticleRate; i++) {
         newParticle();
@@ -204,7 +204,7 @@ void CircleWorld::update()
     mUpdatedSinceLastDraw = true;
 }
 
-void CircleWorld::updateSpinners()
+void CircleWorld::updateSpinners(midi::Hub& midi)
 {
     if (mMoveSpinnersRandomly) {
         Perlin p(4, 0);
@@ -212,6 +212,27 @@ void CircleWorld::updateSpinners()
             b2Body *spinner = mSpinnerBodies[i];
             float angle = p.fBm(mStepNumber * 0.002, i) * 50.0;
             spinner->SetTransform(spinner->GetPosition(), angle);
+        }
+
+    } else {
+        ci::midi::Message msg;
+        while (midi.getNextMessage(&msg)) {
+
+            if (msg.channel >= 1 && msg.channel <= 8 && msg.byteOne == 0x0a) {
+                // Color cube debug message
+                static int temp[8];
+                temp[msg.channel-1] = msg.byteTwo;
+                if (msg.channel == 8) {
+                    mSpinnerColorCube.add(temp[0] | (temp[1] << 8),
+                                          temp[2] | (temp[3] << 8),
+                                          temp[4] | (temp[5] << 8));
+                }
+
+            } else {
+                // Other unhandled message
+                printf("[midi] port=%d ch=%d type=%02x value=%02x\n",
+                       msg.port, msg.channel, msg.byteOne, msg.byteTwo);
+            }
         }
     }
 }

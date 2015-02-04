@@ -70,6 +70,11 @@
 		751542E01A74B7A60012009D /* b2VoronoiDiagram.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 751542A61A74B7A60012009D /* b2VoronoiDiagram.cpp */; };
 		751542E11A74B7A60012009D /* b2Rope.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 751542A91A74B7A60012009D /* b2Rope.cpp */; };
 		751542E41A75D5000012009D /* CircleWorld.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 751542E21A75D5000012009D /* CircleWorld.cpp */; };
+		755B62C21A81E4F2008FF892 /* MidiHub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 755B62B81A81E4F2008FF892 /* MidiHub.cpp */; };
+		755B62C31A81E4F2008FF892 /* MidiIn.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 755B62BA1A81E4F2008FF892 /* MidiIn.cpp */; };
+		755B62C41A81E4F2008FF892 /* MidiMessage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 755B62BC1A81E4F2008FF892 /* MidiMessage.cpp */; };
+		755B62C51A81E4F2008FF892 /* RtMidi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 755B62C01A81E4F2008FF892 /* RtMidi.cpp */; };
+		755B62C71A81EBBF008FF892 /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 755B62C61A81EBBF008FF892 /* CoreMIDI.framework */; };
 		756E5C771A77FC59008EA93E /* colors.png in Resources */ = {isa = PBXBuildFile; fileRef = 756E5C731A77FC59008EA93E /* colors.png */; };
 		756E5C7A1A77FC59008EA93E /* world.svg in Resources */ = {isa = PBXBuildFile; fileRef = 756E5C761A77FC59008EA93E /* world.svg */; };
 		756E5C7D1A780642008EA93E /* ParticleRender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 756E5C7B1A780642008EA93E /* ParticleRender.cpp */; };
@@ -77,6 +82,7 @@
 		756E5C831A780C11008EA93E /* particle.pass1.glslv in Resources */ = {isa = PBXBuildFile; fileRef = 756E5C7F1A780C11008EA93E /* particle.pass1.glslv */; };
 		756E5C841A780C11008EA93E /* particle.pass2.glslf in Resources */ = {isa = PBXBuildFile; fileRef = 756E5C801A780C11008EA93E /* particle.pass2.glslf */; };
 		756E5C851A780C11008EA93E /* particle.pass2.glslv in Resources */ = {isa = PBXBuildFile; fileRef = 756E5C811A780C11008EA93E /* particle.pass2.glslv */; };
+		75D4A4611A81F70800B533EE /* ColorCubePoints.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 75D4A45F1A81F70800B533EE /* ColorCubePoints.cpp */; };
 		75DF8D7C1A788D40000E5A8E /* OPCClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 75DF8D7B1A788D40000E5A8E /* OPCClient.cpp */; };
 		75DF8DA11A788E00000E5A8E /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 75DF8D7E1A788E00000E5A8E /* .gitignore */; };
 		75DF8DA21A788E00000E5A8E /* ClientInterface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 75DF8D811A788E00000E5A8E /* ClientInterface.cpp */; };
@@ -230,6 +236,19 @@
 		751542AA1A74B7A60012009D /* b2Rope.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = b2Rope.h; sourceTree = "<group>"; };
 		751542E21A75D5000012009D /* CircleWorld.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CircleWorld.cpp; path = ../src/CircleWorld.cpp; sourceTree = "<group>"; };
 		751542E31A75D5000012009D /* CircleWorld.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CircleWorld.h; path = ../src/CircleWorld.h; sourceTree = "<group>"; };
+		755B62B61A81E4F2008FF892 /* MidiConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiConstants.h; sourceTree = "<group>"; };
+		755B62B71A81E4F2008FF892 /* MidiExceptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiExceptions.h; sourceTree = "<group>"; };
+		755B62B81A81E4F2008FF892 /* MidiHub.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MidiHub.cpp; sourceTree = "<group>"; };
+		755B62B91A81E4F2008FF892 /* MidiHub.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiHub.h; sourceTree = "<group>"; };
+		755B62BA1A81E4F2008FF892 /* MidiIn.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MidiIn.cpp; sourceTree = "<group>"; };
+		755B62BB1A81E4F2008FF892 /* MidiIn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiIn.h; sourceTree = "<group>"; };
+		755B62BC1A81E4F2008FF892 /* MidiMessage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MidiMessage.cpp; sourceTree = "<group>"; };
+		755B62BD1A81E4F2008FF892 /* MidiMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiMessage.h; sourceTree = "<group>"; };
+		755B62BE1A81E4F2008FF892 /* MidiOut.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiOut.h; sourceTree = "<group>"; };
+		755B62BF1A81E4F2008FF892 /* RtError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RtError.h; sourceTree = "<group>"; };
+		755B62C01A81E4F2008FF892 /* RtMidi.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RtMidi.cpp; sourceTree = "<group>"; };
+		755B62C11A81E4F2008FF892 /* RtMidi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RtMidi.h; sourceTree = "<group>"; };
+		755B62C61A81EBBF008FF892 /* CoreMIDI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMIDI.framework; path = System/Library/Frameworks/CoreMIDI.framework; sourceTree = SDKROOT; };
 		756E5C731A77FC59008EA93E /* colors.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = colors.png; sourceTree = "<group>"; };
 		756E5C761A77FC59008EA93E /* world.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = world.svg; sourceTree = "<group>"; };
 		756E5C7B1A780642008EA93E /* ParticleRender.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ParticleRender.cpp; path = ../src/ParticleRender.cpp; sourceTree = "<group>"; };
@@ -238,6 +257,8 @@
 		756E5C7F1A780C11008EA93E /* particle.pass1.glslv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = particle.pass1.glslv; sourceTree = "<group>"; };
 		756E5C801A780C11008EA93E /* particle.pass2.glslf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = particle.pass2.glslf; sourceTree = "<group>"; };
 		756E5C811A780C11008EA93E /* particle.pass2.glslv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = particle.pass2.glslv; sourceTree = "<group>"; };
+		75D4A45F1A81F70800B533EE /* ColorCubePoints.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ColorCubePoints.cpp; path = ../src/ColorCubePoints.cpp; sourceTree = "<group>"; };
+		75D4A4601A81F70800B533EE /* ColorCubePoints.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ColorCubePoints.h; path = ../src/ColorCubePoints.h; sourceTree = "<group>"; };
 		75DF8D7A1A788D3B000E5A8E /* OPCClient.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OPCClient.h; path = ../src/OPCClient.h; sourceTree = "<group>"; };
 		75DF8D7B1A788D40000E5A8E /* OPCClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OPCClient.cpp; path = ../src/OPCClient.cpp; sourceTree = "<group>"; };
 		75DF8D7E1A788E00000E5A8E /* .gitignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
@@ -302,6 +323,7 @@
 				00B784B30FF439BC000DE1D7 /* Accelerate.framework in Frameworks */,
 				00B784B40FF439BC000DE1D7 /* AudioToolbox.framework in Frameworks */,
 				00B784B50FF439BC000DE1D7 /* AudioUnit.framework in Frameworks */,
+				755B62C71A81EBBF008FF892 /* CoreMIDI.framework in Frameworks */,
 				00B784B60FF439BC000DE1D7 /* CoreAudio.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -312,6 +334,7 @@
 		01B97315FEAEA392516A2CEA /* Blocks */ = {
 			isa = PBXGroup;
 			children = (
+				755B62B41A81E4F2008FF892 /* Cinder-MIDI */,
 				75DF8DB41A797A66000E5A8E /* Cinder-AppNap */,
 				75DF8D7D1A788E00000E5A8E /* Cinder-Asio */,
 				7515422E1A74B7A60012009D /* Box2D */,
@@ -322,6 +345,7 @@
 		080E96DDFE201D6D7F000001 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				75D4A45F1A81F70800B533EE /* ColorCubePoints.cpp */,
 				75DF8DAD1A788FA7000E5A8E /* FadecandyGL.cpp */,
 				75DF8D7B1A788D40000E5A8E /* OPCClient.cpp */,
 				D37DA78CBBF64CAAB6E7E9AF /* CircleEngineApp.cpp */,
@@ -334,6 +358,7 @@
 		1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				755B62C61A81EBBF008FF892 /* CoreMIDI.framework */,
 				00B784AF0FF439BC000DE1D7 /* Accelerate.framework */,
 				00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */,
 				00B784B10FF439BC000DE1D7 /* AudioUnit.framework */,
@@ -385,6 +410,7 @@
 				751542E31A75D5000012009D /* CircleWorld.h */,
 				756E5C7C1A780642008EA93E /* ParticleRender.h */,
 				7C98B10AF0FB40A49AD3EA7C /* Resources.h */,
+				75D4A4601A81F70800B533EE /* ColorCubePoints.h */,
 				F4E4F235BB32482CA9585C64 /* CircleEngine_Prefix.pch */,
 			);
 			name = Headers;
@@ -609,6 +635,34 @@
 			path = Rope;
 			sourceTree = "<group>";
 		};
+		755B62B41A81E4F2008FF892 /* Cinder-MIDI */ = {
+			isa = PBXGroup;
+			children = (
+				755B62B51A81E4F2008FF892 /* src */,
+			);
+			name = "Cinder-MIDI";
+			path = "../blocks/Cinder-MIDI";
+			sourceTree = "<group>";
+		};
+		755B62B51A81E4F2008FF892 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				755B62B61A81E4F2008FF892 /* MidiConstants.h */,
+				755B62B71A81E4F2008FF892 /* MidiExceptions.h */,
+				755B62B81A81E4F2008FF892 /* MidiHub.cpp */,
+				755B62B91A81E4F2008FF892 /* MidiHub.h */,
+				755B62BA1A81E4F2008FF892 /* MidiIn.cpp */,
+				755B62BB1A81E4F2008FF892 /* MidiIn.h */,
+				755B62BC1A81E4F2008FF892 /* MidiMessage.cpp */,
+				755B62BD1A81E4F2008FF892 /* MidiMessage.h */,
+				755B62BE1A81E4F2008FF892 /* MidiOut.h */,
+				755B62BF1A81E4F2008FF892 /* RtError.h */,
+				755B62C01A81E4F2008FF892 /* RtMidi.cpp */,
+				755B62C11A81E4F2008FF892 /* RtMidi.h */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
 		756E5C721A77FC59008EA93E /* assets */ = {
 			isa = PBXGroup;
 			children = (
@@ -821,15 +875,19 @@
 				75DF8DA61A788E00000E5A8E /* TcpClient.cpp in Sources */,
 				751542E11A74B7A60012009D /* b2Rope.cpp in Sources */,
 				751542C61A74B7A60012009D /* b2ChainAndCircleContact.cpp in Sources */,
+				755B62C31A81E4F2008FF892 /* MidiIn.cpp in Sources */,
 				751542D71A74B7A60012009D /* b2RevoluteJoint.cpp in Sources */,
 				751542D81A74B7A60012009D /* b2RopeJoint.cpp in Sources */,
 				751542D61A74B7A60012009D /* b2PulleyJoint.cpp in Sources */,
 				75DF8DC01A797A66000E5A8E /* TODO.md in Sources */,
 				75DF8DA31A788E00000E5A8E /* DispatcherInterface.cpp in Sources */,
 				8685E9DD25B24ED3BA384259 /* CircleEngineApp.cpp in Sources */,
+				755B62C51A81E4F2008FF892 /* RtMidi.cpp in Sources */,
 				751542D91A74B7A60012009D /* b2WeldJoint.cpp in Sources */,
+				755B62C21A81E4F2008FF892 /* MidiHub.cpp in Sources */,
 				75DF8DBE1A797A66000E5A8E /* README.md in Sources */,
 				751542D51A74B7A60012009D /* b2PrismaticJoint.cpp in Sources */,
+				755B62C41A81E4F2008FF892 /* MidiMessage.cpp in Sources */,
 				75DF8DA51A788E00000E5A8E /* SessionInterface.cpp in Sources */,
 				751542D11A74B7A60012009D /* b2GearJoint.cpp in Sources */,
 				751542D21A74B7A60012009D /* b2Joint.cpp in Sources */,
@@ -845,6 +903,7 @@
 				75DF8DA41A788E00000E5A8E /* ServerInterface.cpp in Sources */,
 				751542BC1A74B7A60012009D /* b2StackAllocator.cpp in Sources */,
 				751542CD1A74B7A60012009D /* b2PolygonAndCircleContact.cpp in Sources */,
+				75D4A4611A81F70800B533EE /* ColorCubePoints.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -913,6 +972,7 @@
 				CLANG_USE_OPTIMIZATION_PROFILE = NO;
 				GCC_FAST_MATH = YES;
 				GCC_OPTIMIZATION_LEVEL = fast;
+				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = __MACOSX_CORE__;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
@@ -937,6 +997,7 @@
 				CLANG_USE_OPTIMIZATION_PROFILE = NO;
 				GCC_FAST_MATH = YES;
 				GCC_OPTIMIZATION_LEVEL = fast;
+				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = __MACOSX_CORE__;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
