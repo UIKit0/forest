@@ -10,6 +10,7 @@
 #include "cinder/TriMesh.h"
 #include "Box2D/Box2D.h"
 #include "MidiHub.h"
+#include "ColorCubePoints.h"
 #include <string>
 
 class CircleWorld {
@@ -38,6 +39,8 @@ public:
     unsigned            mNewParticleRate;
     float               mNewParticleLifetime;
     bool                mMoveSpinnersRandomly;
+    
+    ColorCubePoints     mSpinnerColorCube;
     
     std::vector<ci::Vec2f>      mOriginPoints;
     ci::Rectf                   mOriginBounds;

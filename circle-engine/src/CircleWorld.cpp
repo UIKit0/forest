@@ -217,19 +217,21 @@ void CircleWorld::updateSpinners(midi::Hub& midi)
     } else {
         ci::midi::Message msg;
         while (midi.getNextMessage(&msg)) {
-            printf("[midi] port=%d ch=%d type=%02x value=%02x\n",
-                   msg.port, msg.channel, msg.byteOne, msg.byteTwo);
 
-            static int temp[8];
             if (msg.channel >= 1 && msg.channel <= 8 && msg.byteOne == 0x0a) {
+                // Color cube debug message
+                static int temp[8];
                 temp[msg.channel-1] = msg.byteTwo;
                 if (msg.channel == 8) {
-                    printf("temp,%d,%d,%d,%d\n",
-                           temp[0] | (temp[1] << 8),
-                           temp[2] | (temp[3] << 8),
-                           temp[4] | (temp[5] << 8),
-                           temp[6] | (temp[7] << 8));
+                    mSpinnerColorCube.add(temp[0] | (temp[1] << 8),
+                                          temp[2] | (temp[3] << 8),
+                                          temp[4] | (temp[5] << 8));
                 }
+
+            } else {
+                // Other unhandled message
+                printf("[midi] port=%d ch=%d type=%02x value=%02x\n",
+                       msg.port, msg.channel, msg.byteOne, msg.byteTwo);
             }
         }
     }

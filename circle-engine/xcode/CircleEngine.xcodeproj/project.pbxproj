@@ -82,6 +82,7 @@
 		756E5C831A780C11008EA93E /* particle.pass1.glslv in Resources */ = {isa = PBXBuildFile; fileRef = 756E5C7F1A780C11008EA93E /* particle.pass1.glslv */; };
 		756E5C841A780C11008EA93E /* particle.pass2.glslf in Resources */ = {isa = PBXBuildFile; fileRef = 756E5C801A780C11008EA93E /* particle.pass2.glslf */; };
 		756E5C851A780C11008EA93E /* particle.pass2.glslv in Resources */ = {isa = PBXBuildFile; fileRef = 756E5C811A780C11008EA93E /* particle.pass2.glslv */; };
+		75D4A4611A81F70800B533EE /* ColorCubePoints.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 75D4A45F1A81F70800B533EE /* ColorCubePoints.cpp */; };
 		75DF8D7C1A788D40000E5A8E /* OPCClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 75DF8D7B1A788D40000E5A8E /* OPCClient.cpp */; };
 		75DF8DA11A788E00000E5A8E /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 75DF8D7E1A788E00000E5A8E /* .gitignore */; };
 		75DF8DA21A788E00000E5A8E /* ClientInterface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 75DF8D811A788E00000E5A8E /* ClientInterface.cpp */; };
@@ -256,6 +257,8 @@
 		756E5C7F1A780C11008EA93E /* particle.pass1.glslv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = particle.pass1.glslv; sourceTree = "<group>"; };
 		756E5C801A780C11008EA93E /* particle.pass2.glslf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = particle.pass2.glslf; sourceTree = "<group>"; };
 		756E5C811A780C11008EA93E /* particle.pass2.glslv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = particle.pass2.glslv; sourceTree = "<group>"; };
+		75D4A45F1A81F70800B533EE /* ColorCubePoints.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ColorCubePoints.cpp; path = ../src/ColorCubePoints.cpp; sourceTree = "<group>"; };
+		75D4A4601A81F70800B533EE /* ColorCubePoints.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ColorCubePoints.h; path = ../src/ColorCubePoints.h; sourceTree = "<group>"; };
 		75DF8D7A1A788D3B000E5A8E /* OPCClient.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OPCClient.h; path = ../src/OPCClient.h; sourceTree = "<group>"; };
 		75DF8D7B1A788D40000E5A8E /* OPCClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OPCClient.cpp; path = ../src/OPCClient.cpp; sourceTree = "<group>"; };
 		75DF8D7E1A788E00000E5A8E /* .gitignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
@@ -342,6 +345,7 @@
 		080E96DDFE201D6D7F000001 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				75D4A45F1A81F70800B533EE /* ColorCubePoints.cpp */,
 				75DF8DAD1A788FA7000E5A8E /* FadecandyGL.cpp */,
 				75DF8D7B1A788D40000E5A8E /* OPCClient.cpp */,
 				D37DA78CBBF64CAAB6E7E9AF /* CircleEngineApp.cpp */,
@@ -406,6 +410,7 @@
 				751542E31A75D5000012009D /* CircleWorld.h */,
 				756E5C7C1A780642008EA93E /* ParticleRender.h */,
 				7C98B10AF0FB40A49AD3EA7C /* Resources.h */,
+				75D4A4601A81F70800B533EE /* ColorCubePoints.h */,
 				F4E4F235BB32482CA9585C64 /* CircleEngine_Prefix.pch */,
 			);
 			name = Headers;
@@ -898,6 +903,7 @@
 				75DF8DA41A788E00000E5A8E /* ServerInterface.cpp in Sources */,
 				751542BC1A74B7A60012009D /* b2StackAllocator.cpp in Sources */,
 				751542CD1A74B7A60012009D /* b2PolygonAndCircleContact.cpp in Sources */,
+				75D4A4611A81F70800B533EE /* ColorCubePoints.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -51,6 +51,10 @@ private:
     unsigned                    mNumParticles;
     bool                        mDrawForceGrid;
     bool                        mDrawLedBuffer;
+    bool                        mDrawLedModel;
+    bool                        mDrawSpinnerColorCube;
+    bool                        mDrawObstacles;
+    bool                        mDrawParticles;
 };
 
 void CircleEngineApp::prepareSettings( Settings *settings )
@@ -84,7 +88,11 @@ void CircleEngineApp::setup()
     mParams->addParam("Particle brightness", &mParticleRender.mBrightness).min(0.f).max(5.f).step(0.01f);
     mParams->addParam("Spin randomly", &mWorld.mMoveSpinnersRandomly);
     mParams->addParam("Draw force grid", &mDrawForceGrid);
+    mParams->addParam("Draw LED model", &mDrawLedModel);
     mParams->addParam("Draw LED buffer", &mDrawLedBuffer);
+    mParams->addParam("Draw obstacles", &mDrawObstacles);
+    mParams->addParam("Draw particles", &mDrawParticles);
+    mParams->addParam("Show color cube test", &mDrawSpinnerColorCube);
     mParams->addParam("LED sampling radius", &mFadecandy.samplingRadius).min(0.f).max(500.f).step(0.1f);
     mParams->addParam("Particle rate", &mWorld.mNewParticleRate);
     mParams->addParam("Particle lifetime", &mWorld.mNewParticleLifetime);
@@ -97,6 +105,10 @@ void CircleEngineApp::setup()
     
     mDrawLedBuffer = false;
     mDrawForceGrid = false;
+    mDrawSpinnerColorCube = false;
+    mDrawObstacles = true;
+    mDrawLedModel = false;
+    mDrawParticles = true;
     mExiting = false;
 
     mPhysicsThread = thread(physicsThreadFn, this);
@@ -145,24 +157,30 @@ void CircleEngineApp::draw()
     mParticleRender.render(*mWorld.mParticleSystem);
 
     gl::setViewport(Area(Vec2f(0,0), getWindowSize()));
-    gl::setMatricesWindow( getWindowSize() );
+    gl::setMatricesWindowPersp( getWindowSize() );
     gl::clear(Color( 0, 0, 0 ));
 
-    gl::enable(GL_TEXTURE_2D);
-    mParticleRender.getTexture().bind();
-    gl::color(1,1,1,1);
-    gl::drawSolidRect(mParticleRect);
-    gl::disable(GL_TEXTURE_2D);
-    
+    if (mDrawParticles) {
+        gl::enable(GL_TEXTURE_2D);
+        mParticleRender.getTexture().bind();
+        gl::color(1,1,1,1);
+        gl::drawSolidRect(mParticleRect);
+        gl::disable(GL_TEXTURE_2D);
+    }
+        
     if (mDrawForceGrid) {
         drawForceGrid();
     }
 
-    drawObstacles();
-    drawSpinners();
-
-    mFadecandy.drawModel();
+    if (mDrawObstacles) {
+        drawObstacles();
+        drawSpinners();
+    }
     
+    if (mDrawLedModel) {
+        mFadecandy.drawModel();
+    }
+        
     if (mDrawLedBuffer) {
         const gl::Texture& tex = mFadecandy.getFramebufferTexture();
         float scale = 4.0;
@@ -172,6 +190,17 @@ void CircleEngineApp::draw()
         gl::draw(tex, Rectf(topLeft, topLeft + tex.getSize() * scale));
     }
 
+    if (mDrawSpinnerColorCube) {
+        float s = getWindowWidth() * 0.25f;
+        gl::pushModelView();
+        gl::translate(getWindowWidth() * 0.5f, getWindowHeight() * 0.5f, 0.0f);
+        gl::scale(Vec3f(s,s,s));
+        gl::rotate(Vec3f(-10 - getMousePos().y * 0.02, 40 + getMousePos().x * 0.01, 0));
+        gl::translate(-0.5f, -0.5f, -0.5f);
+        mWorld.mSpinnerColorCube.draw();
+        gl::popModelView();
+    }
+    
     mParams->draw();
     
     // Update LEDs from contents of the particle rendering FBO.
