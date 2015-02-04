@@ -1,5 +1,9 @@
 /*
- * Spinner firmware for Forest.
+ * Spinner "color cube test" firmware for Forest.
+ *
+ * Sends back raw colors over MIDI,
+ * for capture by CircleEngine's
+ * "Show color cube test" debug option.
  *
  * For the Teensy 2.0, in USB MIDI device mode.
  *
