@@ -14,7 +14,7 @@ public:
     ColorCubePoints(unsigned maxPoints = 64*1024);
     
     void add(ci::Vec3f v);
-    void add(int r, int g, int b);
+    void add(float r, float g, float b);
 
     void draw();
 

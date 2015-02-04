@@ -195,7 +195,7 @@ void CircleEngineApp::draw()
         gl::pushModelView();
         gl::translate(getWindowWidth() * 0.5f, getWindowHeight() * 0.5f, 0.0f);
         gl::scale(Vec3f(s,s,s));
-        gl::rotate(Vec3f(-10 - getMousePos().y * 0.02, 40 + getMousePos().x * 0.01, 0));
+        gl::rotate(Vec3f(-10 - getMousePos().y * 0.06, 40 + getMousePos().x * 0.07, 0));
         gl::translate(-0.5f, -0.5f, -0.5f);
         mWorld.mSpinnerColorCube.draw();
         gl::popModelView();

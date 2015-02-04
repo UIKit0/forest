@@ -24,7 +24,7 @@ void ColorCubePoints::add(Vec3f v)
     mNextPoint++;
 }
 
-void ColorCubePoints::add(int r, int g, int b)
+void ColorCubePoints::add(float r, float g, float b)
 {
     add(Vec3f(r,g,b));
 }
