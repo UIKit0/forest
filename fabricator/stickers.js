@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-var paper = require('paper'),
+var paper = require('./lib/paper-node.js'),
     path = require('path'),
     fs = require('fs');
 
