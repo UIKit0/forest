@@ -21,4 +21,5 @@ private:
 	SoftI2CMaster i2c;
 	Adafruit_TCS34725 sensor;
 	uint8_t controller, channel;
+    uint16_t last_r, last_g, last_b, last_c;
 };
