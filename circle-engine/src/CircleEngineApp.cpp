@@ -113,12 +113,13 @@ void CircleEngineApp::reloadColorTable()
 void CircleEngineApp::physicsThreadFn(CircleEngineApp *self)
 {
     const unsigned kStepsPerMeasurement = 10;
-
+    ci::midi::Hub midi;
+    
     while (!self->mExiting) {
         self->mPhysicsMutex.lock();
         ci::Timer stepTimer(true);
         for (unsigned i = kStepsPerMeasurement; i; i--) {
-            self->mWorld.update();
+            self->mWorld.update(midi);
         }
         self->mPhysicsHz = kStepsPerMeasurement / stepTimer.getSeconds();
         self->mPhysicsMutex.unlock();
