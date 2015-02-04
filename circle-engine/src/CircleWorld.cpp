@@ -219,7 +219,7 @@ void CircleWorld::updateSpinners(midi::Hub& midi)
         while (midi.getNextMessage(&msg)) {
 
             if (msg.channel >= 1 && msg.channel <= 8 && msg.byteOne == 0x0a) {
-                // Color cube debug message
+                // One hardcoded spinner input, for debugging color cube
                 static int temp[8];
                 temp[msg.channel-1] = msg.byteTwo;
                 if (msg.channel == 8) {
@@ -227,7 +227,7 @@ void CircleWorld::updateSpinners(midi::Hub& midi)
                     float g = temp[2] | (temp[3] << 7);
                     float b = temp[4] | (temp[5] << 7);
                     float c = temp[6] | (temp[7] << 7);
-                    mSpinnerColorCube.add(r, g, b);
+                    mSpinnerColorCube.push(r, g, b);
                 }
 
             } else {
