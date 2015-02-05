@@ -34,7 +34,8 @@ private:
     void drawForceGrid();
     void reloadColorTable();
     void clearColorCubes();
-
+    void logCurrentSpinnerAngle();
+    
     static void physicsThreadFn(CircleEngineApp *self);
     
     FadecandyGL         mFadecandy;
@@ -102,6 +103,7 @@ void CircleEngineApp::setup()
     mParams->addParam("Spin randomly", &mWorld.mMoveSpinnersRandomly);
     mParams->addParam("Show color cube test", &mDrawSpinnerColorCube).min(-1).max(40).keyDecr("[").keyIncr("]");
     mParams->addButton("Clear all color cubes", bind( &CircleEngineApp::clearColorCubes, this ), "key=q");
+    mParams->addButton("Log current spinner angle", bind( &CircleEngineApp::logCurrentSpinnerAngle, this ), "key=l");
     
     gl::disableVerticalSync();
     gl::disable(GL_DEPTH_TEST);
@@ -273,6 +275,16 @@ void CircleEngineApp::drawForceGrid()
         Vec2f force = mWorld.mForceGrid[idx];
         pos = mWorld.mForceGridExtent.getUpperLeft() + pos * mWorld.mForceGridResolution;
         gl::drawLine(pos, pos + force * 0.05);
+    }
+}
+
+void CircleEngineApp::logCurrentSpinnerAngle()
+{
+    if (mDrawSpinnerColorCube >= 0 && mDrawSpinnerColorCube < mWorld.mSpinners.size()) {
+        auto& cube = mWorld.mSpinners[mDrawSpinnerColorCube].mColorCube;
+        printf("%f\n", cube.getCurrentAngle());
+    } else {
+        printf("No spinner selected in color cube debug view\n");
     }
 }
 

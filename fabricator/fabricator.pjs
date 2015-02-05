@@ -815,6 +815,13 @@ Sticker = function ( scale )
     this.center = new Point(0, 0);
     this.dpi = 72;
 
+    this.calibrate = function (testData)
+    {
+        // List of detected RGB angles, in radians, for an arbitary
+        // number of samples evenly spaced around the circle of an uncalibrated disc.
+        this.calibrationTable = testData;
+    }
+
     this.drawAlignmentMarks = function ()
     {
         var group = new Group();
@@ -854,6 +861,42 @@ Sticker = function ( scale )
         return group;
     }
 
+    this.calibrateAngle = function (inputAngle)
+    {
+        /*
+         * Given a physical angle on the sticker (which should match the RGB detector angle),
+         * compute a corresponding angle on the reference sticker for the necessary color.
+         *
+         * This works by linear interpolation in the calibration data table.
+         * We're matching the incoming angle against the angle reported in that table.
+         */
+
+        var data = this.calibrationTable;
+        var steps = data.length;
+
+        inputAngle = inputAngle % (2 * Math.PI);
+        if (inputAngle < -Math.PI) inputAngle += Math.PI * 2;
+        if (inputAngle > Math.PI) inputAngle -= Math.PI * 2;
+
+        for (var i = 0; i < steps; i++) {
+            var a1 = data[i];
+            var a2 = data[(i+1) % steps];
+            var ia = inputAngle;
+
+            if (a2 < a1) {
+                a2 += Math.PI * 2;
+                if (ia < a1) {
+                    ia += Math.PI * 2;
+                }
+            }
+
+            var t = (ia - a1) / (a2 - a1);
+            if (t >= 0 && t < 1) {
+                return (i + t) * (2 * Math.PI) / steps;
+            }
+        }
+    }
+
     this.draw = function ()
     {
         var outer = new Path.Circle(this.center, this.scale.spinnerStickerOuterRadius);
@@ -876,14 +919,20 @@ Sticker = function ( scale )
 
                 var nx = x / (pattern.width - 1);
                 var ny = y / (pattern.height - 1);
-                var angle = -Math.atan2(ny - 0.5, nx - 0.5);
+
+                // 180 degree symmetry
+                var angle = -2.0 * Math.atan2(ny - 0.5, nx - 0.5);
+
+                if (this.calibrationTable) {
+                    angle = this.calibrateAngle(angle);
+                }
 
                 var bright = 0.5;
                 var contrast = 0.5;
 
-                var p0 = Math.cos(2*angle);
-                var p1 = Math.cos(2*angle + Math.PI*2/3) ;
-                var p2 = Math.cos(2*angle - Math.PI*2/3);
+                var p0 = Math.cos(angle);
+                var p1 = Math.cos(angle + Math.PI*2/3) ;
+                var p2 = Math.cos(angle - Math.PI*2/3);
 
                 var r = bright + contrast * p0;
                 var g = bright + contrast * p1;
