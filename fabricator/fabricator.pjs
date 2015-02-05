@@ -1,7 +1,6 @@
 Numerical.TOLERANCE = 1e-20;
 Numerical.EPSILON = 1e-24;
 
-var colorConvert = require('color-convert');
 
 Scale = function (modelWidthInFeet)
 {
@@ -856,28 +855,23 @@ Sticker = function ( scale )
 
         for (var y = 0; y < pixelHeight; y++) {
             for (var x = 0; x < pixelWidth; x++) {
-
+                
                 var nx = x / (pattern.width - 1);
                 var ny = y / (pattern.height - 1);
                 var angle = Math.atan2(ny - 0.5, nx - 0.5);
 
-                var bright = 50;
-                var contrast = 50;
+                var bright = 0.5;
+                var contrast = 0.5;
 
                 var p0 = Math.cos(angle * 2);
                 var p1 = Math.cos(angle * 2 + Math.PI/2);
                 var p2 = Math.cos(angle * 2 - Math.PI/2);
 
-                var cmyk = [
-                    bright + contrast * p0,
-                    bright + contrast * p1,
-                    bright + contrast * p2,
-                    0.0
-                ];
+                var r = bright + contrast * p0;
+                var g = bright + contrast * p1;
+                var b = bright + contrast * p2;
 
-                var rgb = colorConvert.cmyk2rgb(cmyk);
-
-                pattern.setPixel(x, y, new Color(rgb[0]/255.0, rgb[1]/255.0, rgb[2]/255.0));
+                pattern.setPixel(x, y, new Color(r,g,b));
             }
         }
 
