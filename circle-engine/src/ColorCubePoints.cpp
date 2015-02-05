@@ -63,6 +63,7 @@ void ColorCubePoints::push(float r, float g, float b)
 
 void ColorCubePoints::clear()
 {
+    mLineSolver = LineSolver();
     mPoints.clear();
 }
 
@@ -101,7 +102,8 @@ AxisAlignedBox3f ColorCubePoints::getRange()
 
 void ColorCubePoints::draw()
 {
-    gl::color(0.0f, 0.0f, 0.0f);
+    gl::enableAlphaBlending();
+    gl::color(0.0f, 0.0f, 0.0f, 0.5f);
     gl::drawCube(Vec3f(0.5f, 0.5f, 0.5f), Vec3f(1.0f, 1.0f, 1.0f));
 
     gl::color(0.4f, 0.4f, 0.7f);
@@ -129,16 +131,22 @@ void ColorCubePoints::draw()
     // Local coordinates for arbitrary endpoints on the Z axis
     Vec4f zMin(0.0f, 0.0f, range.getMin().z, 1.0f);
     Vec4f zMax(0.0f, 0.0f, range.getMax().z, 1.0f);
-    
+
+    // Convert to world coords and clamp to the AABB to keep the chart tidy
+    Ray ray((mLineSolver.localToWorld * zMin).xyz(),
+            (mLineSolver.localToWorld * (zMax - zMin)).xyz());
+    float intersections[2];
+    range.intersect(ray, intersections);
+
     // Draw a triangle between the Z axis and current point
     gl::color(1.0f, 1.0f, 1.0f);
-    gl::drawLine((mLineSolver.localToWorld * zMin).xyz(),
-                 (mLineSolver.localToWorld * zMax).xyz());
+    gl::drawLine(ray.calcPosition(intersections[0]),
+                 ray.calcPosition(intersections[1]));
     gl::color(1.0f, 0.0f, 0.0f);
-    gl::drawLine((mLineSolver.localToWorld * zMin).xyz(),
+    gl::drawLine(ray.calcPosition(intersections[0]),
                  (mLineSolver.localToWorld * local).xyz());
     gl::color(0.0f, 1.0f, 0.0f);
-    gl::drawLine((mLineSolver.localToWorld * zMax).xyz(),
+    gl::drawLine(ray.calcPosition(intersections[1]),
                  (mLineSolver.localToWorld * local).xyz());
 
     gl::popModelView();
@@ -153,11 +161,17 @@ void ColorCubePoints::drawColorPoint(const AxisAlignedBox3f& range, Vec3f p)
 
 LineSolver::LineSolver()
 {
-    // Initial solution
-    result.x0 = 0.0f;
-    result.y0 = 0.0f;
-    result.xz = 1.0f;
-    result.yz = 1.0f;
+    result.setDefault();
+    localToWorld.setToIdentity();
+    worldToLocal.setToIdentity();
+}
+
+void LineSolver::Vec::setDefault()
+{
+    x0 = 0.0f;
+    y0 = 0.0f;
+    xz = 1.0f;
+    yz = 1.0f;
 }
 
 void LineSolver::solve(vector<Vec3f> &points)
@@ -172,6 +186,13 @@ void LineSolver::solve(vector<Vec3f> &points)
     // Default tolerance: sqaure root of machine precision
     float tol = sqrt(sdpmpar(1));
 
+    // If solution is out of range, start over
+    float limit0 = 4.0f;
+    if (result.x0 < -limit0 || result.x0 > limit0 ||
+        result.y0 < -limit0 || result.y0 > limit0) {
+        result.setDefault();
+    }
+    
     // Minimize the system of equations
     slmdif1(&minFunc, &points[0], m, n,
           &result.array[0], &residuals[0],

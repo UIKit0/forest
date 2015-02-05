@@ -18,6 +18,7 @@ public:
     void solve(std::vector<ci::Vec3f> &points);
 
     struct Vec {
+        void setDefault();
         union {
             float array[4];
             struct {

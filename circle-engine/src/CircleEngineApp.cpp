@@ -201,15 +201,25 @@ void CircleEngineApp::draw()
         gl::draw(tex, Rectf(topLeft, topLeft + tex.getSize() * scale));
     }
 
-    if (mDrawSpinnerColorCube >= 0 && mDrawSpinnerColorCube <= mWorld.mSpinners.size()) {
+    if (mDrawSpinnerColorCube >= 0 && mDrawSpinnerColorCube < mWorld.mSpinners.size()) {
+        auto& cube = mWorld.mSpinners[mDrawSpinnerColorCube].mColorCube;
         float s = getWindowWidth() * 0.25f;
+
         gl::pushModelView();
         gl::translate(getWindowWidth() * 0.5f, getWindowHeight() * 0.5f, 0.0f);
         gl::scale(Vec3f(s,s,s));
         gl::rotate(Vec3f(-10 - getMousePos().y * 0.06, 40 + getMousePos().x * 0.1, 0));
         gl::translate(-0.5f, -0.5f, -0.5f);
-        mWorld.mSpinners[mDrawSpinnerColorCube].mColorCube.draw();
+        cube.draw();
         gl::popModelView();
+
+        char str[128];
+        snprintf(str, sizeof str, "Spinner #%d : %d points, angle: %.1f deg",
+                mDrawSpinnerColorCube,
+                (int)cube.getPoints().size(),
+                cube.getCurrentAngle() * 180.0 / M_PI);
+        gl::enableAlphaBlending();
+        gl::drawString(str, Vec2f(getWindowWidth() * 0.25f, getWindowHeight() * 0.7f));
     }
     
     mParams->draw();
