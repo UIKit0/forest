@@ -40,7 +40,7 @@ private:
 
 class ColorCubePoints {
 public:
-    ColorCubePoints(unsigned maxPoints = 16*1024);
+    ColorCubePoints(unsigned maxPoints = 64 * 128);
 
     void clear();
 
@@ -54,14 +54,15 @@ public:
     ci::AxisAlignedBox3f getRange();
     ci::Vec3f getCurrentPoint();
     float getCurrentAngle();
+    float getAngleForPoint(ci::Vec3f point);
     
 private:
     std::vector<ci::Vec3f> mPoints;
     ci::Vec3f mCurrentPoint;
     unsigned mMaxPoints;
-    unsigned mNextPoint;    // Cyclic
     LineSolver mLineSolver;
     
     void drawColorPoint(const ci::AxisAlignedBox3f& range, ci::Vec3f p);
+    void balance(int numParts = 64);
 };
 

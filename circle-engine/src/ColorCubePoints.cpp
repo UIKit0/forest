@@ -10,21 +10,50 @@ using namespace ci;
 using namespace std;
 
 ColorCubePoints::ColorCubePoints(unsigned maxPoints)
-    : mMaxPoints(maxPoints),
-      mNextPoint(0)
+    : mMaxPoints(maxPoints)
 {}
 
 void ColorCubePoints::push(Vec3f v)
 {
-    mNextPoint %= mMaxPoints;
-    if (mNextPoint >= mPoints.size()) {
-        mPoints.resize(mNextPoint+1);
-    }
-    mPoints[mNextPoint] = v;
-    mNextPoint++;
-    
     mCurrentPoint = v;
+    mPoints.push_back(v);
+    balance();
     mLineSolver.solve(mPoints);
+}
+
+void ColorCubePoints::balance(int numParts)
+{
+    // Divide the angle circle into numParts components,
+    // and remove the oldest points from any component
+    // that has more than its fair share.
+
+    // Count up how many points are in each part
+
+    const int maxPerPart = mMaxPoints / numParts;
+    float angleStep = 2*M_PI / numParts;
+    vector<int> counts(numParts);
+    vector<short> partId(mPoints.size());
+    fill(counts.begin(), counts.end(), 0);
+
+    for (unsigned i = 0; i < mPoints.size(); i++) {
+        // Calculate the angle only once per balance()
+        int id = getAngleForPoint(mPoints[i]) / angleStep;
+        if (id < 0) id += numParts;
+        assert(id >= 0 && id < numParts);
+        partId[i] = id;
+        counts[id]++;
+    }
+
+    // Second pass, clean up excess points
+
+    unsigned dst = 0;
+    for (unsigned src = 0; src < mPoints.size(); src++) {
+        int id = partId[src];
+        if (counts[id]-- <= maxPerPart) {
+            mPoints[dst++] = mPoints[src];
+        }
+    }
+    mPoints.resize(dst);
 }
 
 void ColorCubePoints::push(float r, float g, float b)
@@ -35,7 +64,6 @@ void ColorCubePoints::push(float r, float g, float b)
 void ColorCubePoints::clear()
 {
     mPoints.clear();
-    mNextPoint = 0;
 }
 
 vector<Vec3f>& ColorCubePoints::getPoints()
@@ -50,7 +78,12 @@ ci::Vec3f ColorCubePoints::getCurrentPoint()
 
 float ColorCubePoints::getCurrentAngle()
 {
-    Vec4f local = mLineSolver.worldToLocal * getCurrentPoint();
+    return getAngleForPoint(getCurrentPoint());
+}
+
+float ColorCubePoints::getAngleForPoint(Vec3f point)
+{
+    Vec4f local = mLineSolver.worldToLocal * point;
     return atan2f(local.y, local.x);
 }
 
