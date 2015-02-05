@@ -18,6 +18,7 @@ public:
     void setup(ci::svg::DocRef doc);
     void initColors(ci::ImageSourceRef colorTable);
     void update(ci::midi::Hub& midi);
+    void clearColorCubes();
     
     const ci::svg::Node& findNode(const std::string &name);
     ci::Shape2d findShape(const std::string &name);

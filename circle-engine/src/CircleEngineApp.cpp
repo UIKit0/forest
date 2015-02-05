@@ -33,7 +33,8 @@ private:
     void drawSpinners();
     void drawForceGrid();
     void reloadColorTable();
-    
+    void clearColorCubes();
+
     static void physicsThreadFn(CircleEngineApp *self);
     
     FadecandyGL         mFadecandy;
@@ -83,21 +84,24 @@ void CircleEngineApp::setup()
     mParams->addParam("FPS", &mAverageFps, "readonly=true");
     mParams->addParam("Physics Hz", &mPhysicsHz, "readonly=true");
     mParams->addParam("# particles", &mNumParticles, "readonly=true");
+    mParams->addSeparator();
     mParams->addParam("Current table row", &mWorld.mCurrentTableRow, "readonly=true");
+    mParams->addButton("Reload color table", bind( &CircleEngineApp::reloadColorTable, this ), "key=c");
     mParams->addSeparator();
     mParams->addParam("Particle brightness", &mParticleRender.mBrightness).min(0.f).max(5.f).step(0.01f);
-    mParams->addParam("Spin randomly", &mWorld.mMoveSpinnersRandomly);
+    mParams->addParam("Particle rate", &mWorld.mNewParticleRate);
+    mParams->addParam("Particle lifetime", &mWorld.mNewParticleLifetime);
+    mParams->addParam("LED sampling radius", &mFadecandy.samplingRadius).min(0.f).max(500.f).step(0.1f);
+    mParams->addSeparator();
     mParams->addParam("Draw force grid", &mDrawForceGrid);
     mParams->addParam("Draw LED model", &mDrawLedModel);
     mParams->addParam("Draw LED buffer", &mDrawLedBuffer);
     mParams->addParam("Draw obstacles", &mDrawObstacles);
     mParams->addParam("Draw particles", &mDrawParticles);
-    mParams->addParam("Show color cube test", &mDrawSpinnerColorCube).min(-1).max(40).keyDecr("[").keyIncr("]");
-    mParams->addParam("LED sampling radius", &mFadecandy.samplingRadius).min(0.f).max(500.f).step(0.1f);
-    mParams->addParam("Particle rate", &mWorld.mNewParticleRate);
-    mParams->addParam("Particle lifetime", &mWorld.mNewParticleLifetime);
     mParams->addSeparator();
-    mParams->addButton("Reload color table", bind( &CircleEngineApp::reloadColorTable, this ), "key=c");
+    mParams->addParam("Spin randomly", &mWorld.mMoveSpinnersRandomly);
+    mParams->addParam("Show color cube test", &mDrawSpinnerColorCube).min(-1).max(40).keyDecr("[").keyIncr("]");
+    mParams->addButton("Clear all color cubes", bind( &CircleEngineApp::clearColorCubes, this ), "key=q");
     
     gl::disableVerticalSync();
     gl::disable(GL_DEPTH_TEST);
@@ -119,6 +123,13 @@ void CircleEngineApp::reloadColorTable()
     // Do this with the lock held, since we're reallocating the image
     mPhysicsMutex.lock();
     mWorld.initColors(loadImage(loadAsset("colors.png")));
+    mPhysicsMutex.unlock();
+}
+
+void CircleEngineApp::clearColorCubes()
+{
+    mPhysicsMutex.lock();
+    mWorld.clearColorCubes();
     mPhysicsMutex.unlock();
 }
 

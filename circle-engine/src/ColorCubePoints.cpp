@@ -32,6 +32,12 @@ void ColorCubePoints::push(float r, float g, float b)
     push(Vec3f(r,g,b));
 }
 
+void ColorCubePoints::clear()
+{
+    mPoints.clear();
+    mNextPoint = 0;
+}
+
 vector<Vec3f>& ColorCubePoints::getPoints()
 {
     return mPoints;

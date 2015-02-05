@@ -41,7 +41,9 @@ private:
 class ColorCubePoints {
 public:
     ColorCubePoints(unsigned maxPoints = 16*1024);
-    
+
+    void clear();
+
     void push(ci::Vec3f v);
     void push(float r, float g, float b);
     

@@ -253,13 +253,18 @@ void CircleWorld::Spinner::handleMidi(const midi::Message &msg)
     }
 }
 
-
 void CircleWorld::Spinner::updateAngle()
 {
     float sensorAngle = mColorCube.getCurrentAngle();
     mBody->SetTransform(mBody->GetPosition(), sensorAngle);
 }
 
+void CircleWorld::clearColorCubes()
+{
+    for (unsigned i = 0; i < mSpinners.size(); i++) {
+        mSpinners[i].mColorCube.clear();
+    }
+}
 
 void CircleWorld::applyGridForces()
 {
