@@ -264,15 +264,15 @@ void CircleEngineApp::drawObstacles()
 
 void CircleEngineApp::drawFrontLayer()
 {
-    gl::disableAlphaBlending();
+    gl::enableAlphaBlending();
     gl::color(0.f, 0.f, 0.f);
     gl::draw(mFrontLayerVbo);
 }
 
 void CircleEngineApp::drawSpinners()
 {
-    gl::disableAlphaBlending();
-    gl::color(0.2f, 0.2f, 0.2f);
+    gl::enableAlphaBlending();
+    gl::color(0.1f, 0.1f, 0.1f);
     
     for (unsigned i = 0; i < mWorld.mSpinners.size(); i++) {
         b2Body *body = mWorld.mSpinners[i].mBody;
