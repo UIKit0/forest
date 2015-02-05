@@ -44,6 +44,7 @@ public:
     
     ci::svg::DocRef     mSvg;
     ci::TriMesh2d       mObstacles;
+    ci::TriMesh2d       mFrontLayer;
     ci::Surface         mColorTable;
     ci::Rand            mRand;
     float               mTriangulatePrecision;
@@ -84,6 +85,7 @@ public:
 
 private:
     void setupObstacles(const ci::Shape2d& shape);
+    void setupFrontLayer(const ci::Shape2d& shape);
     void setupStrands(const ci::Shape2d& shape);
     void setupSpinner(const ci::Shape2d& shape);
     void addFixturesForMesh(b2Body *body, ci::TriMesh2d &mesh, float density = 1.0f);

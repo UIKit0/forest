@@ -30,6 +30,7 @@ public:
 
 private:
     void drawObstacles();
+    void drawFrontLayer();
     void drawSpinners();
     void drawForceGrid();
     void reloadColorTable();
@@ -46,6 +47,7 @@ private:
     ParticleRender      mParticleRender;
     Rectf               mParticleRect;
     gl::VboMeshRef      mObstaclesVbo;
+    gl::VboMeshRef      mFrontLayerVbo;
     
     params::InterfaceGlRef      mParams;
     float                       mAverageFps;
@@ -57,6 +59,7 @@ private:
     int                         mDrawSpinnerColorCube;
     bool                        mDrawObstacles;
     bool                        mDrawParticles;
+    bool                        mDrawFrontLayer;
 };
 
 void CircleEngineApp::prepareSettings( Settings *settings )
@@ -71,6 +74,7 @@ void CircleEngineApp::setup()
 
     mWorld.setup(svg::Doc::create(loadAsset("world.svg")));
     mObstaclesVbo = gl::VboMesh::create(mWorld.mObstacles);
+    mFrontLayerVbo = gl::VboMesh::create(mWorld.mFrontLayer);
     reloadColorTable();
 
     mFadecandy.setup(*this);
@@ -94,11 +98,12 @@ void CircleEngineApp::setup()
     mParams->addParam("Particle lifetime", &mWorld.mNewParticleLifetime);
     mParams->addParam("LED sampling radius", &mFadecandy.samplingRadius).min(0.f).max(500.f).step(0.1f);
     mParams->addSeparator();
-    mParams->addParam("Draw force grid", &mDrawForceGrid);
-    mParams->addParam("Draw LED model", &mDrawLedModel);
-    mParams->addParam("Draw LED buffer", &mDrawLedBuffer);
-    mParams->addParam("Draw obstacles", &mDrawObstacles);
-    mParams->addParam("Draw particles", &mDrawParticles);
+    mParams->addParam("Draw force grid", &mDrawForceGrid, "key=1");
+    mParams->addParam("Draw LED model", &mDrawLedModel, "key=2");
+    mParams->addParam("Draw LED buffer", &mDrawLedBuffer, "key=3");
+    mParams->addParam("Draw obstacles", &mDrawObstacles, "key=4");
+    mParams->addParam("Draw particles", &mDrawParticles, "key=5");
+    mParams->addParam("Draw front layer", &mDrawFrontLayer, "key=6");
     mParams->addSeparator();
     mParams->addParam("Spin randomly", &mWorld.mMoveSpinnersRandomly);
     mParams->addParam("Show color cube test", &mDrawSpinnerColorCube).min(-1).max(40).keyDecr("[").keyIncr("]");
@@ -115,6 +120,7 @@ void CircleEngineApp::setup()
     mDrawObstacles = true;
     mDrawLedModel = false;
     mDrawParticles = true;
+    mDrawFrontLayer = false;
     mExiting = false;
 
     mPhysicsThread = thread(physicsThreadFn, this);
@@ -184,16 +190,23 @@ void CircleEngineApp::draw()
     if (mDrawForceGrid) {
         drawForceGrid();
     }
-
-    if (mDrawObstacles) {
-        drawObstacles();
-        drawSpinners();
-    }
     
+    if (mDrawFrontLayer) {
+        if (mDrawObstacles) {
+            drawSpinners();
+        }
+        drawFrontLayer();
+    } else {
+        if (mDrawObstacles) {
+            drawObstacles();
+            drawSpinners();
+        }
+    }
+
     if (mDrawLedModel) {
         mFadecandy.drawModel();
     }
-        
+
     if (mDrawLedBuffer) {
         const gl::Texture& tex = mFadecandy.getFramebufferTexture();
         float scale = 4.0;
@@ -249,10 +262,17 @@ void CircleEngineApp::drawObstacles()
     gl::disableWireframe();
 }
 
+void CircleEngineApp::drawFrontLayer()
+{
+    gl::disableAlphaBlending();
+    gl::color(0.f, 0.f, 0.f);
+    gl::draw(mFrontLayerVbo);
+}
+
 void CircleEngineApp::drawSpinners()
 {
     gl::disableAlphaBlending();
-    gl::color(0.33f, 0.33f, 0.33f);
+    gl::color(0.2f, 0.2f, 0.2f);
     
     for (unsigned i = 0; i < mWorld.mSpinners.size(); i++) {
         b2Body *body = mWorld.mSpinners[i].mBody;

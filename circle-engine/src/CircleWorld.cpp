@@ -74,6 +74,7 @@ void CircleWorld::setup(svg::DocRef doc)
     mMoveSpinnersRandomly = false;
     
     setupObstacles(findShape("obstacles"));
+    setupFrontLayer(findShape("front-layer"));
     setupStrands(findShape("strands"));
 
     for (int index = 0;; index++) {
@@ -116,6 +117,13 @@ void CircleWorld::setupObstacles(const Shape2d& shape)
     b2BodyDef groundBodyDef;
     b2Body *ground = mB2World->CreateBody(&groundBodyDef);
     addFixturesForMesh(ground, mObstacles, 0.0f);
+}
+
+void CircleWorld::setupFrontLayer(const Shape2d& shape)
+{
+    // High-res triangulated mesh in a VBO
+    Triangulator triangulator(shape);
+    mFrontLayer = triangulator.calcMesh();
 }
 
 void CircleWorld::setupStrands(const Shape2d& shape)
