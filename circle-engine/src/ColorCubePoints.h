@@ -41,7 +41,7 @@ private:
 
 class ColorCubePoints {
 public:
-    ColorCubePoints(unsigned maxPoints = 64 * 128);
+    ColorCubePoints(unsigned maxPoints = 32 * 16);
 
     void clear();
 
@@ -64,6 +64,6 @@ private:
     LineSolver mLineSolver;
     
     void drawColorPoint(const ci::AxisAlignedBox3f& range, ci::Vec3f p);
-    void balance(int numParts = 64);
+    void balance(int numParts = 16);
 };
 
