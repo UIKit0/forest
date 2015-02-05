@@ -153,19 +153,19 @@ void CircleWorld::setupStrands(const Shape2d& shape)
 
 void CircleWorld::setupSpinner(const ci::Shape2d& shape)
 {
-    Vec2f center = shape.calcPreciseBoundingBox().getCenter();
+    mSpinners.emplace_back();
+    Spinner &newSpinner = mSpinners.back();
 
+    Vec2f center = shape.calcPreciseBoundingBox().getCenter();
     Triangulator triangulator(shape.transformCopy(MatrixAffine2f::makeTranslate(-center)),
                               mTriangulatePrecision);
-    TriMesh2d mesh = triangulator.calcMesh();
-    mSpinnerMeshes.push_back(mesh);
+    newSpinner.mMesh = triangulator.calcMesh();
     
     b2BodyDef bodyDef;
     bodyDef.position = vecToBox(center);
 
-    b2Body *obj = mB2World->CreateBody(&bodyDef);
-    mSpinnerBodies.push_back(obj);
-    addFixturesForMesh(obj, mesh, 0.0f);
+    newSpinner.mBody = mB2World->CreateBody(&bodyDef);
+    addFixturesForMesh(newSpinner.mBody, newSpinner.mMesh, 0.0f);
 }
 
 void CircleWorld::addFixturesForMesh(b2Body *body, ci::TriMesh2d &mesh, float density)
@@ -208,36 +208,58 @@ void CircleWorld::updateSpinners(midi::Hub& midi)
 {
     if (mMoveSpinnersRandomly) {
         Perlin p(4, 0);
-        for (unsigned i = 0; i < mSpinnerBodies.size(); i++) {
-            b2Body *spinner = mSpinnerBodies[i];
+        for (unsigned i = 0; i < mSpinners.size(); i++) {
+            b2Body *spinner = mSpinners[i].mBody;
             float angle = p.fBm(mStepNumber * 0.002, i) * 50.0;
             spinner->SetTransform(spinner->GetPosition(), angle);
         }
 
     } else {
+        // Track raw colors and build a model that lets us convert to angle
         ci::midi::Message msg;
         while (midi.getNextMessage(&msg)) {
+            unsigned controller = msg.byteOne;
+            if (controller < mSpinners.size()) {
+                mSpinners[controller].handleMidi(msg);
+            }
+        }
 
-            if (msg.channel >= 1 && msg.channel <= 8 && msg.byteOne == 0x0a) {
-                // One hardcoded spinner input, for debugging color cube
-                static int temp[8];
-                temp[msg.channel-1] = msg.byteTwo;
-                if (msg.channel == 8) {
-                    float r = temp[0] | (temp[1] << 7);
-                    float g = temp[2] | (temp[3] << 7);
-                    float b = temp[4] | (temp[5] << 7);
-                    float c = temp[6] | (temp[7] << 7);
-                    mSpinnerColorCube.push(r, g, b);
-                }
+        // Update spinner velocities each physics step
+        for (unsigned i = 0; i < mSpinners.size(); i++) {
+            mSpinners[i].updateAngle();
+        }
+    }
+}
 
-            } else {
-                // Other unhandled message
-                printf("[midi] port=%d ch=%d type=%02x value=%02x\n",
-                       msg.port, msg.channel, msg.byteOne, msg.byteTwo);
+
+void CircleWorld::Spinner::handleMidi(const midi::Message &msg)
+{
+    /*
+     * Colors come in as 'control change' messages where the 'channel'
+     * cycles from 1 to 8 to deliver an 8-byte packet.
+     */
+    
+    if ((msg.status & 0xF0) == 0xB0) {
+        // Control change
+
+        if (msg.channel >= 1 && msg.channel <= 8) {
+            mColorPacket[msg.channel-1] = msg.byteTwo;
+            if (msg.channel == 8) {
+                mColorCube.push(mColorPacket[0] | (mColorPacket[1] << 7),
+                                mColorPacket[2] | (mColorPacket[3] << 7),
+                                mColorPacket[4] | (mColorPacket[5] << 7));
             }
         }
     }
 }
+
+
+void CircleWorld::Spinner::updateAngle()
+{
+    float sensorAngle = mColorCube.getCurrentAngle();
+    mBody->SetTransform(mBody->GetPosition(), sensorAngle);
+}
+
 
 void CircleWorld::applyGridForces()
 {

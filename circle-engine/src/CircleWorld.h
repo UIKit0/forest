@@ -30,6 +30,16 @@ public:
     const unsigned kStepsPerTableRow    = 100;
     const float kMinTriangleArea        = 0.1;
     static const unsigned kMaxParticles = 32768;
+
+    struct Spinner {
+        b2Body*         mBody;
+        ci::TriMesh2d   mMesh;
+        ColorCubePoints mColorCube;
+        uint8_t         mColorPacket[8];
+
+        void handleMidi(const ci::midi::Message& msg);
+        void updateAngle();
+    };
     
     ci::svg::DocRef     mSvg;
     ci::TriMesh2d       mObstacles;
@@ -40,13 +50,10 @@ public:
     float               mNewParticleLifetime;
     bool                mMoveSpinnersRandomly;
     
-    ColorCubePoints     mSpinnerColorCube;
-    
-    std::vector<ci::Vec2f>      mOriginPoints;
-    ci::Rectf                   mOriginBounds;
-    std::vector<b2Body*>        mSpinnerBodies;
-    std::vector<ci::TriMesh2d>  mSpinnerMeshes;
-    std::vector<ci::Vec2f>      mLedPoints;
+    std::vector<ci::Vec2f>  mOriginPoints;
+    ci::Rectf               mOriginBounds;
+    std::vector<ci::Vec2f>  mLedPoints;
+    std::vector<Spinner>    mSpinners;
     
     ci::Rectf               mForceGridExtent;
     float                   mForceGridResolution;

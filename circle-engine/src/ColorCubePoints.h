@@ -7,33 +7,32 @@
 #include "cinder/Cinder.h"
 #include "cinder/CinderMath.h"
 #include "cinder/Vector.h"
-#include "cinder/Ray.h"
+#include "cinder/Matrix44.h"
 #include <vector>
 
 
-class CylinderSolver {
+class LineSolver {
 public:
-    CylinderSolver();
+    LineSolver();
 
     void solve(std::vector<ci::Vec3f> &points);
 
     struct Vec {
         union {
-            float array[5];
+            float array[4];
             struct {
-                float radius;
                 float x0;
                 float y0;
                 float xz;
                 float yz;
             };
         };
-        
-        ci::Ray getRay() const;
     };
     
-    Vec result;
-
+    Vec             result;
+    ci::Matrix44f   localToWorld;
+    ci::Matrix44f   worldToLocal;
+    
 private:
     static int minFunc(void *p, int m, int n, const float *x, float *fvec, int flag);
 };
@@ -41,7 +40,7 @@ private:
 
 class ColorCubePoints {
 public:
-    ColorCubePoints(unsigned maxPoints = 64*1024);
+    ColorCubePoints(unsigned maxPoints = 16*1024);
     
     void push(ci::Vec3f v);
     void push(float r, float g, float b);
@@ -59,7 +58,8 @@ private:
     ci::Vec3f mCurrentPoint;
     unsigned mMaxPoints;
     unsigned mNextPoint;    // Cyclic
+    LineSolver mLineSolver;
     
-    CylinderSolver mCylinder;
+    void drawColorPoint(const ci::AxisAlignedBox3f& range, ci::Vec3f p);
 };
 

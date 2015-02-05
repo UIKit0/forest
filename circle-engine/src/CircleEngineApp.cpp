@@ -52,7 +52,7 @@ private:
     bool                        mDrawForceGrid;
     bool                        mDrawLedBuffer;
     bool                        mDrawLedModel;
-    bool                        mDrawSpinnerColorCube;
+    int                         mDrawSpinnerColorCube;
     bool                        mDrawObstacles;
     bool                        mDrawParticles;
 };
@@ -92,7 +92,7 @@ void CircleEngineApp::setup()
     mParams->addParam("Draw LED buffer", &mDrawLedBuffer);
     mParams->addParam("Draw obstacles", &mDrawObstacles);
     mParams->addParam("Draw particles", &mDrawParticles);
-    mParams->addParam("Show color cube test", &mDrawSpinnerColorCube);
+    mParams->addParam("Show color cube test", &mDrawSpinnerColorCube).min(-1).max(40).keyDecr("[").keyIncr("]");
     mParams->addParam("LED sampling radius", &mFadecandy.samplingRadius).min(0.f).max(500.f).step(0.1f);
     mParams->addParam("Particle rate", &mWorld.mNewParticleRate);
     mParams->addParam("Particle lifetime", &mWorld.mNewParticleLifetime);
@@ -105,7 +105,7 @@ void CircleEngineApp::setup()
     
     mDrawLedBuffer = false;
     mDrawForceGrid = false;
-    mDrawSpinnerColorCube = false;
+    mDrawSpinnerColorCube = -1;
     mDrawObstacles = true;
     mDrawLedModel = false;
     mDrawParticles = true;
@@ -190,14 +190,14 @@ void CircleEngineApp::draw()
         gl::draw(tex, Rectf(topLeft, topLeft + tex.getSize() * scale));
     }
 
-    if (mDrawSpinnerColorCube) {
+    if (mDrawSpinnerColorCube >= 0 && mDrawSpinnerColorCube <= mWorld.mSpinners.size()) {
         float s = getWindowWidth() * 0.25f;
         gl::pushModelView();
         gl::translate(getWindowWidth() * 0.5f, getWindowHeight() * 0.5f, 0.0f);
         gl::scale(Vec3f(s,s,s));
         gl::rotate(Vec3f(-10 - getMousePos().y * 0.06, 40 + getMousePos().x * 0.1, 0));
         gl::translate(-0.5f, -0.5f, -0.5f);
-        mWorld.mSpinnerColorCube.draw();
+        mWorld.mSpinners[mDrawSpinnerColorCube].mColorCube.draw();
         gl::popModelView();
     }
     
@@ -231,9 +231,9 @@ void CircleEngineApp::drawSpinners()
     gl::disableAlphaBlending();
     gl::color(0.33f, 0.33f, 0.33f);
     
-    for (unsigned i = 0; i < mWorld.mSpinnerBodies.size(); i++) {
-        b2Body *body = mWorld.mSpinnerBodies[i];
-        TriMesh2d &mesh = mWorld.mSpinnerMeshes[i];
+    for (unsigned i = 0; i < mWorld.mSpinners.size(); i++) {
+        b2Body *body = mWorld.mSpinners[i].mBody;
+        TriMesh2d &mesh = mWorld.mSpinners[i].mMesh;
 
         gl::pushMatrices();
         gl::translate(mWorld.vecFromBox(body->GetPosition()));
