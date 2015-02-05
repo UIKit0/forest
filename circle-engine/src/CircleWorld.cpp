@@ -245,9 +245,12 @@ void CircleWorld::Spinner::handleMidi(const midi::Message &msg)
         if (msg.channel >= 1 && msg.channel <= 8) {
             mColorPacket[msg.channel-1] = msg.byteTwo;
             if (msg.channel == 8) {
-                mColorCube.push(mColorPacket[0] | (mColorPacket[1] << 7),
-                                mColorPacket[2] | (mColorPacket[3] << 7),
-                                mColorPacket[4] | (mColorPacket[5] << 7));
+                const float s = 1e3;
+                float r = mColorPacket[0] | (mColorPacket[1] << 7);
+                float g = mColorPacket[2] | (mColorPacket[3] << 7);
+                float b = mColorPacket[4] | (mColorPacket[5] << 7);
+                float c = mColorPacket[6] | (mColorPacket[7] << 7);
+                mColorCube.push(r*s/c, g*s/c, b*s/c);
             }
         }
     }
