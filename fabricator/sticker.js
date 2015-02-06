@@ -4,7 +4,7 @@ var paper = require('./lib/paper-node.js'),
     path = require('path'),
     fs = require('fs');
 
-var outFile = path.resolve(__dirname, 'stickers.pdf')
+var outFile = path.resolve(__dirname, 'sticker.pdf')
 
 var canvas = new paper.Canvas(792, 612, 'pdf');
 var fab = require('./fabricator.pjs')(canvas);
