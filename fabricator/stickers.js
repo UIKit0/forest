@@ -20,10 +20,9 @@ with (fab) {
      * and apply a calibration step in order to stretch the original pattern into
      * a more circular shape.
      *
-     * To perform this test, print an uncalibrated sticker and log the angles ('l' key)
-     * the RGB detector finds for each tick mark or consistent fraction thereof.
-     *
-     * Start at the thick line, and move clockwise. (From blue-green to red, through green.)
+     * To perform this test, print the sticker_calibration.js output, expose the
+     * sensor evenly to all test squares, then log the angles recorded for each
+     * numbered square in order.
      *
      * Paste the results into the table below.
      */

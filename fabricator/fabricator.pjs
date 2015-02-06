@@ -795,6 +795,20 @@ MakeDiagramPage = function (item, scale)
 }
 
 
+MakeCalibrationPage = function (item, scale)
+{
+    var world = new Group();
+    world.addChild(item);
+    world.addChild(scale.drawGrid(item.bounds));
+
+    world.fitBounds(view.bounds.expand(-100));
+
+    var layer = new Layer(world);
+    layer.activate();
+    return layer;
+}
+
+
 MakeActualSizePage = function (item, scale)
 {
     var world = new Group();
@@ -897,6 +911,55 @@ Sticker = function ( scale )
         }
     }
 
+    this.uncalibratedColorForAngle = function (angle)
+    {
+        var bright = 0.5;
+        var contrast = 0.5;
+
+        var p0 = Math.cos(angle);
+        var p1 = Math.cos(angle + Math.PI*2/3);
+        var p2 = Math.cos(angle - Math.PI*2/3);
+
+        var r = bright + contrast * p0;
+        var g = bright + contrast * p1;
+        var b = bright + contrast * p2;
+
+        return new Color(r,g,b);
+    }
+
+    this.drawCalibrationDiagram = function ()
+    {
+        var group = new Group();
+        var rows = 10;
+        var cols = 14;
+
+        for (var y = 0; y < rows; y++) {
+            for (var x = 0; x < cols; x++) {
+                var square = new Group();
+                var size = new Point(50, 50);
+                var pos = new Point(x*size.x, y*size.y);
+                var i = x + (y * cols);
+                var angle = i * 2 * Math.PI / (rows*cols-1);
+
+                group.addChild(new Path.Rectangle({
+                    strokeColor: 'black',
+                    strokeWidth: 1,
+                    fillColor: this.uncalibratedColorForAngle(angle),
+                    point: pos,
+                    size: size 
+                }));
+
+                group.addChild(new PointText({
+                    point: pos + new Point(2, 7),
+                    content: '#' + (1 + i),
+                    fillColor: 'black',
+                    fontSize: 5,
+                }));
+            }
+        }
+        return group;
+    }
+
     this.draw = function ()
     {
         var outer = new Path.Circle(this.center, this.scale.spinnerStickerOuterRadius);
@@ -927,18 +990,7 @@ Sticker = function ( scale )
                     angle = this.calibrateAngle(angle);
                 }
 
-                var bright = 0.5;
-                var contrast = 0.5;
-
-                var p0 = Math.cos(angle);
-                var p1 = Math.cos(angle + Math.PI*2/3) ;
-                var p2 = Math.cos(angle - Math.PI*2/3);
-
-                var r = bright + contrast * p0;
-                var g = bright + contrast * p1;
-                var b = bright + contrast * p2;
-
-                pattern.setPixel(x, y, new Color(r,g,b));
+                pattern.setPixel(x, y, this.uncalibratedColorForAngle(angle));
             }
         }
 
