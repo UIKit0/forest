@@ -897,7 +897,8 @@ Sticker = function ( scale )
             var a2 = data[(i+1) % steps];
             var ia = inputAngle;
 
-            if (a2 < a1) {
+            if (a2 < 0 && a1 > 0) {
+                // Discontinuity from +PI to -PI
                 a2 += Math.PI * 2;
                 if (ia < a1) {
                     ia += Math.PI * 2;
