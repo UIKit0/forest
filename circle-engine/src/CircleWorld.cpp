@@ -267,7 +267,7 @@ void CircleWorld::Spinner::handleMidi(const midi::Message &msg)
 void CircleWorld::Spinner::updateAngle()
 {
     float sensorAngle = mColorCube.getCurrentAngle();
-    mBody->SetTransform(mBody->GetPosition(), sensorAngle * 0.5f);
+    mBody->SetTransform(mBody->GetPosition(), M_PI/2.0f + sensorAngle * 0.5f);
 }
 
 void CircleWorld::clearColorCubes()
