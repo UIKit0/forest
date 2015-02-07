@@ -228,14 +228,59 @@ void CircleEngineApp::draw()
         cube.draw();
         gl::popModelView();
 
-        char str[128];
-        snprintf(str, sizeof str, "Spinner #%d : %d points, angle: %.1f deg",
-                mDrawSpinnerColorCube,
-                (int)cube.getPoints().size(),
-                cube.getCurrentAngle() * 180.0 / M_PI);
         gl::enableAlphaBlending();
-        gl::drawString(str, Vec2f(getWindowWidth() * 0.25f, getWindowHeight() * 0.7f));
-    }
+        Vec2f cursor = Vec2f(300, getWindowHeight() * 0.75f);
+        char str[128];
+
+        snprintf(str, sizeof str, "Spinner #%d", mDrawSpinnerColorCube);
+        gl::drawString(str, cursor);
+        cursor.y += 15.0f;
+
+        snprintf(str, sizeof str, "%d points", (int)cube.getPoints().size());
+        gl::drawString(str, cursor);
+        cursor.y += 15.0f;
+
+        snprintf(str, sizeof str, "Angle: %.1f deg  (reliable = %d)",
+                 cube.getCurrentAngle() * 180.0 / M_PI, cube.isAngleReliable());
+        gl::drawString(str, cursor);
+        cursor.y += 15.0f;
+
+        snprintf(str, sizeof str, "RGB range: [%f, %f] [%f, %f] [%f, %f]",
+                 cube.getRangeRGB().getMin().x, cube.getRangeRGB().getMax().x,
+                 cube.getRangeRGB().getMin().y, cube.getRangeRGB().getMax().y,
+                 cube.getRangeRGB().getMin().z, cube.getRangeRGB().getMax().z);
+        gl::drawString(str, cursor);
+        cursor.y += 15.0f;
+
+        snprintf(str, sizeof str, "RGB size: %f, %f %f",
+                 cube.getRangeRGB().getSize().x,
+                 cube.getRangeRGB().getSize().y,
+                 cube.getRangeRGB().getSize().z);
+        gl::drawString(str, cursor);
+        cursor.y += 15.0f;
+
+        snprintf(str, sizeof str, "XYZ range: [%f, %f] [%f, %f] [%f, %f]",
+                 cube.getRangeXYZ().getMin().x, cube.getRangeXYZ().getMax().x,
+                 cube.getRangeXYZ().getMin().y, cube.getRangeXYZ().getMax().y,
+                 cube.getRangeXYZ().getMin().z, cube.getRangeXYZ().getMax().z);
+        gl::drawString(str, cursor);
+        cursor.y += 15.0f;
+
+        snprintf(str, sizeof str, "XYZ size: %f, %f %f",
+                 cube.getRangeXYZ().getSize().x,
+                 cube.getRangeXYZ().getSize().y,
+                 cube.getRangeXYZ().getSize().z);
+        gl::drawString(str, cursor);
+        cursor.y += 15.0f;
+
+        snprintf(str, sizeof str, "XY size: %f", cube.getRangeXYZ().getSize().xy().length());
+        gl::drawString(str, cursor);
+        cursor.y += 15.0f;
+
+        snprintf(str, sizeof str, "XY / Z ratio: %f", cube.getRangeXYZ().getSize().xy().length() / cube.getRangeXYZ().getSize().z);
+        gl::drawString(str, cursor);
+        cursor.y += 15.0f;
+}
     
     mParams->draw();
     

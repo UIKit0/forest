@@ -17,8 +17,37 @@ void ColorCubePoints::push(Vec3f v)
 {
     mCurrentPoint = v;
     mPoints.push_back(v);
+
+    calcRange();
     balance();
     mLineSolver.solve(mPoints);
+    
+    if (mPoints.size() > 16 && getRangeXYZ().getSize().z > 10.0f) {
+        // Solution isn't disc-shaped enough; start over
+        clear();
+    }
+}
+
+void ColorCubePoints::calcRange()
+{
+    if (mPoints.size()) {
+        Vec3f firstPointRGB = mPoints[0];
+        Vec3f firstPointXYZ = (mLineSolver.worldToLocal * firstPointRGB).xyz();
+        AxisAlignedBox3f rangeRGB(firstPointRGB, firstPointRGB);
+        AxisAlignedBox3f rangeXYZ(firstPointXYZ, firstPointXYZ);
+        
+        for (unsigned i = 1; i < mPoints.size(); i++) {
+            Vec3f pointRGB = mPoints[i];
+            Vec3f pointXYZ = (mLineSolver.worldToLocal * pointRGB).xyz();
+            rangeRGB.include(AxisAlignedBox3f(pointRGB, pointRGB));
+            rangeXYZ.include(AxisAlignedBox3f(pointXYZ, pointXYZ));
+        }
+        mRangeRGB = rangeRGB;
+        mRangeXYZ = rangeXYZ;
+    } else {
+        mRangeRGB = AxisAlignedBox3f();
+        mRangeXYZ = AxisAlignedBox3f();
+    }
 }
 
 void ColorCubePoints::balance(int numParts)
@@ -72,52 +101,54 @@ vector<Vec3f>& ColorCubePoints::getPoints()
     return mPoints;
 }
 
-ci::Vec3f ColorCubePoints::getCurrentPoint()
+ci::Vec3f ColorCubePoints::getCurrentPoint() const
 {
     return mCurrentPoint;
 }
 
-float ColorCubePoints::getCurrentAngle()
+float ColorCubePoints::getCurrentAngle() const
 {
     return getAngleForPoint(getCurrentPoint());
 }
 
-float ColorCubePoints::getAngleForPoint(Vec3f point)
+float ColorCubePoints::getAngleForPoint(Vec3f point) const
 {
     Vec4f local = mLineSolver.worldToLocal * point;
     return atan2f(local.y, local.x);
 }
 
-AxisAlignedBox3f ColorCubePoints::getRange()
+bool ColorCubePoints::isAngleReliable() const
 {
-    if (mPoints.size()) {
-        AxisAlignedBox3f range(mPoints[0], mPoints[0]);
-        for (unsigned i = 1; i < mPoints.size(); i++) {
-            range.include(AxisAlignedBox3f(mPoints[i], mPoints[i]));
-        }
-        return range;
-    }
-    return AxisAlignedBox3f();
+    return getRangeXYZ().getSize().xy().lengthSquared() >= 25.0f;
+}
+
+const AxisAlignedBox3f& ColorCubePoints::getRangeRGB() const
+{
+    return mRangeRGB;
+}
+
+const AxisAlignedBox3f& ColorCubePoints::getRangeXYZ() const
+{
+    return mRangeXYZ;
 }
 
 void ColorCubePoints::draw()
 {
+    // Unit cube with wireframe outline
     gl::enableAlphaBlending();
     gl::color(0.0f, 0.0f, 0.0f, 0.5f);
     gl::drawCube(Vec3f(0.5f, 0.5f, 0.5f), Vec3f(1.0f, 1.0f, 1.0f));
-
     gl::color(0.4f, 0.4f, 0.7f);
     gl::drawStrokedCube(Vec3f(0.5f, 0.5f, 0.5f), Vec3f(1.0f, 1.0f, 1.0f));
 
-    gl::enableAdditiveBlending();
-    gl::color(1.0f, 1.0f, 1.0f);
-    
-    AxisAlignedBox3f range = getRange();
+    // Scaled RGB color coordinate system    
+    AxisAlignedBox3f range = getRangeRGB();
     gl::pushModelView();
     gl::scale(Vec3f(1.0f, 1.0f, 1.0f) / range.getSize());
     gl::translate(-range.getMin());
 
     // Point history
+    gl::enableAdditiveBlending();
     glPointSize(3.0f);
     glBegin(GL_POINTS);
     for (unsigned i = 0; i < mPoints.size(); i++) {
@@ -159,14 +190,14 @@ void ColorCubePoints::drawColorPoint(const AxisAlignedBox3f& range, Vec3f p)
     gl::vertex(p);
 }
 
-LineSolver::LineSolver()
+ColorCubePoints::LineSolver::LineSolver()
 {
     result.setDefault();
     localToWorld.setToIdentity();
     worldToLocal.setToIdentity();
 }
 
-void LineSolver::Vec::setDefault()
+void ColorCubePoints::LineSolver::Vec::setDefault()
 {
     x0 = 0.0f;
     y0 = 0.0f;
@@ -174,7 +205,7 @@ void LineSolver::Vec::setDefault()
     yz = 1.0f;
 }
 
-void LineSolver::solve(vector<Vec3f> &points)
+void ColorCubePoints::LineSolver::solve(vector<Vec3f> &points)
 {
     const int m = points.size();    // Number of functions to minimize
     const int n = 5;                // Number of independent variables
@@ -217,7 +248,7 @@ void LineSolver::solve(vector<Vec3f> &points)
     worldToLocal = localToWorld.affineInverted();
 }
 
-int LineSolver::minFunc(void *p, int m, int n, const float *x, float *fvec, int flag)
+int ColorCubePoints::LineSolver::minFunc(void *p, int m, int n, const float *x, float *fvec, int flag)
 {
     Vec3f* points = (Vec3f*) p;
     const Vec& param = *(const Vec*)x;

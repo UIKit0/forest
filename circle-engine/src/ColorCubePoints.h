@@ -11,34 +11,6 @@
 #include <vector>
 
 
-class LineSolver {
-public:
-    LineSolver();
-
-    void solve(std::vector<ci::Vec3f> &points);
-
-    struct Vec {
-        void setDefault();
-        union {
-            float array[4];
-            struct {
-                float x0;
-                float y0;
-                float xz;
-                float yz;
-            };
-        };
-    };
-    
-    Vec             result;
-    ci::Matrix44f   localToWorld;
-    ci::Matrix44f   worldToLocal;
-    
-private:
-    static int minFunc(void *p, int m, int n, const float *x, float *fvec, int flag);
-};
-
-
 class ColorCubePoints {
 public:
     ColorCubePoints(unsigned maxPoints = 32 * 16);
@@ -52,18 +24,50 @@ public:
     void draw();
     
     std::vector<ci::Vec3f>& getPoints();
-    ci::AxisAlignedBox3f getRange();
-    ci::Vec3f getCurrentPoint();
-    float getCurrentAngle();
-    float getAngleForPoint(ci::Vec3f point);
+    const ci::AxisAlignedBox3f& getRangeRGB() const;
+    const ci::AxisAlignedBox3f& getRangeXYZ() const;
+    
+    ci::Vec3f getCurrentPoint() const;
+    float getCurrentAngle() const;
+    bool isAngleReliable() const;
+
+    float getAngleForPoint(ci::Vec3f point) const;
     
 private:
+    // Solver for locating a 3D line that passes through the rotational axis in RGB space
+    class LineSolver {
+    public:
+        LineSolver();
+
+        void solve(std::vector<ci::Vec3f> &points);
+
+        struct Vec {
+            void setDefault();
+            union {
+                float array[4];
+                struct {
+                    float x0, y0, xz, yz;
+                };
+            };
+        };
+        
+        Vec             result;
+        ci::Matrix44f   localToWorld;
+        ci::Matrix44f   worldToLocal;
+        
+    private:
+        static int minFunc(void *p, int m, int n, const float *x, float *fvec, int flag);
+    };
+
     std::vector<ci::Vec3f> mPoints;
     ci::Vec3f mCurrentPoint;
     unsigned mMaxPoints;
     LineSolver mLineSolver;
-    
+    ci::AxisAlignedBox3f mRangeRGB;
+    ci::AxisAlignedBox3f mRangeXYZ;
+
     void drawColorPoint(const ci::AxisAlignedBox3f& range, ci::Vec3f p);
     void balance(int numParts = 16);
+    void calcRange();
 };
 

@@ -84,7 +84,6 @@
 		756E5C851A780C11008EA93E /* particle.pass2.glslv in Resources */ = {isa = PBXBuildFile; fileRef = 756E5C811A780C11008EA93E /* particle.pass2.glslv */; };
 		757675CA1A82CD87003C6702 /* chkder.c in Sources */ = {isa = PBXBuildFile; fileRef = 757675901A82CD87003C6702 /* chkder.c */; };
 		757675CB1A82CD87003C6702 /* chkder_.c in Sources */ = {isa = PBXBuildFile; fileRef = 757675911A82CD87003C6702 /* chkder_.c */; };
-		757675CC1A82CD87003C6702 /* CopyrightMINPACK.txt in Resources */ = {isa = PBXBuildFile; fileRef = 757675941A82CD87003C6702 /* CopyrightMINPACK.txt */; };
 		757675CD1A82CD87003C6702 /* covar.c in Sources */ = {isa = PBXBuildFile; fileRef = 757675951A82CD87003C6702 /* covar.c */; };
 		757675CE1A82CD87003C6702 /* covar1.c in Sources */ = {isa = PBXBuildFile; fileRef = 757675961A82CD87003C6702 /* covar1.c */; };
 		757675CF1A82CD87003C6702 /* covar_.c in Sources */ = {isa = PBXBuildFile; fileRef = 757675971A82CD87003C6702 /* covar_.c */; };
@@ -135,7 +134,6 @@
 		757675FD1A82CD87003C6702 /* rwupdt_.c in Sources */ = {isa = PBXBuildFile; fileRef = 757675C61A82CD87003C6702 /* rwupdt_.c */; };
 		75D4A4611A81F70800B533EE /* ColorCubePoints.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 75D4A45F1A81F70800B533EE /* ColorCubePoints.cpp */; };
 		75DF8D7C1A788D40000E5A8E /* OPCClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 75DF8D7B1A788D40000E5A8E /* OPCClient.cpp */; };
-		75DF8DA11A788E00000E5A8E /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 75DF8D7E1A788E00000E5A8E /* .gitignore */; };
 		75DF8DA21A788E00000E5A8E /* ClientInterface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 75DF8D811A788E00000E5A8E /* ClientInterface.cpp */; };
 		75DF8DA31A788E00000E5A8E /* DispatcherInterface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 75DF8D841A788E00000E5A8E /* DispatcherInterface.cpp */; };
 		75DF8DA41A788E00000E5A8E /* ServerInterface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 75DF8D871A788E00000E5A8E /* ServerInterface.cpp */; };
@@ -150,11 +148,7 @@
 		75DF8DAF1A788FA7000E5A8E /* FadecandyGL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 75DF8DAD1A788FA7000E5A8E /* FadecandyGL.cpp */; };
 		75DF8DB21A78B078000E5A8E /* fadecandy.glslf in Resources */ = {isa = PBXBuildFile; fileRef = 75DF8DB01A78B078000E5A8E /* fadecandy.glslf */; };
 		75DF8DB31A78B078000E5A8E /* fadecandy.glslv in Resources */ = {isa = PBXBuildFile; fileRef = 75DF8DB11A78B078000E5A8E /* fadecandy.glslv */; };
-		75DF8DBC1A797A66000E5A8E /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 75DF8DB51A797A66000E5A8E /* .gitignore */; };
-		75DF8DBD1A797A66000E5A8E /* cinderblock.xml in Resources */ = {isa = PBXBuildFile; fileRef = 75DF8DB61A797A66000E5A8E /* cinderblock.xml */; };
-		75DF8DBE1A797A66000E5A8E /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = 75DF8DB71A797A66000E5A8E /* README.md */; };
 		75DF8DBF1A797A66000E5A8E /* Cinder-AppNap.mm in Sources */ = {isa = PBXBuildFile; fileRef = 75DF8DBA1A797A66000E5A8E /* Cinder-AppNap.mm */; };
-		75DF8DC01A797A66000E5A8E /* TODO.md in Sources */ = {isa = PBXBuildFile; fileRef = 75DF8DBB1A797A66000E5A8E /* TODO.md */; };
 		8685E9DD25B24ED3BA384259 /* CircleEngineApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D37DA78CBBF64CAAB6E7E9AF /* CircleEngineApp.cpp */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 /* End PBXBuildFile section */
@@ -312,7 +306,6 @@
 		757675911A82CD87003C6702 /* chkder_.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = chkder_.c; sourceTree = "<group>"; };
 		757675921A82CD87003C6702 /* cminpack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cminpack.h; sourceTree = "<group>"; };
 		757675931A82CD87003C6702 /* cminpackP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cminpackP.h; sourceTree = "<group>"; };
-		757675941A82CD87003C6702 /* CopyrightMINPACK.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CopyrightMINPACK.txt; sourceTree = "<group>"; };
 		757675951A82CD87003C6702 /* covar.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = covar.c; sourceTree = "<group>"; };
 		757675961A82CD87003C6702 /* covar1.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = covar1.c; sourceTree = "<group>"; };
 		757675971A82CD87003C6702 /* covar_.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = covar_.c; sourceTree = "<group>"; };
@@ -366,7 +359,6 @@
 		75D4A4601A81F70800B533EE /* ColorCubePoints.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ColorCubePoints.h; path = ../src/ColorCubePoints.h; sourceTree = "<group>"; };
 		75DF8D7A1A788D3B000E5A8E /* OPCClient.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OPCClient.h; path = ../src/OPCClient.h; sourceTree = "<group>"; };
 		75DF8D7B1A788D40000E5A8E /* OPCClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OPCClient.cpp; path = ../src/OPCClient.cpp; sourceTree = "<group>"; };
-		75DF8D7E1A788E00000E5A8E /* .gitignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		75DF8D801A788E00000E5A8E /* ClientEventHandlerInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClientEventHandlerInterface.h; sourceTree = "<group>"; };
 		75DF8D811A788E00000E5A8E /* ClientInterface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ClientInterface.cpp; sourceTree = "<group>"; };
 		75DF8D821A788E00000E5A8E /* ClientInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClientInterface.h; sourceTree = "<group>"; };
@@ -404,12 +396,8 @@
 		75DF8DAE1A788FA7000E5A8E /* FadecandyGL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FadecandyGL.h; path = ../src/FadecandyGL.h; sourceTree = "<group>"; };
 		75DF8DB01A78B078000E5A8E /* fadecandy.glslf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = fadecandy.glslf; sourceTree = "<group>"; };
 		75DF8DB11A78B078000E5A8E /* fadecandy.glslv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = fadecandy.glslv; sourceTree = "<group>"; };
-		75DF8DB51A797A66000E5A8E /* .gitignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
-		75DF8DB61A797A66000E5A8E /* cinderblock.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = cinderblock.xml; sourceTree = "<group>"; };
-		75DF8DB71A797A66000E5A8E /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		75DF8DB91A797A66000E5A8E /* Cinder-AppNap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Cinder-AppNap.h"; sourceTree = "<group>"; };
 		75DF8DBA1A797A66000E5A8E /* Cinder-AppNap.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "Cinder-AppNap.mm"; sourceTree = "<group>"; };
-		75DF8DBB1A797A66000E5A8E /* TODO.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = TODO.md; sourceTree = "<group>"; };
 		7C98B10AF0FB40A49AD3EA7C /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* CircleEngine.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CircleEngine.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D37DA78CBBF64CAAB6E7E9AF /* CircleEngineApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = CircleEngineApp.cpp; path = ../src/CircleEngineApp.cpp; sourceTree = "<group>"; };
@@ -792,7 +780,6 @@
 				757675911A82CD87003C6702 /* chkder_.c */,
 				757675921A82CD87003C6702 /* cminpack.h */,
 				757675931A82CD87003C6702 /* cminpackP.h */,
-				757675941A82CD87003C6702 /* CopyrightMINPACK.txt */,
 				757675951A82CD87003C6702 /* covar.c */,
 				757675961A82CD87003C6702 /* covar1.c */,
 				757675971A82CD87003C6702 /* covar_.c */,
@@ -850,7 +837,6 @@
 		75DF8D7D1A788E00000E5A8E /* Cinder-Asio */ = {
 			isa = PBXGroup;
 			children = (
-				75DF8D7E1A788E00000E5A8E /* .gitignore */,
 				75DF8D7F1A788E00000E5A8E /* src */,
 			);
 			name = "Cinder-Asio";
@@ -900,11 +886,7 @@
 		75DF8DB41A797A66000E5A8E /* Cinder-AppNap */ = {
 			isa = PBXGroup;
 			children = (
-				75DF8DB51A797A66000E5A8E /* .gitignore */,
-				75DF8DB61A797A66000E5A8E /* cinderblock.xml */,
-				75DF8DB71A797A66000E5A8E /* README.md */,
 				75DF8DB81A797A66000E5A8E /* src */,
-				75DF8DBB1A797A66000E5A8E /* TODO.md */,
 			);
 			name = "Cinder-AppNap";
 			path = "../blocks/Cinder-AppNap";
@@ -972,19 +954,15 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				75DF8DA11A788E00000E5A8E /* .gitignore in Resources */,
 				756E5C821A780C11008EA93E /* particle.pass1.glslf in Resources */,
-				75DF8DBD1A797A66000E5A8E /* cinderblock.xml in Resources */,
 				75DF8DB31A78B078000E5A8E /* fadecandy.glslv in Resources */,
 				756E5C841A780C11008EA93E /* particle.pass2.glslf in Resources */,
-				75DF8DBC1A797A66000E5A8E /* .gitignore in Resources */,
 				75DF8DB21A78B078000E5A8E /* fadecandy.glslf in Resources */,
 				756E5C7A1A77FC59008EA93E /* world.svg in Resources */,
 				6D3A4433FAE64C268CD40228 /* CinderApp.icns in Resources */,
 				756E5C831A780C11008EA93E /* particle.pass1.glslv in Resources */,
 				757675FB1A82CD87003C6702 /* readme.txt in Resources */,
 				756E5C771A77FC59008EA93E /* colors.png in Resources */,
-				757675CC1A82CD87003C6702 /* CopyrightMINPACK.txt in Resources */,
 				756E5C851A780C11008EA93E /* particle.pass2.glslv in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1079,7 +1057,6 @@
 				751542D71A74B7A60012009D /* b2RevoluteJoint.cpp in Sources */,
 				751542D81A74B7A60012009D /* b2RopeJoint.cpp in Sources */,
 				751542D61A74B7A60012009D /* b2PulleyJoint.cpp in Sources */,
-				75DF8DC01A797A66000E5A8E /* TODO.md in Sources */,
 				75DF8DA31A788E00000E5A8E /* DispatcherInterface.cpp in Sources */,
 				757675E01A82CD87003C6702 /* hybrj1_.c in Sources */,
 				757675DC1A82CD87003C6702 /* hybrd1_.c in Sources */,
@@ -1093,7 +1070,6 @@
 				757675ED1A82CD87003C6702 /* lmstr1.c in Sources */,
 				757675D01A82CD87003C6702 /* dogleg.c in Sources */,
 				757675DD1A82CD87003C6702 /* hybrd_.c in Sources */,
-				75DF8DBE1A797A66000E5A8E /* README.md in Sources */,
 				751542D51A74B7A60012009D /* b2PrismaticJoint.cpp in Sources */,
 				755B62C41A81E4F2008FF892 /* MidiMessage.cpp in Sources */,
 				75DF8DA51A788E00000E5A8E /* SessionInterface.cpp in Sources */,
