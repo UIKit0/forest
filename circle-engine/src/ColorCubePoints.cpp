@@ -11,7 +11,10 @@ using namespace std;
 
 ColorCubePoints::ColorCubePoints(unsigned maxPoints)
     : mMaxPoints(maxPoints)
-{}
+{
+    mZLimit = 7.0f;
+    mXYThreshold = 5.0f;
+}
 
 void ColorCubePoints::push(Vec3f v)
 {
@@ -22,7 +25,7 @@ void ColorCubePoints::push(Vec3f v)
     balance();
     mLineSolver.solve(mPoints);
     
-    if (mPoints.size() > 16 && getRangeXYZ().getSize().z > 10.0f) {
+    if (mPoints.size() > 16 && getRangeXYZ().getSize().z > mZLimit) {
         // Solution isn't disc-shaped enough; start over
         clear();
     }
@@ -119,7 +122,7 @@ float ColorCubePoints::getAngleForPoint(Vec3f point) const
 
 bool ColorCubePoints::isAngleReliable() const
 {
-    return getRangeXYZ().getSize().xy().lengthSquared() >= 25.0f;
+    return getRangeXYZ().getSize().xy().lengthSquared() >= mXYThreshold * mXYThreshold;
 }
 
 const AxisAlignedBox3f& ColorCubePoints::getRangeRGB() const

@@ -59,10 +59,14 @@ private:
         static int minFunc(void *p, int m, int n, const float *x, float *fvec, int flag);
     };
 
-    std::vector<ci::Vec3f> mPoints;
-    ci::Vec3f mCurrentPoint;
+    float mXYThreshold;
+    float mZLimit;
     unsigned mMaxPoints;
+    
     LineSolver mLineSolver;
+
+    ci::Vec3f mCurrentPoint;
+    std::vector<ci::Vec3f> mPoints;
     ci::AxisAlignedBox3f mRangeRGB;
     ci::AxisAlignedBox3f mRangeXYZ;
 
