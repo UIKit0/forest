@@ -57,7 +57,7 @@ Scale = function (modelWidthInFeet)
     this.spinnerWidthMin = this.inToUnits * 3.0;
     this.spinnerCurveRatio = 3.0;
     this.spinnerGap = this.inToUnits * 1/8.0;
-    this.spinnerStickerOuterRadius = this.spinnerWidthMin/2 - this.inToUnits / 16.0;
+    this.spinnerStickerOuterRadius = this.spinnerWidthMin/2 - this.inToUnits * 0.25;
     this.spinnerStickerInnerRadius = this.drillSpinnerMountRadius + this.inToUnits / 4.0;
 
     // Distance to keep LED strips from small dots, to avoid glare.
@@ -827,7 +827,7 @@ Sticker = function ( scale )
 {
     this.scale = scale;
     this.center = new Point(0, 0);
-    this.dpi = 72;
+    this.dpi = 150;
 
     this.calibrate = function (testData)
     {
