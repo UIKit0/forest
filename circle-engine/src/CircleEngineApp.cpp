@@ -109,7 +109,7 @@ void CircleEngineApp::setup()
     mParams->addParam("Spin randomly", &mWorld.mMoveSpinnersRandomly);
     mParams->addParam("Spinner motor power", &mWorld.mSpinnerPower).min(0.f).max(100.f).step(.01f);
     mParams->addParam("Show color cube test", &mDrawSpinnerColorCube).min(-1).max(40).keyDecr("[").keyIncr("]");
-    mParams->addParam("One spinner controls all", &mWorld.mOneSpinnerControlsAll);
+    mParams->addParam("One spinner ctrl all", &mWorld.mOneSpinnerControlsAll);
     mParams->addButton("Clear all color cubes", bind( &CircleEngineApp::clearColorCubes, this ), "key=q");
     mParams->addButton("Log current spinner angle", bind( &CircleEngineApp::logCurrentSpinnerAngle, this ), "key=l");
     
