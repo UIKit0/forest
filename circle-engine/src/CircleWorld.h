@@ -33,13 +33,15 @@ public:
     static const unsigned kMaxParticles = 32768;
 
     struct Spinner {
-        b2Body*         mBody;
-        ci::TriMesh2d   mMesh;
-        ColorCubePoints mColorCube;
-        uint8_t         mColorPacket[8];
+        b2Body*           mBody;
+        b2RevoluteJoint*  mJoint;
+        ci::TriMesh2d     mMesh;
+        float             mTargetAngle;
+        ColorCubePoints   mColorCube;
+        uint8_t           mColorPacket[8];
 
         void handleMidi(const ci::midi::Message& msg);
-        void updateAngle();
+        void sensorAngle(float angle, float motorPower);
     };
     
     ci::svg::DocRef     mSvg;
@@ -50,7 +52,9 @@ public:
     float               mTriangulatePrecision;
     unsigned            mNewParticleRate;
     float               mNewParticleLifetime;
+    bool                mOneSpinnerControlsAll;
     bool                mMoveSpinnersRandomly;
+    float               mSpinnerPower;
     
     std::vector<ci::Vec2f>  mOriginPoints;
     ci::Rectf               mOriginBounds;
@@ -64,6 +68,7 @@ public:
     std::vector<ci::Vec2f>  mForceGrid;
     
     b2World				*mB2World;
+    b2Body              *mGround;
     b2ParticleSystem    *mParticleSystem;
     uint64_t            mStepNumber;
     unsigned            mCurrentTableRow;

@@ -53,7 +53,6 @@ OPCClient::~OPCClient( )
     if (mSession) {
         mSession->close();
     }
-    mSession.reset();
 }
 void OPCClient::update(){
     mIo->poll();

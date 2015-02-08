@@ -72,6 +72,8 @@ void CircleWorld::setup(svg::DocRef doc)
     mNewParticleRate = 18;
     mNewParticleLifetime = 20.0;
     mMoveSpinnersRandomly = false;
+    mOneSpinnerControlsAll = false;
+    mSpinnerPower = 5.0f;
     
     setupObstacles(findShape("obstacles"));
     setupFrontLayer(findShape("front-layer"));
@@ -115,8 +117,9 @@ void CircleWorld::setupObstacles(const Shape2d& shape)
     mObstacles = triangulator.calcMesh();
     
     b2BodyDef groundBodyDef;
-    b2Body *ground = mB2World->CreateBody(&groundBodyDef);
-    addFixturesForMesh(ground, mObstacles, 0.0f);
+    groundBodyDef.type = b2_staticBody;
+    mGround = mB2World->CreateBody(&groundBodyDef);
+    addFixturesForMesh(mGround, mObstacles, 0.0f);
 }
 
 void CircleWorld::setupFrontLayer(const Shape2d& shape)
@@ -170,10 +173,17 @@ void CircleWorld::setupSpinner(const ci::Shape2d& shape)
     newSpinner.mMesh = triangulator.calcMesh();
     
     b2BodyDef bodyDef;
+    bodyDef.type = b2_dynamicBody;
     bodyDef.position = vecToBox(center);
 
     newSpinner.mBody = mB2World->CreateBody(&bodyDef);
-    addFixturesForMesh(newSpinner.mBody, newSpinner.mMesh, 0.0f);
+    addFixturesForMesh(newSpinner.mBody, newSpinner.mMesh);
+
+    b2RevoluteJointDef jointDef;
+    jointDef.Initialize(newSpinner.mBody, mGround, bodyDef.position);
+    
+    newSpinner.mTargetAngle = 0.0f;
+    newSpinner.mJoint = dynamic_cast<b2RevoluteJoint*>(mB2World->CreateJoint(&jointDef));
 }
 
 void CircleWorld::addFixturesForMesh(b2Body *body, ci::TriMesh2d &mesh, float density)
@@ -214,31 +224,44 @@ void CircleWorld::update(ci::midi::Hub& midi)
 
 void CircleWorld::updateSpinners(midi::Hub& midi)
 {
-    if (mMoveSpinnersRandomly) {
-        Perlin p(4, 0);
-        for (unsigned i = 0; i < mSpinners.size(); i++) {
-            b2Body *spinner = mSpinners[i].mBody;
-            float angle = p.fBm(mStepNumber * 0.002, i) * 50.0;
-            spinner->SetTransform(spinner->GetPosition(), angle);
-        }
+    // Track raw colors and build a model that lets us convert to angle
+    ci::midi::Message msg;
+    while (midi.getNextMessage(&msg)) {
 
-    } else {
-        // Track raw colors and build a model that lets us convert to angle
-        ci::midi::Message msg;
-        while (midi.getNextMessage(&msg)) {
+        if (mOneSpinnerControlsAll) {
+            // MIDI messages go to all spinners, for debug / simulation
+            for (unsigned controller = 0; controller < mSpinners.size(); controller++) {
+                mSpinners[controller].handleMidi(msg);
+            }
+
+        } else {
+            // Dispatch to one spinner according to the message's "controller" byte
             unsigned controller = msg.byteOne;
             if (controller < mSpinners.size()) {
                 mSpinners[controller].handleMidi(msg);
             }
         }
+    }
 
-        // Update spinner velocities each physics step
-        for (unsigned i = 0; i < mSpinners.size(); i++) {
-            mSpinners[i].updateAngle();
+    // Update spinner velocities each physics step
+    for (unsigned i = 0; i < mSpinners.size(); i++) {
+        Spinner& spinner = mSpinners[i];
+
+        if (mMoveSpinnersRandomly) {
+            // Random sensor data
+            Perlin p(4, 0);
+            spinner.sensorAngle(p.fBm(mStepNumber * 0.002, i) * 50.0, mSpinnerPower);
+        
+        } else if (spinner.mColorCube.isAngleReliable()) {
+            // Real sensor data
+            spinner.sensorAngle(spinner.mColorCube.getCurrentAngle(), mSpinnerPower);
+
+        } else {
+            // Disable the motor, just spin freely
+            spinner.mJoint->EnableMotor(false);
         }
     }
 }
-
 
 void CircleWorld::Spinner::handleMidi(const midi::Message &msg)
 {
@@ -264,12 +287,24 @@ void CircleWorld::Spinner::handleMidi(const midi::Message &msg)
     }
 }
 
-void CircleWorld::Spinner::updateAngle()
+void CircleWorld::Spinner::sensorAngle(float angle, float motorPower)
 {
-    if (mColorCube.isAngleReliable()) {
-        float sensorAngle = mColorCube.getCurrentAngle();
-        mBody->SetTransform(mBody->GetPosition(), M_PI/2.0f + sensorAngle * 0.5f);
-    }
+    // The sensor's full scale is one half revolution.
+    // Convert that to a continuous angle with no discontinuities.
+
+    angle = M_PI/2 + angle/2;
+
+    float diff = fmod(angle - mTargetAngle, M_PI);
+    if (diff >=  M_PI/2) diff -= M_PI;
+    if (diff <= -M_PI/2) diff += M_PI;
+    mTargetAngle += diff;
+    
+    // The joint acts like a spring connected between the virtual spinner and the physical one
+    mJoint->EnableMotor(true);
+    mJoint->SetMotorSpeed((mBody->GetAngle() - mTargetAngle) * motorPower);
+
+    // These motors have a very high "mass" due to being attached to the obstacle body
+    mJoint->SetMaxMotorTorque(1e20);
 }
 
 void CircleWorld::clearColorCubes()

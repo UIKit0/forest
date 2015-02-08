@@ -60,6 +60,7 @@ private:
     bool                        mDrawObstacles;
     bool                        mDrawParticles;
     bool                        mDrawFrontLayer;
+    bool                        mSelectedSpinnerControlsAll;
 };
 
 void CircleEngineApp::prepareSettings( Settings *settings )
@@ -106,7 +107,9 @@ void CircleEngineApp::setup()
     mParams->addParam("Draw front layer", &mDrawFrontLayer, "key=6");
     mParams->addSeparator();
     mParams->addParam("Spin randomly", &mWorld.mMoveSpinnersRandomly);
+    mParams->addParam("Spinner motor power", &mWorld.mSpinnerPower).min(0.f).max(100.f).step(.01f);
     mParams->addParam("Show color cube test", &mDrawSpinnerColorCube).min(-1).max(40).keyDecr("[").keyIncr("]");
+    mParams->addParam("One spinner controls all", &mWorld.mOneSpinnerControlsAll);
     mParams->addButton("Clear all color cubes", bind( &CircleEngineApp::clearColorCubes, this ), "key=q");
     mParams->addButton("Log current spinner angle", bind( &CircleEngineApp::logCurrentSpinnerAngle, this ), "key=l");
     
@@ -217,7 +220,8 @@ void CircleEngineApp::draw()
     }
 
     if (mDrawSpinnerColorCube >= 0 && mDrawSpinnerColorCube < mWorld.mSpinners.size()) {
-        auto& cube = mWorld.mSpinners[mDrawSpinnerColorCube].mColorCube;
+        auto& spinner = mWorld.mSpinners[mDrawSpinnerColorCube];
+        auto& cube = spinner.mColorCube;
         float s = getWindowWidth() * 0.25f;
 
         gl::pushModelView();
@@ -240,8 +244,11 @@ void CircleEngineApp::draw()
         gl::drawString(str, cursor);
         cursor.y += 15.0f;
 
-        snprintf(str, sizeof str, "Angle: %.1f deg  (reliable = %d)",
-                 cube.getCurrentAngle() * 180.0 / M_PI, cube.isAngleReliable());
+        snprintf(str, sizeof str, "Sensor angle: %.1f deg  (reliable = %d)", cube.getCurrentAngle() * 180.0 / M_PI, cube.isAngleReliable());
+        gl::drawString(str, cursor);
+        cursor.y += 15.0f;
+
+        snprintf(str, sizeof str, "Target angle: %.1f deg", spinner.mTargetAngle * 180.0 / M_PI);
         gl::drawString(str, cursor);
         cursor.y += 15.0f;
 
