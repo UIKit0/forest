@@ -28,7 +28,6 @@ public:
     ci::Vec2f vecFromBox(b2Vec2 v);
     
     const float kMetersPerPoint         = 10.0;
-    const unsigned kStepsPerTableRow    = 100;
     const float kMinTriangleArea        = 0.1;
     static const unsigned kMaxParticles = 32768;
 
@@ -73,6 +72,7 @@ public:
     uint64_t            mStepNumber;
     unsigned            mCurrentTableRow;
     float               mSubRow;
+    unsigned            mStepsPerTableRow;
     
     b2Vec2              mPositionBuffer[kMaxParticles];
     b2Vec2              mVelocityBuffer[kMaxParticles];

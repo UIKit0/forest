@@ -9,7 +9,7 @@ using namespace ci;
 void ParticleRender::setup(ci::app::App &app, unsigned width, unsigned height, float scale)
 {
     mScale = scale;
-    mBrightness = 1.75f;
+    mBrightness = 2.5f;
 
     gl::Fbo::Format floatFormat;
     floatFormat.setColorInternalFormat(GL_RGBA32F_ARB);

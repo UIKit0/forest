@@ -69,11 +69,12 @@ void CircleWorld::setup(svg::DocRef doc)
     mParticleSystem->SetColorBuffer(mColorBuffer, kMaxParticles);
     mParticleSystem->SetExpirationTimeBuffer(mExpirationTimeBuffer, kMaxParticles);
 
-    mNewParticleRate = 18;
-    mNewParticleLifetime = 20.0;
+    mNewParticleRate = 6;
+    mNewParticleLifetime = 25.0;
     mMoveSpinnersRandomly = false;
     mOneSpinnerControlsAll = false;
     mSpinnerPower = 5.0f;
+    mStepsPerTableRow = 25;
     
     setupObstacles(findShape("obstacles"));
     setupFrontLayer(findShape("front-layer"));
@@ -135,7 +136,7 @@ void CircleWorld::setupStrands(const Shape2d& shape)
     
     mForceGridExtent = shape.calcBoundingBox();
     mForceGridResolution = findMetric("force-grid-resolution").y;
-    mForceGridStrength = findMetric("force-grid-strength").y * 1e-3;
+    mForceGridStrength = findMetric("force-grid-strength").y;
     mForceGridWidth = mForceGridExtent.getWidth() / mForceGridResolution;
     mForceGrid.resize(mForceGridWidth * int(mForceGridExtent.getHeight() / mForceGridResolution));
     
@@ -215,8 +216,8 @@ void CircleWorld::update(ci::midi::Hub& midi)
     applyGridForces();
 
     mStepNumber++;
-    mCurrentTableRow = (mStepNumber / kStepsPerTableRow) % mColorTable.getHeight();
-    mSubRow = (mStepNumber % kStepsPerTableRow) / float(kStepsPerTableRow - 1);
+    mCurrentTableRow = (mStepNumber / mStepsPerTableRow) % mColorTable.getHeight();
+    mSubRow = (mStepNumber % mStepsPerTableRow) / float(mStepsPerTableRow - 1);
 
     mB2World->Step( 1 / 60.0f, 1, 1, 2 );
     mUpdatedSinceLastDraw = true;
@@ -321,13 +322,14 @@ void CircleWorld::applyGridForces()
     unsigned numParticles = mParticleSystem->GetParticleCount();
     float scale = 1.0f / (mForceGridResolution * kMetersPerPoint);
     b2Vec2 gridCorner = vecToBox(mForceGridExtent.getUpperLeft());
+    float gain = mForceGridStrength * 1e-3;
     
     for (unsigned i = 0; i < numParticles; i++) {
         b2Vec2 pos = (positions[i] - gridCorner) * scale;
         int ix = pos.x;
         unsigned idx = ix + int(pos.y) * mForceGridWidth;
         if (ix < mForceGridWidth && idx < mForceGrid.size()) {
-            velocities[i] += vecToBox(mForceGrid[idx]) * mForceGridStrength;
+            velocities[i] += vecToBox(mForceGrid[idx]) * gain;
         }
     }
 }

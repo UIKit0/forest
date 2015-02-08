@@ -90,14 +90,16 @@ void CircleEngineApp::setup()
     mParams->addParam("FPS", &mAverageFps, "readonly=true");
     mParams->addParam("Physics Hz", &mPhysicsHz, "readonly=true");
     mParams->addParam("# particles", &mNumParticles, "readonly=true");
+    mParams->addParam("LED sampling radius", &mFadecandy.samplingRadius).min(0.f).max(500.f).step(0.1f);
     mParams->addSeparator();
     mParams->addParam("Current table row", &mWorld.mCurrentTableRow, "readonly=true");
+    mParams->addParam("Steps per table row", &mWorld.mStepsPerTableRow).min(1).max(10000);
     mParams->addButton("Reload color table", bind( &CircleEngineApp::reloadColorTable, this ), "key=c");
     mParams->addSeparator();
     mParams->addParam("Particle brightness", &mParticleRender.mBrightness).min(0.f).max(5.f).step(0.01f);
     mParams->addParam("Particle rate", &mWorld.mNewParticleRate);
     mParams->addParam("Particle lifetime", &mWorld.mNewParticleLifetime);
-    mParams->addParam("LED sampling radius", &mFadecandy.samplingRadius).min(0.f).max(500.f).step(0.1f);
+    mParams->addParam("Force grid strength", &mWorld.mForceGridStrength).min(0.f).max(100.f).step(0.01f);
     mParams->addSeparator();
     mParams->addParam("Draw force grid", &mDrawForceGrid, "key=1");
     mParams->addParam("Draw LED model", &mDrawLedModel, "key=2");
@@ -123,7 +125,7 @@ void CircleEngineApp::setup()
     mDrawObstacles = true;
     mDrawLedModel = false;
     mDrawParticles = true;
-    mDrawFrontLayer = false;
+    mDrawFrontLayer = true;
     mExiting = false;
 
     mPhysicsThread = thread(physicsThreadFn, this);
