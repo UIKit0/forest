@@ -52,6 +52,7 @@ private:
     params::InterfaceGlRef      mParams;
     float                       mAverageFps;
     float                       mPhysicsHz;
+    float                       mAmbientLight;
     unsigned                    mNumParticles;
     bool                        mDrawForceGrid;
     bool                        mDrawLedBuffer;
@@ -107,6 +108,7 @@ void CircleEngineApp::setup()
     mParams->addParam("Draw obstacles", &mDrawObstacles, "key=4");
     mParams->addParam("Draw particles", &mDrawParticles, "key=5");
     mParams->addParam("Draw front layer", &mDrawFrontLayer, "key=6");
+    mParams->addParam("Ambient light", &mAmbientLight).min(0.f).max(1.f).step(0.01f);
     mParams->addSeparator();
     mParams->addParam("Spin randomly", &mWorld.mMoveSpinnersRandomly);
     mParams->addParam("Spinner motor power", &mWorld.mSpinnerPower).min(0.f).max(100.f).step(.01f);
@@ -127,6 +129,7 @@ void CircleEngineApp::setup()
     mDrawParticles = true;
     mDrawFrontLayer = true;
     mExiting = false;
+    mAmbientLight = 0.07f;
 
     mPhysicsThread = thread(physicsThreadFn, this);
 }
@@ -319,14 +322,14 @@ void CircleEngineApp::drawObstacles()
 void CircleEngineApp::drawFrontLayer()
 {
     gl::enableAlphaBlending();
-    gl::color(0.f, 0.f, 0.f);
+    gl::color(mAmbientLight, mAmbientLight, mAmbientLight);
     gl::draw(mFrontLayerVbo);
 }
 
 void CircleEngineApp::drawSpinners()
 {
     gl::enableAlphaBlending();
-    gl::color(0.1f, 0.1f, 0.1f);
+    gl::color(mAmbientLight, mAmbientLight, mAmbientLight);
     
     for (unsigned i = 0; i < mWorld.mSpinners.size(); i++) {
         b2Body *body = mWorld.mSpinners[i].mBody;
