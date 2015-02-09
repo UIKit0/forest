@@ -47,6 +47,7 @@ public:
     ci::TriMesh2d       mObstacles;
     ci::TriMesh2d       mFrontLayer;
     ci::Surface         mColorTable;
+    b2PolygonShape      mVacuumShape;
     ci::Rand            mRand;
     float               mTriangulatePrecision;
     unsigned            mNewParticleRate;
@@ -55,10 +56,9 @@ public:
     bool                mMoveSpinnersRandomly;
     float               mSpinnerPower;
     
-    std::vector<ci::Vec2f>  mOriginPoints;
-    ci::Rectf               mOriginBounds;
     std::vector<ci::Vec2f>  mLedPoints;
     std::vector<Spinner>    mSpinners;
+    std::vector<ci::Rectf>  mSourceRects;
     
     ci::Rectf               mForceGridExtent;
     float                   mForceGridResolution;
@@ -93,6 +93,11 @@ private:
     void setupFrontLayer(const ci::Shape2d& shape);
     void setupStrands(const ci::Shape2d& shape);
     void setupSpinner(const ci::Shape2d& shape);
+    void setupSource(const ci::Shape2d& shape);
+    void setupLed(const ci::Shape2d& shape);
+    
+    void setupShapeSequence(const char *fmt, std::function<void(const ci::Shape2d &)> handler);
+    void setShapeAsConvexHull(b2PolygonShape &poly, const ci::Shape2d& shape);
     void addFixturesForMesh(b2Body *body, ci::TriMesh2d &mesh, float density = 1.0f);
     void newParticle();
     void updateSpinners(ci::midi::Hub& midi);

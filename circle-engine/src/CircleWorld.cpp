@@ -5,6 +5,7 @@
 #include "cinder/Perlin.h"
 #include "CircleWorld.h"
 #include <stdio.h>
+#include <functional>
 
 using namespace ci;
 using namespace std;
@@ -79,24 +80,20 @@ void CircleWorld::setup(svg::DocRef doc)
     setupObstacles(findShape("obstacles"));
     setupFrontLayer(findShape("front-layer"));
     setupStrands(findShape("strands"));
+    setShapeAsConvexHull(mVacuumShape, findShape("vacuum"));
+    setupShapeSequence("spinner-%d", bind( &CircleWorld::setupSpinner, this, _1 ));
+    setupShapeSequence("led-%d", bind( &CircleWorld::setupLed, this, _1 ));
+    setupShapeSequence("source-%d", bind( &CircleWorld::setupSource, this, _1 ));
+}
 
+void CircleWorld::setupShapeSequence(const char *fmt, std::function<void(const ci::Shape2d &)> handler)
+{
     for (int index = 0;; index++) {
         char name[64];
-        snprintf(name, sizeof name, "spinner-%d", index);
+        snprintf(name, sizeof name, fmt, index);
         const svg::Node* node = mSvg->findNode(name);
         if (node) {
-            setupSpinner(node->getShape());
-        } else {
-            break;
-        }
-    }
-
-    for (int index = 0;; index++) {
-        char name[64];
-        snprintf(name, sizeof name, "led-%d", index);
-        const svg::Node* node = mSvg->findNode(name);
-        if (node) {
-            mLedPoints.push_back(node->getShape().calcBoundingBox().getCenter());
+            handler(node->getShape());
         } else {
             break;
         }
@@ -132,8 +129,6 @@ void CircleWorld::setupFrontLayer(const Shape2d& shape)
 
 void CircleWorld::setupStrands(const Shape2d& shape)
 {
-    mOriginPoints.clear();
-    
     mForceGridExtent = shape.calcBoundingBox();
     mForceGridResolution = findMetric("force-grid-resolution").y;
     mForceGridStrength = findMetric("force-grid-strength").y;
@@ -143,8 +138,6 @@ void CircleWorld::setupStrands(const Shape2d& shape)
     for (unsigned contour = 0; contour < shape.getNumContours(); contour++) {
         const Path2d &path = shape.getContour(contour);
         unsigned steps = path.calcLength() / mForceGridResolution * 4.0;
-
-        mOriginPoints.push_back(path.getPosition(0.0f));
 
         for (unsigned step = 0; step < steps; step++) {
             float t = step / float(steps - 1);
@@ -158,9 +151,6 @@ void CircleWorld::setupStrands(const Shape2d& shape)
             }
         }
     }
-
-    // Bounding rectangle of all origin points
-    mOriginBounds = mOriginPoints;
 }
 
 void CircleWorld::setupSpinner(const ci::Shape2d& shape)
@@ -185,6 +175,31 @@ void CircleWorld::setupSpinner(const ci::Shape2d& shape)
     
     newSpinner.mTargetAngle = 0.0f;
     newSpinner.mJoint = dynamic_cast<b2RevoluteJoint*>(mB2World->CreateJoint(&jointDef));
+}
+
+void CircleWorld::setupSource(const ci::Shape2d& shape)
+{
+    mSourceRects.push_back(shape.calcPreciseBoundingBox());
+}
+
+void CircleWorld::setupLed(const ci::Shape2d& shape)
+{
+    mLedPoints.push_back(shape.calcBoundingBox().getCenter());
+}
+
+void CircleWorld::setShapeAsConvexHull(b2PolygonShape &poly, const Shape2d& shape)
+{
+    vector<b2Vec2> boxPoints;
+    const vector<Path2d>& contours = shape.getContours();
+
+    for (unsigned i = 0; i < contours.size(); i++) {
+        const vector<Vec2f>& points = contours[i].getPoints();
+        for (unsigned j = 0; j < points.size(); j++) {
+            boxPoints.push_back(vecToBox(points[j]));
+        }
+    }
+    
+    poly.Set(&boxPoints[0], boxPoints.size());
 }
 
 void CircleWorld::addFixturesForMesh(b2Body *body, ci::TriMesh2d &mesh, float density)
@@ -221,6 +236,10 @@ void CircleWorld::update(ci::midi::Hub& midi)
 
     mB2World->Step( 1 / 60.0f, 1, 1, 2 );
     mUpdatedSinceLastDraw = true;
+
+    b2Transform xf;
+    xf.SetIdentity();
+    mParticleSystem->DestroyParticlesInShape(mVacuumShape, xf);
 }
 
 void CircleWorld::updateSpinners(midi::Hub& midi)
@@ -337,17 +356,23 @@ void CircleWorld::applyGridForces()
 void CircleWorld::newParticle()
 {
     b2ParticleDef pd;
-    Vec2f pos = mOriginPoints[mRand.nextInt(mOriginPoints.size())];
 
-    float x = (pos.x - mOriginBounds.getX1()) / mOriginBounds.getWidth();
-    Vec2i loc( x * (mColorTable.getWidth() - 1), mCurrentTableRow );
-
+    // X axis matches individual marked rectangles in the SVG
+    int x = mRand.nextInt(mSourceRects.size());
+    Vec2i loc( min(x, mColorTable.getWidth() - 1), mCurrentTableRow );
+    Rectf& rect = mSourceRects[x];
+    
+    // Linear interpolate along Y axis
     auto pix1 = mColorTable.getPixel(loc);
     loc.y = (loc.y + 1) % mColorTable.getHeight();
     auto pix2 = mColorTable.getPixel(loc);
     float a1 = 1.0f - mSubRow;
     float a2 = mSubRow;
-    
+
+    // Random position within the source box
+    Vec2f pos(mRand.nextFloat(rect.getX1(), rect.getX2()),
+              mRand.nextFloat(rect.getY1(), rect.getY2()));
+
     pd.position = vecToBox(pos);
     pd.flags = b2_colorMixingParticle | b2_tensileParticle;
     pd.lifetime = mNewParticleLifetime;
