@@ -70,12 +70,12 @@ void CircleWorld::setup(svg::DocRef doc)
     mParticleSystem->SetColorBuffer(mColorBuffer, kMaxParticles);
     mParticleSystem->SetExpirationTimeBuffer(mExpirationTimeBuffer, kMaxParticles);
 
-    mNewParticleRate = 6;
-    mNewParticleLifetime = 25.0;
+    mNewParticleRate = 3;
+    mNewParticleLifetime = 300.0;
     mMoveSpinnersRandomly = false;
     mOneSpinnerControlsAll = false;
-    mSpinnerPower = 5.0f;
-    mStepsPerTableRow = 25;
+    mSpinnerPower = 10.0f;
+    mStepsPerTableRow = 1000;
     
     setupObstacles(findShape("obstacles"));
     setupFrontLayer(findShape("front-layer"));
