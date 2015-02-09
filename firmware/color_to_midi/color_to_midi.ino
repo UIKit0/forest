@@ -12,7 +12,7 @@
 
 #include "spinner.h"
 
-Spinner spin1(22, 23, 10);
+Spinner spin1(22, 23, 27);
 
 const int LED = 13;
 
