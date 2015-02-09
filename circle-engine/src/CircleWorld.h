@@ -48,6 +48,7 @@ public:
     ci::TriMesh2d       mFrontLayer;
     ci::Surface         mColorTable;
     b2PolygonShape      mVacuumShape;
+    ci::Rectf           mFeedbackRect;
     ci::Rand            mRand;
     float               mTriangulatePrecision;
     unsigned            mNewParticleRate;

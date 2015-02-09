@@ -98,6 +98,7 @@ void CircleEngineApp::setup()
     mParams->addButton("Reload color table", bind( &CircleEngineApp::reloadColorTable, this ), "key=c");
     mParams->addSeparator();
     mParams->addParam("Particle brightness", &mParticleRender.mBrightness).min(0.f).max(5.f).step(0.01f);
+    mParams->addParam("Feedback gain", &mParticleRender.mFeedbackGain).min(0.f).max(10.f).step(0.001f);
     mParams->addParam("Particle rate", &mWorld.mNewParticleRate);
     mParams->addParam("Particle lifetime", &mWorld.mNewParticleLifetime);
     mParams->addParam("Force grid strength", &mWorld.mForceGridStrength).min(0.f).max(100.f).step(0.01f);
@@ -181,7 +182,9 @@ void CircleEngineApp::update()
 
 void CircleEngineApp::draw()
 {
-    mParticleRender.render(*mWorld.mParticleSystem);
+    mParticleRender.render(*mWorld.mParticleSystem,
+        Rectf(mWorld.mFeedbackRect.getUpperLeft() / mParticleRect.getSize(),
+              mWorld.mFeedbackRect.getLowerRight() / mParticleRect.getSize()));
 
     gl::setViewport(Area(Vec2f(0,0), getWindowSize()));
     gl::setMatricesWindowPersp( getWindowSize() );

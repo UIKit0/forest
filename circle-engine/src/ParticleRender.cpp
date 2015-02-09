@@ -4,18 +4,21 @@
 #include "ParticleRender.h"
 
 using namespace ci;
+using namespace std;
 
 
 void ParticleRender::setup(ci::app::App &app, unsigned width, unsigned height, float scale)
 {
     mScale = scale;
     mBrightness = 2.5f;
+    mFeedbackGain = 1.44f;
 
     gl::Fbo::Format floatFormat;
     floatFormat.setColorInternalFormat(GL_RGBA32F_ARB);
 
     mFirstPassFbo = gl::Fbo(width, height, floatFormat);
-    mSecondPassFbo = gl::Fbo(width, height);
+    mSecondPassFbo[0] = gl::Fbo(width, height);
+    mSecondPassFbo[1] = gl::Fbo(width, height);
 
     mFirstPassProg = gl::GlslProg( app.loadAsset("particle.pass1.glslv"),
                                    app.loadAsset("particle.pass1.glslf") );
@@ -28,13 +31,14 @@ void ParticleRender::setup(ci::app::App &app, unsigned width, unsigned height, f
 
 gl::Texture& ParticleRender::getTexture()
 {
-    return mSecondPassFbo.getTexture(0);
+    return mSecondPassFbo[mFrame].getTexture(0);
 }
 
-void ParticleRender::render(const b2ParticleSystem &system)
+void ParticleRender::render(const b2ParticleSystem &system, const Rectf& feedback)
 {
+    mFrame = !mFrame;
     firstPass(system);
-    secondPass();
+    secondPass(feedback);
 }
 
 void ParticleRender::firstPass(const b2ParticleSystem &system)
@@ -86,12 +90,13 @@ void ParticleRender::firstPass(const b2ParticleSystem &system)
     gl::disable(GL_POINT_SPRITE);
 }
 
-void ParticleRender::secondPass()
+void ParticleRender::secondPass(const ci::Rectf &feedback)
 {
-    mSecondPassFbo.bindFramebuffer();
+    mSecondPassFbo[mFrame].bindFramebuffer();
     mSecondPassProg.bind();
 
-    gl::setViewport(Area(Vec2f(0,0), mSecondPassFbo.getSize()));
+    Vec2f size = mSecondPassFbo[mFrame].getSize();
+    gl::setViewport(Area(Vec2f(0,0), size));
     gl::disableAlphaBlending();
     gl::enable(GL_TEXTURE_2D);
     
@@ -105,9 +110,16 @@ void ParticleRender::secondPass()
     GLint position = mSecondPassProg.getAttribLocation("position");
 
     mSecondPassProg.uniform("brightness", mBrightness);
+    mSecondPassProg.uniform("feedbackGain", mFeedbackGain);
     
     mSecondPassProg.uniform("firstPass", 0);
-    mFirstPassFbo.getTexture().bind();
+    mFirstPassFbo.getTexture().bind(0);
+
+    mSecondPassProg.uniform("feedback", 1);
+    mSecondPassFbo[!mFrame].getTexture().bind(1);
+    
+    mSecondPassProg.uniform("feedbackUpperLeft", feedback.getUpperLeft());
+    mSecondPassProg.uniform("feedbackLowerRight", feedback.getLowerRight());
 
     glVertexAttribPointer(position, 2, GL_FLOAT, GL_FALSE, 0, &positionData[0]);
     glEnableVertexAttribArray(position);
@@ -116,5 +128,5 @@ void ParticleRender::secondPass()
 
     gl::disable(GL_TEXTURE_2D);
     mSecondPassProg.unbind();
-    mSecondPassFbo.unbindFramebuffer();
+    mSecondPassFbo[mFrame].unbindFramebuffer();
 }
