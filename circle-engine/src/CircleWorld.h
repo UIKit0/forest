@@ -18,6 +18,7 @@ public:
     void setup(ci::svg::DocRef doc);
     void initColors(ci::ImageSourceRef colorTable);
     void update(ci::midi::Hub& midi);
+    void newParticle();
     void clearColorCubes();
     
     const ci::svg::Node& findNode(const std::string &name);
@@ -51,8 +52,8 @@ public:
     ci::Rectf           mFeedbackRect;
     ci::Rand            mRand;
     float               mTriangulatePrecision;
-    unsigned            mNewParticleRate;
-    float               mNewParticleLifetime;
+    unsigned            mMaxParticleRate;
+    float               mMaxParticleLifetime;
     bool                mOneSpinnerControlsAll;
     bool                mMoveSpinnersRandomly;
     float               mSpinnerPower;
@@ -100,7 +101,6 @@ private:
     void setupShapeSequence(const char *fmt, std::function<void(const ci::Shape2d &)> handler);
     void setShapeAsConvexHull(b2PolygonShape &poly, const ci::Shape2d& shape);
     void addFixturesForMesh(b2Body *body, ci::TriMesh2d &mesh, float density = 1.0f);
-    void newParticle();
     void updateSpinners(ci::midi::Hub& midi);
     void applyGridForces();
 };

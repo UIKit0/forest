@@ -52,6 +52,7 @@ private:
     params::InterfaceGlRef      mParams;
     float                       mAverageFps;
     float                       mPhysicsHz;
+    float                       mTargetPhysicsHz;
     float                       mAmbientLight;
     unsigned                    mNumParticles;
     bool                        mDrawForceGrid;
@@ -90,6 +91,7 @@ void CircleEngineApp::setup()
     
     mParams->addParam("FPS", &mAverageFps, "readonly=true");
     mParams->addParam("Physics Hz", &mPhysicsHz, "readonly=true");
+    mParams->addParam("Target physics hz", &mTargetPhysicsHz);
     mParams->addParam("# particles", &mNumParticles, "readonly=true");
     mParams->addParam("LED sampling radius", &mFadecandy.samplingRadius).min(0.f).max(500.f).step(0.1f);
     mParams->addSeparator();
@@ -99,8 +101,8 @@ void CircleEngineApp::setup()
     mParams->addSeparator();
     mParams->addParam("Particle brightness", &mParticleRender.mBrightness).min(0.f).max(5.f).step(0.01f);
     mParams->addParam("Feedback gain", &mParticleRender.mFeedbackGain).min(0.f).max(10.f).step(0.001f);
-    mParams->addParam("Particle rate", &mWorld.mNewParticleRate);
-    mParams->addParam("Particle lifetime", &mWorld.mNewParticleLifetime);
+    mParams->addParam("Max particle rate", &mWorld.mMaxParticleRate);
+    mParams->addParam("Max particle lifetime", &mWorld.mMaxParticleLifetime);
     mParams->addParam("Force grid strength", &mWorld.mForceGridStrength).min(0.f).max(100.f).step(0.01f);
     mParams->addSeparator();
     mParams->addParam("Draw force grid", &mDrawForceGrid, "key=1");
@@ -131,6 +133,7 @@ void CircleEngineApp::setup()
     mDrawFrontLayer = true;
     mExiting = false;
     mAmbientLight = 0.07f;
+    mTargetPhysicsHz = 90.0f;
 
     mPhysicsThread = thread(physicsThreadFn, this);
 }
@@ -160,6 +163,11 @@ void CircleEngineApp::physicsThreadFn(CircleEngineApp *self)
         ci::Timer stepTimer(true);
         for (unsigned i = kStepsPerMeasurement; i; i--) {
             self->mWorld.update(midi);
+            if (self->mPhysicsHz > self->mTargetPhysicsHz) {
+                for (unsigned j = 0; j < self->mWorld.mMaxParticleRate; j++) {
+                    self->mWorld.newParticle();
+                }
+            }
         }
         self->mPhysicsHz = kStepsPerMeasurement / stepTimer.getSeconds();
         self->mPhysicsMutex.unlock();
@@ -175,7 +183,6 @@ void CircleEngineApp::shutdown()
 
 void CircleEngineApp::update()
 {
-
     mAverageFps = getAverageFps();
     mNumParticles = mWorld.mParticleSystem->GetParticleCount();
 }

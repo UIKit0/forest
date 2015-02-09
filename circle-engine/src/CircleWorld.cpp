@@ -70,8 +70,8 @@ void CircleWorld::setup(svg::DocRef doc)
     mParticleSystem->SetColorBuffer(mColorBuffer, kMaxParticles);
     mParticleSystem->SetExpirationTimeBuffer(mExpirationTimeBuffer, kMaxParticles);
 
-    mNewParticleRate = 3;
-    mNewParticleLifetime = 300.0;
+    mMaxParticleRate = 3;
+    mMaxParticleLifetime = 300.0;
     mMoveSpinnersRandomly = false;
     mOneSpinnerControlsAll = false;
     mSpinnerPower = 10.0f;
@@ -224,11 +224,6 @@ void CircleWorld::addFixturesForMesh(b2Body *body, ci::TriMesh2d &mesh, float de
 void CircleWorld::update(ci::midi::Hub& midi)
 {
     updateSpinners(midi);
-
-    for (unsigned i = 0; i < mNewParticleRate; i++) {
-        newParticle();
-    }
-
     applyGridForces();
 
     mStepNumber++;
@@ -376,7 +371,7 @@ void CircleWorld::newParticle()
 
     pd.position = vecToBox(pos);
     pd.flags = b2_colorMixingParticle | b2_tensileParticle;
-    pd.lifetime = mNewParticleLifetime;
+    pd.lifetime = mMaxParticleLifetime;
 
     pd.color.Set(pix1.r * a1 + pix2.r * a2,
                  pix1.g * a1 + pix2.g * a2,
