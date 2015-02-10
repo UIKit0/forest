@@ -10,8 +10,8 @@ using namespace std;
 void ParticleRender::setup(ci::app::App &app, unsigned width, unsigned height, float scale)
 {
     mScale = scale;
-    mBrightness = 2.5f;
-    mFeedbackControl = 4.0f;
+    mBrightness = 1.62f;
+    mFeedbackControl = 9.7f;
 
     gl::Fbo::Format floatFormat;
     floatFormat.setColorInternalFormat(GL_RGBA32F_ARB);

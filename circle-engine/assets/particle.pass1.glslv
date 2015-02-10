@@ -26,5 +26,5 @@ void main()
     }
 
     gl_Position = gl_ModelViewProjectionMatrix * vec4(position.xy, 0.0, 1.0);
-    sprite_color = brightness * color;
+    sprite_color = brightness * vec4(pow(color.rgb, vec3(0.5)), 1.0);
 }

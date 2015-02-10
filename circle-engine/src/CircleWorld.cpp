@@ -70,12 +70,13 @@ void CircleWorld::setup(svg::DocRef doc)
     mParticleSystem->SetColorBuffer(mColorBuffer, kMaxParticles);
     mParticleSystem->SetExpirationTimeBuffer(mExpirationTimeBuffer, kMaxParticles);
 
-    mMaxParticleRate = 3;
+    mMaxParticleRate = 5;
     mMaxParticleLifetime = 300.0;
     mMoveSpinnersRandomly = false;
     mOneSpinnerControlsAll = false;
     mSpinnerPower = 10.0f;
-    mStepsPerTableRow = 1000;
+    mForceGridStrength = 5.6f;
+    mStepsPerTableRow = 320;
     
     setupObstacles(findShape("obstacles"));
     setupFrontLayer(findShape("front-layer"));
@@ -132,7 +133,6 @@ void CircleWorld::setupStrands(const Shape2d& shape)
 {
     mForceGridExtent = shape.calcBoundingBox();
     mForceGridResolution = findMetric("force-grid-resolution").y;
-    mForceGridStrength = findMetric("force-grid-strength").y;
     mForceGridWidth = mForceGridExtent.getWidth() / mForceGridResolution;
     int forceGridHeight = mForceGridExtent.getHeight() / mForceGridResolution;
     mForceGrid.resize(mForceGridWidth * forceGridHeight);
@@ -393,7 +393,6 @@ void CircleWorld::newParticle()
     unsigned smallestCount = (unsigned)-1;
     
     for (unsigned i = 0; i < mSourceRects.size(); i++) {
-        cerr << i << ", " << closestCount[i] << endl;
         if (closestCount[i] <= smallestCount) {
             smallestCount = closestCount[i];
             x = i;

@@ -34,6 +34,7 @@ private:
     void drawSpinners();
     void drawForceGrid();
     void reloadColorTable();
+    void deleteAllParticles();
     void clearColorCubes();
     void logCurrentSpinnerAngle();
     
@@ -48,7 +49,8 @@ private:
     Rectf               mParticleRect;
     gl::VboMeshRef      mObstaclesVbo;
     gl::VboMeshRef      mFrontLayerVbo;
-    
+    gl::Texture         mColorTableTexture;
+
     params::InterfaceGlRef      mParams;
     float                       mAverageFps;
     float                       mPhysicsHz;
@@ -58,6 +60,7 @@ private:
     bool                        mDrawForceGrid;
     bool                        mDrawLedBuffer;
     bool                        mDrawLedModel;
+    bool                        mDrawColorTable;
     int                         mDrawSpinnerColorCube;
     bool                        mDrawObstacles;
     bool                        mDrawParticles;
@@ -101,6 +104,7 @@ void CircleEngineApp::setup()
     mParams->addParam("Current table row", &mWorld.mCurrentTableRow, "readonly=true");
     mParams->addParam("Steps per table row", &mWorld.mStepsPerTableRow).min(1).max(10000);
     mParams->addButton("Reload color table", bind( &CircleEngineApp::reloadColorTable, this ), "key=c");
+    mParams->addButton("Delete all particles", bind( &CircleEngineApp::deleteAllParticles, this ), "key=d");
     mParams->addSeparator();
     mParams->addParam("Particle brightness", &mParticleRender.mBrightness).min(0.f).max(5.f).step(0.01f);
     mParams->addParam("Feedback control", &mParticleRender.mFeedbackControl).min(0.f).max(100.f).step(0.001f);
@@ -114,6 +118,7 @@ void CircleEngineApp::setup()
     mParams->addParam("Draw obstacles", &mDrawObstacles, "key=4");
     mParams->addParam("Draw particles", &mDrawParticles, "key=5");
     mParams->addParam("Draw front layer", &mDrawFrontLayer, "key=6");
+    mParams->addParam("Draw color table", &mDrawColorTable, "key=7");
     mParams->addParam("Ambient light", &mAmbientLight).min(0.f).max(1.f).step(0.01f);
     mParams->addSeparator();
     mParams->addParam("Spin randomly", &mWorld.mMoveSpinnersRandomly);
@@ -134,6 +139,7 @@ void CircleEngineApp::setup()
     mDrawLedModel = false;
     mDrawParticles = true;
     mDrawFrontLayer = true;
+    mDrawColorTable = false;
     mExiting = false;
     mAmbientLight = 0.07f;
     mTargetPhysicsHz = 90.0f;
@@ -144,8 +150,20 @@ void CircleEngineApp::setup()
 void CircleEngineApp::reloadColorTable()
 {
     // Do this with the lock held, since we're reallocating the image
+    ci::ImageSourceRef table = loadImage(loadAsset("colors.png"));
     mPhysicsMutex.lock();
-    mWorld.initColors(loadImage(loadAsset("colors.png")));
+    mColorTableTexture = table;
+    mColorTableTexture.setMagFilter(GL_NEAREST);
+    mWorld.initColors(table);
+    mPhysicsMutex.unlock();
+}
+
+void CircleEngineApp::deleteAllParticles()
+{
+    mPhysicsMutex.lock();
+    for (unsigned i = 0 ; i < mWorld.mParticleSystem->GetParticleCount(); i++) {
+        mWorld.mParticleSystem->DestroyParticle(i);
+    }
     mPhysicsMutex.unlock();
 }
 
@@ -230,13 +248,34 @@ void CircleEngineApp::draw()
 
     if (mDrawLedBuffer) {
         const gl::Texture& tex = mFadecandy.getFramebufferTexture();
-        float scale = 4.0;
+        float scale = 4.0f;
         Vec2f topLeft(400, 10);
         gl::disableAlphaBlending();
         gl::color(1.0f, 1.0f, 1.0f, 1.0f);
         gl::draw(tex, Rectf(topLeft, topLeft + tex.getSize() * scale));
     }
 
+    if (mDrawColorTable) {
+        const gl::Texture& tex = mColorTableTexture;
+        float scale = 12.0f;
+        float row = mWorld.mCurrentTableRow + mWorld.mSubRow;
+        Vec2f topLeft(getWindowWidth() - 10 - tex.getWidth() * scale, 0.5f + getWindowHeight() / 4);
+        Vec2f cursorV(0.0f, row * scale);
+        Vec2f cursorH(tex.getWidth() * scale, 0.0f);
+
+        gl::color(1.0f, 1.0f, 1.0f, 1.0f);
+        gl::disableAlphaBlending();
+        gl::draw(tex, Rectf(topLeft - cursorV, topLeft - cursorV + tex.getSize() * scale));
+
+        gl::enableAlphaBlending();
+        gl::color(0.0f, 0.0f, 0.0f, 1.0f);
+        gl::lineWidth(4.0f);
+        gl::drawLine(topLeft, topLeft + cursorH);
+        gl::color(1.0f, 1.0f, 1.0f, 1.0f);
+        gl::lineWidth(1.0f);
+        gl::drawLine(topLeft, topLeft + cursorH);
+    }
+    
     if (mDrawSpinnerColorCube >= 0 && mDrawSpinnerColorCube < mWorld.mSpinners.size()) {
         auto& spinner = mWorld.mSpinners[mDrawSpinnerColorCube];
         auto& cube = spinner.mColorCube;
