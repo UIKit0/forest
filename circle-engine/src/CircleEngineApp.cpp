@@ -37,6 +37,8 @@ private:
     void deleteAllParticles();
     void clearColorCubes();
     void logCurrentSpinnerAngle();
+    void seekBackward();
+    void seekForward();
     
     static void physicsThreadFn(CircleEngineApp *self);
     
@@ -105,6 +107,8 @@ void CircleEngineApp::setup()
     mParams->addParam("Steps per table row", &mWorld.mStepsPerTableRow).min(1).max(10000);
     mParams->addButton("Reload color table", bind( &CircleEngineApp::reloadColorTable, this ), "key=c");
     mParams->addButton("Delete all particles", bind( &CircleEngineApp::deleteAllParticles, this ), "key=d");
+    mParams->addButton("Seek backward", bind( &CircleEngineApp::seekBackward, this ), "key=,");
+    mParams->addButton("Seek forward", bind( &CircleEngineApp::seekForward, this ), "key=.");
     mParams->addSeparator();
     mParams->addParam("Particle brightness", &mParticleRender.mBrightness).min(0.f).max(5.f).step(0.01f);
     mParams->addParam("Feedback control", &mParticleRender.mFeedbackControl).min(0.f).max(100.f).step(0.001f);
@@ -171,6 +175,20 @@ void CircleEngineApp::clearColorCubes()
 {
     mPhysicsMutex.lock();
     mWorld.clearColorCubes();
+    mPhysicsMutex.unlock();
+}
+
+void CircleEngineApp::seekBackward()
+{
+    mPhysicsMutex.lock();
+    mWorld.mStepNumber -= min<uint64_t>(mWorld.mStepsPerTableRow, mWorld.mStepNumber);
+    mPhysicsMutex.unlock();
+}
+
+void CircleEngineApp::seekForward()
+{
+    mPhysicsMutex.lock();
+    mWorld.mStepNumber += mWorld.mStepsPerTableRow;
     mPhysicsMutex.unlock();
 }
 
