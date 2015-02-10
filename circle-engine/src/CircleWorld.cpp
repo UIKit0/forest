@@ -359,6 +359,13 @@ void CircleWorld::applyGridForces()
     }
 }
 
+void CircleWorld::particleBurst()
+{
+    for (unsigned i = 0; i < mMaxParticleRate; i++) {
+        newParticle();
+    }
+}
+
 void CircleWorld::newParticle()
 {
     b2ParticleDef pd;

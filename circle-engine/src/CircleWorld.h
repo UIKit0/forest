@@ -19,6 +19,7 @@ public:
     void initColors(ci::ImageSourceRef colorTable);
     void update(ci::midi::Hub& midi);
     void newParticle();
+    void particleBurst();
     void clearColorCubes();
     
     const ci::svg::Node& findNode(const std::string &name);

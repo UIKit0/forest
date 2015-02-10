@@ -41,6 +41,7 @@ private:
     void seekForward();
     
     static void physicsThreadFn(CircleEngineApp *self);
+    void physicsLoop(ci::midi::Hub &midi);
     
     FadecandyGL         mFadecandy;
     thread              mPhysicsThread;
@@ -53,6 +54,9 @@ private:
     gl::VboMeshRef      mFrontLayerVbo;
     gl::Texture         mColorTableTexture;
 
+    int                 mSeekPending;
+    mutex               mSeekMutex;
+    
     params::InterfaceGlRef      mParams;
     float                       mAverageFps;
     float                       mPhysicsHz;
@@ -180,37 +184,54 @@ void CircleEngineApp::clearColorCubes()
 
 void CircleEngineApp::seekBackward()
 {
-    mPhysicsMutex.lock();
-    mWorld.mStepNumber -= min<uint64_t>(mWorld.mStepsPerTableRow, mWorld.mStepNumber);
-    mPhysicsMutex.unlock();
+    mSeekMutex.lock();
+    mSeekPending--;
+    mSeekMutex.unlock();
 }
 
 void CircleEngineApp::seekForward()
 {
-    mPhysicsMutex.lock();
-    mWorld.mStepNumber += mWorld.mStepsPerTableRow;
-    mPhysicsMutex.unlock();
+    mSeekMutex.lock();
+    mSeekPending++;
+    mSeekMutex.unlock();
 }
 
 void CircleEngineApp::physicsThreadFn(CircleEngineApp *self)
 {
-    const unsigned kStepsPerMeasurement = 10;
-    ci::midi::Hub midi;
+    midi::Hub midi;
     
     while (!self->mExiting) {
-        self->mPhysicsMutex.lock();
-        ci::Timer stepTimer(true);
-        for (unsigned i = kStepsPerMeasurement; i; i--) {
-            self->mWorld.update(midi);
-            if (self->mPhysicsHz > self->mTargetPhysicsHz) {
-                for (unsigned j = 0; j < self->mWorld.mMaxParticleRate; j++) {
-                    self->mWorld.newParticle();
-                }
-            }
-        }
-        self->mPhysicsHz = kStepsPerMeasurement / stepTimer.getSeconds();
-        self->mPhysicsMutex.unlock();
+        self->physicsLoop(midi);
     }
+}
+
+void CircleEngineApp::physicsLoop(midi::Hub &midi)
+{
+    const unsigned kStepsPerMeasurement = 10;
+    
+    mSeekMutex.lock();
+    int seekSteps = mSeekPending;
+    mSeekPending = 0;
+    mSeekMutex.unlock();
+    
+    mPhysicsMutex.lock();
+
+    int64_t step = mWorld.mStepNumber;
+    step += seekSteps * (int)mWorld.mStepsPerTableRow;
+    if (step < 0) step += mWorld.mStepsPerTableRow * mWorld.mColorTable.getHeight();
+    mWorld.mStepNumber = step;
+
+    ci::Timer stepTimer(true);
+
+    for (unsigned i = kStepsPerMeasurement; i; i--) {
+        mWorld.update(midi);
+        if (mPhysicsHz > mTargetPhysicsHz) {
+            mWorld.particleBurst();
+        }
+    }
+    
+    mPhysicsHz = kStepsPerMeasurement / stepTimer.getSeconds();
+    mPhysicsMutex.unlock();
 }
 
 void CircleEngineApp::shutdown()
