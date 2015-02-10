@@ -67,6 +67,7 @@ public:
     float                   mForceGridStrength;
     unsigned                mForceGridWidth;
     std::vector<ci::Vec2f>  mForceGrid;
+    ci::Surface32f          mForceGridSurface;
     
     b2World				*mB2World;
     b2Body              *mGround;

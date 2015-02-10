@@ -15,15 +15,25 @@ class ParticleRender
 {
 public:
     void setup(ci::app::App &app, unsigned width, unsigned height, float scale);
+
+    // Vector LUT for perturbing feedback image according to strand vector grid
+    void setForceGrid(ci::ImageSourceRef image, ci::Rectf extent);
+    
+    // Render particle system and video feedback to texture
     void render(const b2ParticleSystem &system, const ci::Rectf &feedback);
+
+    // Read results of last render()
     ci::gl::Texture &getTexture();
     
+    // Tweakable things
     float           mBrightness;
-    float           mFeedbackGain;
+    float           mFeedbackControl;
 
 private:
     ci::gl::Fbo     mFirstPassFbo;
     ci::gl::Fbo     mSecondPassFbo[2];
+    ci::gl::Texture mForceGridTexture;
+    ci::Rectf       mForceGridExtent;
     float           mScale;
     bool            mFrame;
 

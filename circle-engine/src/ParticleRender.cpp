@@ -11,7 +11,7 @@ void ParticleRender::setup(ci::app::App &app, unsigned width, unsigned height, f
 {
     mScale = scale;
     mBrightness = 2.5f;
-    mFeedbackGain = 1.44f;
+    mFeedbackControl = 2.8f;
 
     gl::Fbo::Format floatFormat;
     floatFormat.setColorInternalFormat(GL_RGBA32F_ARB);
@@ -32,6 +32,12 @@ void ParticleRender::setup(ci::app::App &app, unsigned width, unsigned height, f
 gl::Texture& ParticleRender::getTexture()
 {
     return mSecondPassFbo[mFrame].getTexture(0);
+}
+
+void ParticleRender::setForceGrid(ImageSourceRef image, Rectf extent)
+{
+    mForceGridTexture = image;
+    mForceGridExtent = extent;
 }
 
 void ParticleRender::render(const b2ParticleSystem &system, const Rectf& feedback)
@@ -110,7 +116,7 @@ void ParticleRender::secondPass(const ci::Rectf &feedback)
     GLint position = mSecondPassProg.getAttribLocation("position");
 
     mSecondPassProg.uniform("brightness", mBrightness);
-    mSecondPassProg.uniform("feedbackGain", mFeedbackGain);
+    mSecondPassProg.uniform("feedbackControl", mFeedbackControl);
     
     mSecondPassProg.uniform("firstPass", 0);
     mFirstPassFbo.getTexture().bind(0);
@@ -118,9 +124,17 @@ void ParticleRender::secondPass(const ci::Rectf &feedback)
     mSecondPassProg.uniform("feedback", 1);
     mSecondPassFbo[!mFrame].getTexture().bind(1);
     
+    mSecondPassProg.uniform("forceGrid", 2);
+    mForceGridTexture.bind(2);
+    
+    mSecondPassProg.uniform("texelSize", Vec2f(1.0f / mFirstPassFbo.getWidth(), 1.0f / mFirstPassFbo.getHeight()));
+
     mSecondPassProg.uniform("feedbackUpperLeft", feedback.getUpperLeft());
     mSecondPassProg.uniform("feedbackLowerRight", feedback.getLowerRight());
 
+    mSecondPassProg.uniform("forceGridUpperLeft", mForceGridExtent.getUpperLeft());
+    mSecondPassProg.uniform("forceGridLowerRight", mForceGridExtent.getLowerRight());
+    
     glVertexAttribPointer(position, 2, GL_FLOAT, GL_FALSE, 0, &positionData[0]);
     glEnableVertexAttribArray(position);
     glDrawArrays(GL_QUADS, 0, 4);

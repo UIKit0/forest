@@ -134,7 +134,8 @@ void CircleWorld::setupStrands(const Shape2d& shape)
     mForceGridResolution = findMetric("force-grid-resolution").y;
     mForceGridStrength = findMetric("force-grid-strength").y;
     mForceGridWidth = mForceGridExtent.getWidth() / mForceGridResolution;
-    mForceGrid.resize(mForceGridWidth * int(mForceGridExtent.getHeight() / mForceGridResolution));
+    int forceGridHeight = mForceGridExtent.getHeight() / mForceGridResolution;
+    mForceGrid.resize(mForceGridWidth * forceGridHeight);
     
     for (unsigned contour = 0; contour < shape.getNumContours(); contour++) {
         const Path2d &path = shape.getContour(contour);
@@ -150,6 +151,15 @@ void CircleWorld::setupStrands(const Shape2d& shape)
             if (x < mForceGridWidth && idx < mForceGrid.size()) {
                 mForceGrid[idx] += tangent;
             }
+        }
+    }
+
+    mForceGridSurface = ci::Surface32f(mForceGridWidth, forceGridHeight, false, SurfaceChannelOrder::RGB);
+
+    for (unsigned y = 0; y < forceGridHeight; y++) {
+        for (unsigned x = 0; x < mForceGridWidth; x++) {
+            Vec2f force = mForceGrid[x + y * mForceGridWidth];
+            mForceGridSurface.setPixel(Vec2i(x,y), Color(force.x, force.y, 0.0f));
         }
     }
 }

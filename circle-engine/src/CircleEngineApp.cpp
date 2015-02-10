@@ -86,7 +86,10 @@ void CircleEngineApp::setup()
     float scale = 2;
     mParticleRect = Rectf(0, 0, getWindowWidth(), getWindowHeight());
     mParticleRender.setup( *this, getWindowWidth() / scale, getWindowHeight() / scale, 1.0f / scale / mWorld.kMetersPerPoint );
- 
+    mParticleRender.setForceGrid(mWorld.mForceGridSurface,
+                                 Rectf(mWorld.mForceGridExtent.getUpperLeft() / mParticleRect.getSize(),
+                                       mWorld.mForceGridExtent.getLowerRight() / mParticleRect.getSize()));
+    
     mParams = params::InterfaceGl::create( getWindow(), "Engine parameters", toPixels(Vec2i(240, 600)) );
     
     mParams->addParam("FPS", &mAverageFps, "readonly=true");
@@ -100,7 +103,7 @@ void CircleEngineApp::setup()
     mParams->addButton("Reload color table", bind( &CircleEngineApp::reloadColorTable, this ), "key=c");
     mParams->addSeparator();
     mParams->addParam("Particle brightness", &mParticleRender.mBrightness).min(0.f).max(5.f).step(0.01f);
-    mParams->addParam("Feedback gain", &mParticleRender.mFeedbackGain).min(0.f).max(10.f).step(0.001f);
+    mParams->addParam("Feedback control", &mParticleRender.mFeedbackControl).min(0.f).max(100.f).step(0.001f);
     mParams->addParam("Max particle rate", &mWorld.mMaxParticleRate);
     mParams->addParam("Max particle lifetime", &mWorld.mMaxParticleLifetime);
     mParams->addParam("Force grid strength", &mWorld.mForceGridStrength).min(0.f).max(100.f).step(0.01f);
