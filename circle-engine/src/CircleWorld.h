@@ -8,6 +8,7 @@
 #include "cinder/Rand.h"
 #include "cinder/Triangulate.h"
 #include "cinder/TriMesh.h"
+#include "cinder/Timer.h"
 #include "Box2D/Box2D.h"
 #include "MidiHub.h"
 #include "ColorCubePoints.h"
@@ -52,6 +53,7 @@ public:
     b2PolygonShape      mVacuumShape;
     ci::Rectf           mFeedbackRect;
     ci::Rand            mRand;
+    ci::Timer           mTimer;
     float               mTriangulatePrecision;
     unsigned            mMaxParticleRate;
     float               mMaxParticleLifetime;

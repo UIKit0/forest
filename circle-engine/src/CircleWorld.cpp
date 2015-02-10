@@ -50,6 +50,8 @@ void CircleWorld::setup(svg::DocRef doc)
 {
     mSvg = doc;
 
+    mTimer.start();
+
     b2Vec2 gravity( 0.0f, vecToBox(findMetric("gravity")).y );
     mB2World = new b2World(gravity);
 
@@ -76,7 +78,7 @@ void CircleWorld::setup(svg::DocRef doc)
     mOneSpinnerControlsAll = false;
     mSpinnerPower = 10.0f;
     mForceGridStrength = 5.6f;
-    mStepsPerTableRow = 600;
+    mStepsPerTableRow = 1000;
     
     setupObstacles(findShape("obstacles"));
     setupFrontLayer(findShape("front-layer"));
@@ -276,7 +278,7 @@ void CircleWorld::updateSpinners(midi::Hub& midi)
         if (mMoveSpinnersRandomly) {
             // Random sensor data
             Perlin p(4, 0);
-            spinner.sensorAngle(p.fBm(mStepNumber * 0.002, i) * 50.0, mSpinnerPower);
+            spinner.sensorAngle(p.fBm(mTimer.getSeconds() * 0.2, i) * 50.0, mSpinnerPower);
         
         } else if (spinner.mColorCube.isAngleReliable()) {
             // Real sensor data
@@ -412,12 +414,8 @@ void CircleWorld::newParticle()
     Vec2i loc( min(x, mColorTable.getWidth() - 1), mCurrentTableRow );
     Rectf& rect = mSourceRects[x];
     
-    // Linear interpolate along Y axis
-    auto pix1 = mColorTable.getPixel(loc);
-    loc.y = (loc.y + 1) % mColorTable.getHeight();
-    auto pix2 = mColorTable.getPixel(loc);
-    float a1 = 1.0f - mSubRow;
-    float a2 = mSubRow;
+    // Lookup from color table without interpolation
+    auto pix = mColorTable.getPixel(loc);
 
     // Random position within the source box
     Vec2f pos(mRand.nextFloat(rect.getX1(), rect.getX2()),
@@ -427,9 +425,7 @@ void CircleWorld::newParticle()
     pd.flags = b2_colorMixingParticle | b2_tensileParticle;
     pd.lifetime = mMaxParticleLifetime;
 
-    pd.color.Set(pix1.r * a1 + pix2.r * a2,
-                 pix1.g * a1 + pix2.g * a2,
-                 pix1.b * a1 + pix2.b * a2, 255);
+    pd.color.Set(pix.r, pix.g, pix.b, 255);
 
     mParticleSystem->CreateParticle(pd);
 }
