@@ -38,15 +38,12 @@ void main()
         if (t > 0.0 && t < 1.0) {
 
             vec3 blend = feedbackSample * feedbackControl + c;
-            if (blend.r > 1.0) {
-                blend /= blend.r;
-            }
-            if (blend.g > 1.0) {
-                blend /= blend.g;
-            }
-            if (blend.b > 1.0) {
-                blend /= blend.b;
-            }
+
+            float limit = 1.77;
+
+            if (blend.r > limit) blend *= limit / blend.r;
+            if (blend.g > limit) blend *= limit / blend.g;
+            if (blend.b > limit) blend *= limit / blend.b;
 
             // Blend along a nonlinear vertical gradient
             c = mix(c, blend, 1.0 - 1.0 / (1.0 + t));

@@ -10073,7 +10073,7 @@
 	<rect id="source-14" x="1068.203" y="660.17" display="inline" fill="#B6FF91" width="26" height="27.333"/>
 	<rect id="source-15" x="1122.835" y="640.502" display="inline" fill="#B6FF91" width="26" height="27.333"/>
 </g>
-<rect id="feedback" x="63.619" y="91.552" display="none" opacity="0.5" fill="#FFFFFF" stroke="#000000" stroke-miterlimit="10" enable-background="new    " width="1166.941" height="165.823"/>
+<rect id="feedback" x="63.619" y="91.552" opacity="0.5" fill="#FFFFFF" stroke="#000000" stroke-miterlimit="10" enable-background="new    " width="1166.941" height="224.118"/>
 <g id="obstacles">
 	<path d="M350.399,358.5c-0.151-1.233-0.047-2.43,0.228-3.579c-4.304-5.083-11.187-6.873-10.651-15.897
 		c-1.965,1.659-2.616,2.891-2.612,3.546c-0.292,0.397-0.585,0.795-0.878,1.192c0.508,2.432,7.566,20.921,14.615,28.171
