@@ -363,8 +363,46 @@ void CircleWorld::newParticle()
 {
     b2ParticleDef pd;
 
+    // Choose the particle emitter that is closest to fewest existing particles
+
+    vector<unsigned> closestCount(mSourceRects.size());
+    unsigned particleCount = mParticleSystem->GetParticleCount();
+
+    fill(closestCount.begin(), closestCount.end(), 0);
+    
+    for (unsigned i = 0; i < particleCount; i++) {
+        Vec2f position = vecFromBox(mPositionBuffer[i]);
+        float closestDist2 = INFINITY;
+        int closestIndex = -1;
+        
+        // Measure the X axis only
+        for (unsigned j = 0; j < mSourceRects.size(); j++) {
+            float d = mSourceRects[j].getCenter().x - position.x;
+            float dist2 = d * d;
+            if (dist2 < closestDist2) {
+                closestDist2 = dist2;
+                closestIndex = j;
+            }
+        }
+    
+        assert(closestIndex >= 0);
+        closestCount[closestIndex]++;
+    }
+    
+    int x = -1;
+    unsigned smallestCount = (unsigned)-1;
+    
+    for (unsigned i = 0; i < mSourceRects.size(); i++) {
+        cerr << i << ", " << closestCount[i] << endl;
+        if (closestCount[i] <= smallestCount) {
+            smallestCount = closestCount[i];
+            x = i;
+        }
+    }
+    
     // X axis matches individual marked rectangles in the SVG
-    int x = mRand.nextInt(mSourceRects.size());
+
+    assert(x >= 0 && x < mSourceRects.size());
     Vec2i loc( min(x, mColorTable.getWidth() - 1), mCurrentTableRow );
     Rectf& rect = mSourceRects[x];
     

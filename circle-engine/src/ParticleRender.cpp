@@ -11,7 +11,7 @@ void ParticleRender::setup(ci::app::App &app, unsigned width, unsigned height, f
 {
     mScale = scale;
     mBrightness = 2.5f;
-    mFeedbackControl = 2.8f;
+    mFeedbackControl = 4.0f;
 
     gl::Fbo::Format floatFormat;
     floatFormat.setColorInternalFormat(GL_RGBA32F_ARB);

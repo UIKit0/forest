@@ -19,7 +19,7 @@ void main()
 
     // Sample location perturbed by force grid, for optical flow
     vec2 forceCoord = (v_position - forceGridUpperLeft) / (forceGridLowerRight - forceGridUpperLeft);
-    vec2 force = texture2D(forceGrid, forceCoord).rg * 1e-6 * feedbackControl;
+    vec2 force = texture2D(forceGrid, forceCoord).rg * 2e-6 * feedbackControl;
     vec2 samplePos = v_position - force;
 
     // Sampled feedback from previous frame, with box diffusion
