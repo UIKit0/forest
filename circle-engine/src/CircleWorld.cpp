@@ -77,7 +77,7 @@ void CircleWorld::setup(svg::DocRef doc)
     mMoveSpinnersRandomly = false;
     mOneSpinnerControlsAll = false;
     mSpinnerPower = 10.0f;
-    mForceGridStrength = 5.6f;
+    mForceGridStrength = 6.0f;
     mStepsPerTableRow = 1000;
     
     setupObstacles(findShape("obstacles"));

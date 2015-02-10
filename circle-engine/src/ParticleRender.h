@@ -27,7 +27,9 @@ public:
     
     // Tweakable things
     float           mBrightness;
-    float           mFeedbackControl;
+    float           mFeedbackGain;
+    float           mFeedbackExp;
+    float           mFeedbackFlow;
 
 private:
     ci::gl::Fbo     mFirstPassFbo;

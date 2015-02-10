@@ -7,7 +7,7 @@ varying vec2 v_position;
 uniform sampler2D feedback, forceGrid;
 uniform vec2 forceGridUpperLeft, forceGridLowerRight;
 uniform vec2 feedbackUpperLeft, feedbackLowerRight;
-uniform float feedbackControl;
+uniform float feedbackGain, feedbackExp, feedbackFlow;
 uniform vec2 texelSize;
 
 void main()
@@ -19,7 +19,7 @@ void main()
 
     // Sample location perturbed by force grid, for optical flow
     vec2 forceCoord = (v_position - forceGridUpperLeft) / (forceGridLowerRight - forceGridUpperLeft);
-    vec2 force = texture2D(forceGrid, forceCoord).rg * 2e-6 * feedbackControl;
+    vec2 force = texture2D(forceGrid, forceCoord).rg * 2e-6 * feedbackFlow;
     vec2 samplePos = v_position - force;
 
     // Sampled feedback from previous frame, with box diffusion
@@ -30,23 +30,18 @@ void main()
         }
     }
     feedbackSample *= 1.0 / (7.0*7.0);
-    feedbackSample = feedbackSample * vec3(feedbackControl);
 
     // Feedback mask test
     if (v_position.x > feedbackUpperLeft.x && v_position.x < feedbackLowerRight.x) {
         float t = (v_position.y - feedbackLowerRight.y) / (feedbackUpperLeft.y - feedbackLowerRight.y);
         if (t > 0.0 && t < 1.0) {
 
-            vec3 blend = feedbackSample * feedbackControl + c;
+            vec3 blend = max(feedbackSample, c) * feedbackGain;
 
-            float limit = 1.77;
-
-            if (blend.r > limit) blend *= limit / blend.r;
-            if (blend.g > limit) blend *= limit / blend.g;
-            if (blend.b > limit) blend *= limit / blend.b;
+            blend = length(blend) * pow(normalize(blend), vec3(feedbackExp));
 
             // Blend along a nonlinear vertical gradient
-            c = mix(c, blend, 1.0 - 1.0 / (1.0 + t));
+            c = pow(mix(c, blend, 1.0 - 1.0 / (1.0 + t)), vec3(1.0/feedbackExp));
         }
     }
 

@@ -11,8 +11,10 @@ void ParticleRender::setup(ci::app::App &app, unsigned width, unsigned height, f
 {
     mScale = scale;
     mBrightness = 1.62f;
-    mFeedbackControl = 1.8f;
-
+    mFeedbackGain = 2.259f;
+    mFeedbackExp = 1.072f;
+    mFeedbackFlow = 2.0f;
+    
     gl::Fbo::Format floatFormat;
     floatFormat.setColorInternalFormat(GL_RGBA32F_ARB);
 
@@ -116,7 +118,9 @@ void ParticleRender::secondPass(const ci::Rectf &feedback)
     GLint position = mSecondPassProg.getAttribLocation("position");
 
     mSecondPassProg.uniform("brightness", mBrightness);
-    mSecondPassProg.uniform("feedbackControl", mFeedbackControl);
+    mSecondPassProg.uniform("feedbackGain", mFeedbackGain);
+    mSecondPassProg.uniform("feedbackExp", mFeedbackExp);
+    mSecondPassProg.uniform("feedbackFlow", mFeedbackFlow);
     
     mSecondPassProg.uniform("firstPass", 0);
     mFirstPassFbo.getTexture().bind(0);
