@@ -262,10 +262,13 @@ void CircleEngineApp::draw()
         Vec2f topLeft(getWindowWidth() - 10 - tex.getWidth() * scale, 0.5f + getWindowHeight() / 4);
         Vec2f cursorV(0.0f, row * scale);
         Vec2f cursorH(tex.getWidth() * scale, 0.0f);
-
+        Vec2f texV(0.0f, tex.getHeight() * scale);
+        
         gl::color(1.0f, 1.0f, 1.0f, 1.0f);
         gl::disableAlphaBlending();
         gl::draw(tex, Rectf(topLeft - cursorV, topLeft - cursorV + tex.getSize() * scale));
+        gl::draw(tex, Rectf(topLeft - cursorV - texV, topLeft - cursorV + tex.getSize() * scale - texV));
+        gl::draw(tex, Rectf(topLeft - cursorV + texV, topLeft - cursorV + tex.getSize() * scale + texV));
 
         gl::enableAlphaBlending();
         gl::color(0.0f, 0.0f, 0.0f, 1.0f);
