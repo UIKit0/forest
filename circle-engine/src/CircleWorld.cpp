@@ -327,12 +327,21 @@ void CircleWorld::Spinner::sensorAngle(float angle, float motorPower)
     if (diff <= -M_PI/2) diff += M_PI;
     mTargetAngle += diff;
     
-    // The joint acts like a spring connected between the virtual spinner and the physical one
-    mJoint->EnableMotor(true);
-    mJoint->SetMotorSpeed((mBody->GetAngle() - mTargetAngle) * motorPower);
+    if (fabs(diff) < M_PI*4) {
+        // Close enough to the target (two rotations) we'll act like a servo motor
+    
+        // The joint acts like a spring connected between the virtual spinner and the physical one
+        mJoint->EnableMotor(true);
+        mJoint->SetMotorSpeed((mBody->GetAngle() - mTargetAngle) * motorPower);
 
-    // These motors have a very high "mass" due to being attached to the obstacle body
-    mJoint->SetMaxMotorTorque(1e20);
+        // These motors have a very high "mass" due to being attached to the obstacle body
+        mJoint->SetMaxMotorTorque(1e20);
+
+    } else {
+        // Lots of rotation to catch up, warp there instantly
+        mJoint->EnableMotor(false);
+        mBody->SetTransform(mBody->GetPosition(), mTargetAngle);
+    }
 }
 
 void CircleWorld::clearColorCubes()
