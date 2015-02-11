@@ -53,6 +53,7 @@ private:
     Rectf               mParticleRect;
     gl::VboMeshRef      mObstaclesVbo;
     gl::VboMeshRef      mFrontLayerVbo;
+    gl::Fbo             mFrontLayerFbo;
     gl::Texture         mColorTableTexture;
 
     int                 mSeekPending;
@@ -88,6 +89,7 @@ void CircleEngineApp::setup()
     mWorld.setup(svg::Doc::create(loadAsset("world.svg")));
     mObstaclesVbo = gl::VboMesh::create(mWorld.mObstacles);
     mFrontLayerVbo = gl::VboMesh::create(mWorld.mFrontLayer);
+
     reloadColorTable();
 
     mFadecandy.setup(*this);
@@ -133,7 +135,7 @@ void CircleEngineApp::setup()
     mParams->addParam("Draw color table", &mDrawColorTable, "key=7");
     mParams->addParam("Ambient light", &mAmbientLight).min(0.f).max(1.f).step(0.01f);
     mParams->addSeparator();
-    mParams->addParam("Spin randomly", &mWorld.mMoveSpinnersRandomly);
+    mParams->addParam("Spin randomly", &mWorld.mMoveSpinnersRandomly, "key=r");
     mParams->addParam("Spinner motor power", &mWorld.mSpinnerPower).min(0.f).max(100.f).step(.01f);
     mParams->addParam("Show color cube test", &mDrawSpinnerColorCube).min(-1).max(40).keyDecr("[").keyIncr("]");
     mParams->addParam("One spinner ctrl all", &mWorld.mOneSpinnerControlsAll);
@@ -422,6 +424,7 @@ void CircleEngineApp::drawObstacles()
     gl::draw(mObstaclesVbo);
 
     gl::enableWireframe();
+    gl::lineWidth(0.5f);
     gl::color(0.5f, 0.5f, 0.5f);
     gl::draw(mObstaclesVbo);
     gl::disableWireframe();
@@ -429,9 +432,26 @@ void CircleEngineApp::drawObstacles()
 
 void CircleEngineApp::drawFrontLayer()
 {
+    if (!mFrontLayerFbo) {
+        Vec2f size = getWindowSize();
+        float oversample = 2;
+        mFrontLayerFbo = gl::Fbo(size.x * oversample, size.y * oversample, true);
+        mFrontLayerFbo.bindFramebuffer();
+        
+        gl::setViewport(Area(Vec2f(0.0f, 0.0f), mFrontLayerFbo.getSize()));
+        gl::setMatricesWindow(size, false);
+        gl::clear(ColorA(0.0f, 0.0f, 0.0f, 0.0f));
+        
+        gl::enableAlphaBlending();
+        gl::color(1.0f, 1.0f, 1.0f);
+        gl::draw(mFrontLayerVbo);
+        
+        mFrontLayerFbo.unbindFramebuffer();
+    }
+    
     gl::enableAlphaBlending();
     gl::color(mAmbientLight, mAmbientLight, mAmbientLight);
-    gl::draw(mFrontLayerVbo);
+    gl::draw(mFrontLayerFbo.getTexture(), Rectf(Vec2f(0,0), getWindowSize()));
 }
 
 void CircleEngineApp::drawSpinners()
