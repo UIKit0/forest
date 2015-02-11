@@ -27,6 +27,7 @@ public:
     void shutdown();
     void update();
     void draw();
+    void keyDown(KeyEvent event);
 
 private:
     void drawObstacles();
@@ -100,6 +101,7 @@ void CircleEngineApp::setup()
                                        mWorld.mForceGridExtent.getLowerRight() / mParticleRect.getSize()));
     
     mParams = params::InterfaceGl::create( getWindow(), "Engine parameters", toPixels(Vec2i(240, 600)) );
+    mParams->minimize();
     
     mParams->addParam("FPS", &mAverageFps, "readonly=true");
     mParams->addParam("Physics Hz", &mPhysicsHz, "readonly=true");
@@ -155,6 +157,16 @@ void CircleEngineApp::setup()
     mTargetPhysicsHz = 90.0f;
 
     mPhysicsThread = thread(physicsThreadFn, this);
+}
+
+void CircleEngineApp::keyDown(KeyEvent event)
+{
+    if (event.getCode() == KeyEvent::KEY_TAB) {
+        if (mParams->isMaximized())
+            mParams->minimize();
+        else
+            mParams->maximize();
+    }
 }
 
 void CircleEngineApp::reloadColorTable()
