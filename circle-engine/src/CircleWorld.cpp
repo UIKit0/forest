@@ -59,7 +59,7 @@ void CircleWorld::setup(svg::DocRef doc)
     mTriangulatePrecision = 1.0f / metricParticleRadius.y;
     
     b2ParticleSystemDef particleSystemDef;
-    particleSystemDef.colorMixingStrength = 0.01;
+    particleSystemDef.colorMixingStrength = 0.05f;
     mParticleSystem = mB2World->CreateParticleSystem(&particleSystemDef);
     mParticleSystem->SetGravityScale(0.4f);
     mParticleSystem->SetDensity(1.2f);
