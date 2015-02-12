@@ -29,7 +29,6 @@ public:
     // Tweakable things
     float           mBrightness;
     float           mFeedbackGain;
-    float           mFeedbackExp;
     float           mFeedbackFlow;
 
 private:

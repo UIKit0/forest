@@ -270,7 +270,7 @@ void CircleWorld::updateSpinners(midi::Hub& midi)
 
         if (mMoveSpinnersRandomly) {
             // Random sensor data
-            spinner.sensorAngle(mPerlin.fBm(mTimer.getSeconds() * 0.2, i) * 50.0, mSpinnerPower);
+            spinner.sensorAngle(mPerlin.fBm(mTimer.getSeconds() * 0.1, i) * 50.0, mSpinnerPower);
         
         } else if (spinner.mColorCube.isAngleReliable()) {
             // Real sensor data

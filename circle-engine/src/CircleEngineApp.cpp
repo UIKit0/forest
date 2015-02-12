@@ -119,7 +119,6 @@ void CircleEngineApp::setup()
     mParams->addSeparator();
     mParams->addParam("Particle brightness", &mParticleRender.mBrightness).min(0.f).max(5.f).step(0.01f);
     mParams->addParam("Feedback gain", &mParticleRender.mFeedbackGain).min(0.f).max(10.f).step(0.001f);
-    mParams->addParam("Feedback exponent", &mParticleRender.mFeedbackExp).min(0.f).max(10.f).step(0.001f);
     mParams->addParam("Feedback flow", &mParticleRender.mFeedbackFlow).min(-10.f).max(10.f).step(0.001f);
     mParams->addParam("Max particle rate", &mWorld.mMaxParticleRate);
     mParams->addParam("Max particle lifetime", &mWorld.mMaxParticleLifetime);

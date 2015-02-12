@@ -6,7 +6,7 @@ varying vec2 v_position;
 
 uniform sampler2D feedback, forceGrid, feedbackMask;
 uniform vec2 forceGridUpperLeft, forceGridLowerRight;
-uniform float feedbackGain, feedbackExp, feedbackFlow;
+uniform float feedbackGain, feedbackFlow;
 uniform vec2 texelSize;
 
 void main()
@@ -16,9 +16,9 @@ void main()
     vec3 c = brightness * texel.rgb / texel.w;
     c = c * c * c;
 
-    // Feedback mask test
     vec4 mask = texture2D(feedbackMask, v_position);
-    if (mask.r > 0.5) {
+    if (mask.b > 0.5) {
+        // Flow feedback area
 
         // Sample location perturbed by force grid, for optical flow
         vec2 forceCoord = (v_position - forceGridUpperLeft) / (forceGridLowerRight - forceGridUpperLeft);
@@ -35,7 +35,7 @@ void main()
         feedbackSample *= 1.0 / (7.0*7.0);
 
         float t = 0.7 - v_position.y + feedbackGain;
-        c = pow(c + pow(feedbackSample * t, vec3(feedbackExp)), vec3(1.0f/feedbackExp));
+        c = c + feedbackSample * t;
     }
 
     gl_FragColor = vec4(c.rgb, 1.0);

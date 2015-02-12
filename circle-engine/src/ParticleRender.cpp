@@ -10,10 +10,9 @@ using namespace std;
 void ParticleRender::setup(ci::app::App &app, unsigned width, unsigned height, float scale)
 {
     mScale = scale;
-    mBrightness = 1.8f;
-    mFeedbackGain = 2.176f;
-    mFeedbackExp = 1.072f;
-    mFeedbackFlow = 1.0f;
+    mBrightness = 1.7f;
+    mFeedbackGain = 0.506f;
+    mFeedbackFlow = 6.0f;
     
     gl::Fbo::Format floatFormat;
     floatFormat.setColorInternalFormat(GL_RGBA32F_ARB);
@@ -119,7 +118,6 @@ void ParticleRender::secondPass(const ci::gl::Texture& feedbackMask)
 
     mSecondPassProg.uniform("brightness", mBrightness);
     mSecondPassProg.uniform("feedbackGain", mFeedbackGain);
-    mSecondPassProg.uniform("feedbackExp", mFeedbackExp);
     mSecondPassProg.uniform("feedbackFlow", mFeedbackFlow);
     
     mSecondPassProg.uniform("firstPass", 0);
