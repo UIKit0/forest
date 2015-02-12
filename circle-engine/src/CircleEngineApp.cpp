@@ -152,8 +152,8 @@ void CircleEngineApp::setup()
     mDrawFrontLayer = true;
     mDrawColorTable = false;
     mExiting = false;
-    mAmbientLight = 0.07f;
-    mTargetPhysicsHz = 90.0f;
+    mAmbientLight = 0.05f;
+    mTargetPhysicsHz = 75.0f;
 
     mPhysicsThread = thread(physicsThreadFn, this);
 }
