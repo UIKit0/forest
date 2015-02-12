@@ -52,6 +52,7 @@ public:
     ci::TriMesh2d       mFrontLayer;
     ColorChooser        mColorChooser;
     b2PolygonShape      mVacuumShape;
+    ci::Rectf           mFeedbackRect;
     ci::Rand            mRand;
     ci::Timer           mTimer;
     float               mTriangulatePrecision;

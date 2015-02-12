@@ -87,6 +87,7 @@ void CircleWorld::setup(svg::DocRef doc)
     setupShapeSequence("spinner-%d", bind( &CircleWorld::setupSpinner, this, _1 ));
     setupShapeSequence("led-%d", bind( &CircleWorld::setupLed, this, _1 ));
     setupShapeSequence("source-%d", bind( &CircleWorld::setupSource, this, _1 ));
+    mFeedbackRect = findShape("feedback").calcPreciseBoundingBox();
 }
 
 void CircleWorld::setupShapeSequence(const char *fmt, std::function<void(const ci::Shape2d &)> handler)

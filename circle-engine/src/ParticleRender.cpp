@@ -42,11 +42,11 @@ void ParticleRender::setForceGrid(ImageSourceRef image, Rectf extent)
     mForceGridExtent = extent;
 }
 
-void ParticleRender::render(const b2ParticleSystem &system, const ci::gl::Texture& feedbackMask)
+void ParticleRender::render(const b2ParticleSystem &system, const Rectf& feedback)
 {
     mFrame = !mFrame;
     firstPass(system);
-    secondPass(feedbackMask);
+    secondPass(feedback);
 }
 
 void ParticleRender::firstPass(const b2ParticleSystem &system)
@@ -98,7 +98,7 @@ void ParticleRender::firstPass(const b2ParticleSystem &system)
     gl::disable(GL_POINT_SPRITE);
 }
 
-void ParticleRender::secondPass(const ci::gl::Texture& feedbackMask)
+void ParticleRender::secondPass(const ci::Rectf &feedback)
 {
     mSecondPassFbo[mFrame].bindFramebuffer();
     mSecondPassProg.bind();
@@ -130,11 +130,11 @@ void ParticleRender::secondPass(const ci::gl::Texture& feedbackMask)
     
     mSecondPassProg.uniform("forceGrid", 2);
     mForceGridTexture.bind(2);
-
-    mSecondPassProg.uniform("feedbackMask", 3);
-    feedbackMask.bind(3);
-
+    
     mSecondPassProg.uniform("texelSize", Vec2f(1.0f / mFirstPassFbo.getWidth(), 1.0f / mFirstPassFbo.getHeight()));
+
+    mSecondPassProg.uniform("feedbackUpperLeft", feedback.getUpperLeft());
+    mSecondPassProg.uniform("feedbackLowerRight", feedback.getLowerRight());
 
     mSecondPassProg.uniform("forceGridUpperLeft", mForceGridExtent.getUpperLeft());
     mSecondPassProg.uniform("forceGridLowerRight", mForceGridExtent.getLowerRight());
