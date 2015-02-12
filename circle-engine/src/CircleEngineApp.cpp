@@ -8,6 +8,7 @@
 #include "cinder/gl/Fbo.h"
 #include "cinder/gl/Vbo.h"
 #include "cinder/svg/Svg.h"
+#include "cinder/svg/SvgGl.h"
 #include "cinder/Triangulate.h"
 #include "cinder/TriMesh.h"
 #include "Box2D/Box2D.h"
@@ -54,6 +55,7 @@ private:
     gl::VboMeshRef      mObstaclesVbo;
     gl::VboMeshRef      mFrontLayerVbo;
     gl::Fbo             mFrontLayerFbo;
+    gl::Fbo             mFeedbackMaskFbo;
 
     int                 mSeekPending;
     mutex               mSeekMutex;
@@ -256,13 +258,24 @@ void CircleEngineApp::update()
 
 void CircleEngineApp::draw()
 {
-    mParticleRender.render(*mWorld.mParticleSystem,
-        Rectf(mWorld.mFeedbackRect.getUpperLeft() / mParticleRect.getSize(),
-              mWorld.mFeedbackRect.getLowerRight() / mParticleRect.getSize()));
+    if (!mFeedbackMaskFbo) {
+        mFeedbackMaskFbo = gl::Fbo(getWindowWidth(), getWindowHeight(), false);
+    }
+    if (true) {
+        mFeedbackMaskFbo.bindFramebuffer();
+        SvgRendererGl rGl;
+        gl::setViewport(Area(Vec2f(0,0), mFeedbackMaskFbo.getSize()));
+        gl::setMatricesWindow(mFeedbackMaskFbo.getSize(), false);
+        gl::clear();
+        mWorld.findNode("feedback").render(rGl);
+        mFeedbackMaskFbo.unbindFramebuffer();
+    }
+
+    mParticleRender.render(*mWorld.mParticleSystem, mFeedbackMaskFbo.getTexture());
 
     gl::setViewport(Area(Vec2f(0,0), getWindowSize()));
     gl::setMatricesWindowPersp( getWindowSize() );
-    gl::clear(Color( 0, 0, 0 ));
+    gl::clear();
 
     if (mDrawParticles) {
         gl::enable(GL_TEXTURE_2D);
@@ -379,7 +392,7 @@ void CircleEngineApp::draw()
         snprintf(str, sizeof str, "XY / Z ratio: %f", cube.getRangeXYZ().getSize().xy().length() / cube.getRangeXYZ().getSize().z);
         gl::drawString(str, cursor);
         cursor.y += 15.0f;
-}
+    }
     
     mParams->draw();
     
