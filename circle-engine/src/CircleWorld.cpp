@@ -79,7 +79,7 @@ void CircleWorld::setup(svg::DocRef doc)
     mMoveSpinnersRandomly = false;
     mOneSpinnerControlsAll = false;
     mSpinnerPower = 10.0f;
-    mForceGridStrength = 2.0f;
+    mForceGridStrength = 5.0f;
     
     setupObstacles(findShape("obstacles"));
     setupFrontLayer(findShape("front-layer"));
@@ -274,7 +274,7 @@ void CircleWorld::updateSpinners(midi::Hub& midi)
 
         if (mMoveSpinnersRandomly) {
             // Random sensor data
-            spinner.sensorAngle(mPerlin.fBm(mTimer.getSeconds() * 0.1, i) * 50.0, mSpinnerPower);
+            spinner.sensorAngle(mPerlin.fBm(mTimer.getSeconds() * 0.05f, i) * 100.0f, mSpinnerPower);
         
         } else if (spinner.mColorCube.isAngleReliable()) {
             // Real sensor data
