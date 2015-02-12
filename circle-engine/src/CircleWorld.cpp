@@ -6,6 +6,8 @@
 #include "CircleWorld.h"
 #include <stdio.h>
 #include <functional>
+#include <mach/mach.h>
+#include <mach/mach_time.h>
 
 using namespace ci;
 using namespace std;
@@ -51,7 +53,6 @@ void CircleWorld::setup(svg::DocRef doc)
     mSvg = doc;
 
     mTimer.start();
-    mPerlin = Perlin(4, mRand.nextInt());
 
     b2Vec2 gravity( 0.0f, vecToBox(findMetric("gravity")).y );
     mB2World = new b2World(gravity);
@@ -105,6 +106,9 @@ void CircleWorld::setupShapeSequence(const char *fmt, std::function<void(const c
 
 void CircleWorld::initColors(ci::ImageSourceRef colorTable)
 {
+    mRand.seed(mach_absolute_time());
+    mPerlin = Perlin(4, mRand.nextInt());
+
     mColorChooser.setup(colorTable, &mPerlin, 16);
 }
 

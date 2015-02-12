@@ -10,8 +10,8 @@ using namespace std;
 void ParticleRender::setup(ci::app::App &app, unsigned width, unsigned height, float scale)
 {
     mScale = scale;
-    mBrightness = 1.7f;
-    mFeedbackGain = 0.506f;
+    mBrightness = 1.95f;
+    mFeedbackGain = 0.352f;
     mFeedbackFlow = 6.0f;
     
     gl::Fbo::Format floatFormat;
