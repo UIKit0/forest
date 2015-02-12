@@ -8,6 +8,7 @@
 #include "cinder/gl/gl.h"
 #include "cinder/gl/GlslProg.h"
 #include "cinder/gl/Fbo.h"
+#include "cinder/gl/Texture.h"
 #include "Box2D/Box2D.h"
 
 
@@ -18,12 +19,12 @@ public:
 
     // Vector LUT for perturbing feedback image according to strand vector grid
     void setForceGrid(ci::ImageSourceRef image, ci::Rectf extent);
-    
+
     // Render particle system and video feedback to texture
-    void render(const b2ParticleSystem &system, const ci::Rectf &feedback);
+    void render(const b2ParticleSystem &system, const ci::gl::Texture& feedbackMask);
 
     // Read results of last render()
-    ci::gl::Texture &getTexture();
+    ci::gl::Texture& getTexture();
     
     // Tweakable things
     float           mBrightness;
@@ -44,5 +45,5 @@ private:
     ci::gl::Texture  mPointTexture;
 
     void firstPass(const b2ParticleSystem &system);
-    void secondPass(const ci::Rectf &feedback);
+    void secondPass(const ci::gl::Texture& feedbackMask);
 };
