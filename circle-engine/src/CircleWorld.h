@@ -12,6 +12,7 @@
 #include "Box2D/Box2D.h"
 #include "MidiHub.h"
 #include "ColorCubePoints.h"
+#include "ColorChooser.h"
 #include <string>
 
 class CircleWorld {
@@ -49,7 +50,7 @@ public:
     ci::svg::DocRef     mSvg;
     ci::TriMesh2d       mObstacles;
     ci::TriMesh2d       mFrontLayer;
-    ci::Surface         mColorTable;
+    ColorChooser        mColorChooser;
     b2PolygonShape      mVacuumShape;
     ci::Rectf           mFeedbackRect;
     ci::Rand            mRand;
@@ -75,10 +76,7 @@ public:
     b2World				*mB2World;
     b2Body              *mGround;
     b2ParticleSystem    *mParticleSystem;
-    uint64_t            mStepNumber;
-    unsigned            mCurrentTableRow;
-    float               mSubRow;
-    unsigned            mStepsPerTableRow;
+    ci::Perlin          mPerlin;
     
     b2Vec2              mPositionBuffer[kMaxParticles];
     b2Vec2              mVelocityBuffer[kMaxParticles];

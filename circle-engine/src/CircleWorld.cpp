@@ -51,6 +51,7 @@ void CircleWorld::setup(svg::DocRef doc)
     mSvg = doc;
 
     mTimer.start();
+    mPerlin = Perlin(4, mRand.nextInt());
 
     b2Vec2 gravity( 0.0f, vecToBox(findMetric("gravity")).y );
     mB2World = new b2World(gravity);
@@ -77,8 +78,7 @@ void CircleWorld::setup(svg::DocRef doc)
     mMoveSpinnersRandomly = false;
     mOneSpinnerControlsAll = false;
     mSpinnerPower = 10.0f;
-    mForceGridStrength = 6.0f;
-    mStepsPerTableRow = 1000;
+    mForceGridStrength = 2.0f;
     
     setupObstacles(findShape("obstacles"));
     setupFrontLayer(findShape("front-layer"));
@@ -106,10 +106,7 @@ void CircleWorld::setupShapeSequence(const char *fmt, std::function<void(const c
 
 void CircleWorld::initColors(ci::ImageSourceRef colorTable)
 {
-    mColorTable = colorTable;
-    mCurrentTableRow = 0;
-    mSubRow = 0;
-    mStepNumber = 0;
+    mColorChooser.setup(colorTable, &mPerlin, 16);
 }
 
 void CircleWorld::setupObstacles(const Shape2d& shape)
@@ -237,11 +234,8 @@ void CircleWorld::update(ci::midi::Hub& midi)
 {
     updateSpinners(midi);
     applyGridForces();
-
-    mStepNumber++;
-    mCurrentTableRow = (mStepNumber / mStepsPerTableRow) % mColorTable.getHeight();
-    mSubRow = (mStepNumber % mStepsPerTableRow) / float(mStepsPerTableRow - 1);
-
+    mColorChooser.update();
+    
     mB2World->Step( 1 / 60.0f, 1, 1, 2 );
     mUpdatedSinceLastDraw = true;
 
@@ -277,8 +271,7 @@ void CircleWorld::updateSpinners(midi::Hub& midi)
 
         if (mMoveSpinnersRandomly) {
             // Random sensor data
-            Perlin p(4, 0);
-            spinner.sensorAngle(p.fBm(mTimer.getSeconds() * 0.2, i) * 50.0, mSpinnerPower);
+            spinner.sensorAngle(mPerlin.fBm(mTimer.getSeconds() * 0.2, i) * 50.0, mSpinnerPower);
         
         } else if (spinner.mColorCube.isAngleReliable()) {
             // Real sensor data
@@ -419,15 +412,10 @@ void CircleWorld::newParticle()
         }
     }
     
-    // X axis matches individual marked rectangles in the SVG
-
     assert(x >= 0 && x < mSourceRects.size());
-    Vec2i loc( min(x, mColorTable.getWidth() - 1), mCurrentTableRow );
-    Rectf& rect = mSourceRects[x];
+    Color pix = mColorChooser.sample(x);
+    Rectf rect = mSourceRects[x];
     
-    // Lookup from color table without interpolation
-    auto pix = mColorTable.getPixel(loc);
-
     // Random position within the source box
     Vec2f pos(mRand.nextFloat(rect.getX1(), rect.getX2()),
               mRand.nextFloat(rect.getY1(), rect.getY2()));
@@ -436,7 +424,7 @@ void CircleWorld::newParticle()
     pd.flags = b2_colorMixingParticle | b2_tensileParticle;
     pd.lifetime = mMaxParticleLifetime;
 
-    pd.color.Set(pix.r, pix.g, pix.b, 255);
+    pd.color.Set(pix.r * 255.0f, pix.g * 255.0f, pix.b * 255.0f, 255);
 
     mParticleSystem->CreateParticle(pd);
 }

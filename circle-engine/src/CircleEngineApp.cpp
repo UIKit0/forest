@@ -54,7 +54,6 @@ private:
     gl::VboMeshRef      mObstaclesVbo;
     gl::VboMeshRef      mFrontLayerVbo;
     gl::Fbo             mFrontLayerFbo;
-    gl::Texture         mColorTableTexture;
 
     int                 mSeekPending;
     mutex               mSeekMutex;
@@ -111,8 +110,6 @@ void CircleEngineApp::setup()
     mParams->addParam("# particles", &mNumParticles, "readonly=true");
     mParams->addParam("LED sampling radius", &mFadecandy.samplingRadius).min(0.f).max(500.f).step(0.1f);
     mParams->addSeparator();
-    mParams->addParam("Current table row", &mWorld.mCurrentTableRow, "readonly=true");
-    mParams->addParam("Steps per table row", &mWorld.mStepsPerTableRow).min(1).max(10000);
     mParams->addButton("Reload color table", bind( &CircleEngineApp::reloadColorTable, this ), "key=c");
     mParams->addButton("Delete all particles", bind( &CircleEngineApp::deleteAllParticles, this ), "key=d");
     mParams->addButton("Seek backward", bind( &CircleEngineApp::seekBackward, this ), "key=,");
@@ -174,10 +171,8 @@ void CircleEngineApp::keyDown(KeyEvent event)
 void CircleEngineApp::reloadColorTable()
 {
     // Do this with the lock held, since we're reallocating the image
-    ci::ImageSourceRef table = loadImage(loadAsset("colors.png"));
+    ci::ImageSourceRef table = loadImage(loadAsset("forest-palette.png"));
     mPhysicsMutex.lock();
-    mColorTableTexture = table;
-    mColorTableTexture.setMagFilter(GL_NEAREST);
     mWorld.initColors(table);
     mPhysicsMutex.unlock();
 }
@@ -231,15 +226,11 @@ void CircleEngineApp::physicsLoop(midi::Hub &midi)
     mSeekMutex.unlock();
     
     mPhysicsMutex.lock();
-
-    int64_t step = mWorld.mStepNumber;
-    step += seekSteps * (int)mWorld.mStepsPerTableRow;
-    if (step < 0) step += mWorld.mStepsPerTableRow * mWorld.mColorTable.getHeight();
-    mWorld.mStepNumber = step;
-
+    mWorld.mColorChooser.seek(seekSteps);
     ci::Timer stepTimer(true);
 
     for (unsigned i = kStepsPerMeasurement; i; i--) {
+        mWorld.mColorChooser.update();
         mWorld.update(midi);
         if (mPhysicsHz > mTargetPhysicsHz) {
             mWorld.particleBurst();
@@ -311,27 +302,13 @@ void CircleEngineApp::draw()
     }
 
     if (mDrawColorTable) {
-        const gl::Texture& tex = mColorTableTexture;
-        float scale = 12.0f;
-        float row = mWorld.mCurrentTableRow + mWorld.mSubRow;
-        Vec2f topLeft(getWindowWidth() - 10 - tex.getWidth() * scale, 0.5f + getWindowHeight() / 4);
-        Vec2f cursorV(0.0f, row * scale);
-        Vec2f cursorH(tex.getWidth() * scale, 0.0f);
-        Vec2f texV(0.0f, tex.getHeight() * scale);
-        
-        gl::color(1.0f, 1.0f, 1.0f, 1.0f);
-        gl::disableAlphaBlending();
-        gl::draw(tex, Rectf(topLeft - cursorV, topLeft - cursorV + tex.getSize() * scale));
-        gl::draw(tex, Rectf(topLeft - cursorV - texV, topLeft - cursorV + tex.getSize() * scale - texV));
-        gl::draw(tex, Rectf(topLeft - cursorV + texV, topLeft - cursorV + tex.getSize() * scale + texV));
-
-        gl::enableAlphaBlending();
-        gl::color(0.0f, 0.0f, 0.0f, 1.0f);
-        gl::lineWidth(4.0f);
-        gl::drawLine(topLeft, topLeft + cursorH);
-        gl::color(1.0f, 1.0f, 1.0f, 1.0f);
-        gl::lineWidth(1.0f);
-        gl::drawLine(topLeft, topLeft + cursorH);
+        gl::pushModelView();
+        gl::translate(getWindowWidth() * 0.75f, getWindowHeight() * 0.5f, 0.0f);
+        float scale = getWindowHeight() * 0.66;
+        gl::scale(scale, scale, scale);
+        gl::translate(-0.5f, -0.5f, 0.0f);
+        mWorld.mColorChooser.draw();
+        gl::popModelView();
     }
     
     if (mDrawSpinnerColorCube >= 0 && mDrawSpinnerColorCube < mWorld.mSpinners.size()) {

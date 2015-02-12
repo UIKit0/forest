@@ -75,7 +75,6 @@
 		755B62C41A81E4F2008FF892 /* MidiMessage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 755B62BC1A81E4F2008FF892 /* MidiMessage.cpp */; };
 		755B62C51A81E4F2008FF892 /* RtMidi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 755B62C01A81E4F2008FF892 /* RtMidi.cpp */; };
 		755B62C71A81EBBF008FF892 /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 755B62C61A81EBBF008FF892 /* CoreMIDI.framework */; };
-		756E5C771A77FC59008EA93E /* colors.png in Resources */ = {isa = PBXBuildFile; fileRef = 756E5C731A77FC59008EA93E /* colors.png */; };
 		756E5C7A1A77FC59008EA93E /* world.svg in Resources */ = {isa = PBXBuildFile; fileRef = 756E5C761A77FC59008EA93E /* world.svg */; };
 		756E5C7D1A780642008EA93E /* ParticleRender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 756E5C7B1A780642008EA93E /* ParticleRender.cpp */; };
 		756E5C821A780C11008EA93E /* particle.pass1.glslf in Resources */ = {isa = PBXBuildFile; fileRef = 756E5C7E1A780C11008EA93E /* particle.pass1.glslf */; };
@@ -149,6 +148,7 @@
 		75DF8DB21A78B078000E5A8E /* fadecandy.glslf in Resources */ = {isa = PBXBuildFile; fileRef = 75DF8DB01A78B078000E5A8E /* fadecandy.glslf */; };
 		75DF8DB31A78B078000E5A8E /* fadecandy.glslv in Resources */ = {isa = PBXBuildFile; fileRef = 75DF8DB11A78B078000E5A8E /* fadecandy.glslv */; };
 		75DF8DBF1A797A66000E5A8E /* Cinder-AppNap.mm in Sources */ = {isa = PBXBuildFile; fileRef = 75DF8DBA1A797A66000E5A8E /* Cinder-AppNap.mm */; };
+		75E2F2541A8C1BC7002EEBD6 /* ColorChooser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 75E2F2521A8C1BC7002EEBD6 /* ColorChooser.cpp */; };
 		8685E9DD25B24ED3BA384259 /* CircleEngineApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D37DA78CBBF64CAAB6E7E9AF /* CircleEngineApp.cpp */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 /* End PBXBuildFile section */
@@ -294,7 +294,6 @@
 		755B62C01A81E4F2008FF892 /* RtMidi.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RtMidi.cpp; sourceTree = "<group>"; };
 		755B62C11A81E4F2008FF892 /* RtMidi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RtMidi.h; sourceTree = "<group>"; };
 		755B62C61A81EBBF008FF892 /* CoreMIDI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMIDI.framework; path = System/Library/Frameworks/CoreMIDI.framework; sourceTree = SDKROOT; };
-		756E5C731A77FC59008EA93E /* colors.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = colors.png; sourceTree = "<group>"; };
 		756E5C761A77FC59008EA93E /* world.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = world.svg; sourceTree = "<group>"; };
 		756E5C7B1A780642008EA93E /* ParticleRender.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ParticleRender.cpp; path = ../src/ParticleRender.cpp; sourceTree = "<group>"; };
 		756E5C7C1A780642008EA93E /* ParticleRender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ParticleRender.h; path = ../src/ParticleRender.h; sourceTree = "<group>"; };
@@ -398,6 +397,8 @@
 		75DF8DB11A78B078000E5A8E /* fadecandy.glslv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = fadecandy.glslv; sourceTree = "<group>"; };
 		75DF8DB91A797A66000E5A8E /* Cinder-AppNap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Cinder-AppNap.h"; sourceTree = "<group>"; };
 		75DF8DBA1A797A66000E5A8E /* Cinder-AppNap.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "Cinder-AppNap.mm"; sourceTree = "<group>"; };
+		75E2F2521A8C1BC7002EEBD6 /* ColorChooser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ColorChooser.cpp; path = ../src/ColorChooser.cpp; sourceTree = "<group>"; };
+		75E2F2531A8C1BC7002EEBD6 /* ColorChooser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ColorChooser.h; path = ../src/ColorChooser.h; sourceTree = "<group>"; };
 		7C98B10AF0FB40A49AD3EA7C /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* CircleEngine.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CircleEngine.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D37DA78CBBF64CAAB6E7E9AF /* CircleEngineApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = CircleEngineApp.cpp; path = ../src/CircleEngineApp.cpp; sourceTree = "<group>"; };
@@ -440,6 +441,7 @@
 			isa = PBXGroup;
 			children = (
 				75D4A45F1A81F70800B533EE /* ColorCubePoints.cpp */,
+				75E2F2521A8C1BC7002EEBD6 /* ColorChooser.cpp */,
 				75DF8DAD1A788FA7000E5A8E /* FadecandyGL.cpp */,
 				75DF8D7B1A788D40000E5A8E /* OPCClient.cpp */,
 				D37DA78CBBF64CAAB6E7E9AF /* CircleEngineApp.cpp */,
@@ -505,6 +507,7 @@
 				756E5C7C1A780642008EA93E /* ParticleRender.h */,
 				7C98B10AF0FB40A49AD3EA7C /* Resources.h */,
 				75D4A4601A81F70800B533EE /* ColorCubePoints.h */,
+				75E2F2531A8C1BC7002EEBD6 /* ColorChooser.h */,
 				F4E4F235BB32482CA9585C64 /* CircleEngine_Prefix.pch */,
 			);
 			name = Headers;
@@ -766,7 +769,6 @@
 				756E5C7F1A780C11008EA93E /* particle.pass1.glslv */,
 				756E5C801A780C11008EA93E /* particle.pass2.glslf */,
 				756E5C811A780C11008EA93E /* particle.pass2.glslv */,
-				756E5C731A77FC59008EA93E /* colors.png */,
 				756E5C761A77FC59008EA93E /* world.svg */,
 			);
 			name = assets;
@@ -962,7 +964,6 @@
 				6D3A4433FAE64C268CD40228 /* CinderApp.icns in Resources */,
 				756E5C831A780C11008EA93E /* particle.pass1.glslv in Resources */,
 				757675FB1A82CD87003C6702 /* readme.txt in Resources */,
-				756E5C771A77FC59008EA93E /* colors.png in Resources */,
 				756E5C851A780C11008EA93E /* particle.pass2.glslv in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1083,6 +1084,7 @@
 				757675FC1A82CD87003C6702 /* rwupdt.c in Sources */,
 				751542B41A74B7A60012009D /* b2CircleShape.cpp in Sources */,
 				757675E81A82CD87003C6702 /* lmdif1_.c in Sources */,
+				75E2F2541A8C1BC7002EEBD6 /* ColorChooser.cpp in Sources */,
 				756E5C7D1A780642008EA93E /* ParticleRender.cpp in Sources */,
 				75DF8DA21A788E00000E5A8E /* ClientInterface.cpp in Sources */,
 				757675E91A82CD87003C6702 /* lmdif_.c in Sources */,
