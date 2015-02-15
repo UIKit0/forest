@@ -27,6 +27,10 @@ void BeginActivity(const std::string& reason) {
         return;
     }
 
+    if (![[NSProcessInfo processInfo] respondsToSelector:@selector(beginActivityWithOptions:reason:)]) {
+        return;
+    }
+
     @autoreleasepool {
         activity = [[NSProcessInfo processInfo] beginActivityWithOptions:NSActivityIdleSystemSleepDisabled | NSActivitySuddenTerminationDisabled reason:@(reason.c_str())];
         [activity retain];
