@@ -58,7 +58,7 @@ void CircleWorld::setup(svg::DocRef doc)
     mB2World = new b2World(gravity);
 
     Vec2f metricParticleRadius = findMetric("particle-radius");
-    mTriangulatePrecision = 1.0f / metricParticleRadius.y;
+    mTriangulatePrecision = 2.0f / metricParticleRadius.y;
     
     b2ParticleSystemDef particleSystemDef;
     particleSystemDef.colorMixingStrength = 0.05f;
