@@ -17,6 +17,8 @@
 #include "ParticleRender.h"
 #include "FadecandyGL.h"
 #include <OpenGL/OpenGL.h>
+#include <mutex>
+#include <condition_variable>
 
 using namespace ci;
 using namespace ci::app;
@@ -46,10 +48,17 @@ private:
     static void physicsThreadFn(CircleEngineApp *self);
     void physicsLoop(ci::midi::Hub &midi);
     
+    static void fadecandyThreadFn(CircleEngineApp *self);
+    void fadecandyLoop();
+    
     CGLContextObj       mMainGlContext;
     FadecandyGL         mFadecandy;
     thread              mPhysicsThread;
+    thread              mFadecandyThread;
+    
     mutex               mPhysicsMutex;
+    mutex               mPhysicsFrameDoneMutex;
+    condition_variable  mPhysicsFrameDone;
     bool                mExiting;
     CircleWorld         mWorld;
     ParticleRender      mParticleRender;
@@ -64,9 +73,10 @@ private:
     uint64_t            mFrameCounter;
     
     params::InterfaceGlRef      mParams;
-    float                       mAverageFps;
-    float                       mPhysicsHz;
-    float                       mTargetPhysicsHz;
+    float                       mDisplayFps;
+    float                       mPhysicsFps;
+    float                       mFadecandyFps;
+    float                       mTargetPhysicsFps;
     float                       mAmbientLight;
     unsigned                    mNumParticles;
     bool                        mDrawForceGrid;
@@ -115,9 +125,10 @@ void CircleEngineApp::setup()
     mParams = params::InterfaceGl::create( getWindow(), "Engine parameters", toPixels(Vec2i(240, 600)) );
     mParams->minimize();
     
-    mParams->addParam("Display FPS", &mAverageFps, "readonly=true");
-    mParams->addParam("Physics / LED Hz", &mPhysicsHz, "readonly=true");
-    mParams->addParam("Target physics hz", &mTargetPhysicsHz);
+    mParams->addParam("Display FPS", &mDisplayFps, "readonly=true");
+    mParams->addParam("Physics FPS", &mPhysicsFps, "readonly=true");
+    mParams->addParam("Fadecandy FPS", &mFadecandyFps, "readonly=true");
+    mParams->addParam("Target physics FPS", &mTargetPhysicsFps);
     mParams->addParam("# particles", &mNumParticles, "readonly=true");
     mParams->addParam("LED sampling radius", &mFadecandy.samplingRadius).min(0.f).max(500.f).step(0.1f);
     mParams->addSeparator();
@@ -165,10 +176,11 @@ void CircleEngineApp::setup()
     mDisableLedUpdates = false;
     mAmbientLight = 0.05f;
     mFrameCounter = 0;
-    mTargetPhysicsHz = 90.0f;
+    mTargetPhysicsFps = 90.0f;
     
     mMainGlContext = CGLGetCurrentContext();
     mPhysicsThread = thread(physicsThreadFn, this);
+    mFadecandyThread = thread(fadecandyThreadFn, this);
     cerr << "Complete setup" << endl;
 }
 
@@ -227,23 +239,6 @@ void CircleEngineApp::physicsThreadFn(CircleEngineApp *self)
 
     midi::Hub midi;
     
-    // Physics thread does its own OpenGL rendering on a
-    // separate context which shares reesources with the main thread.
-    
-    CGDirectDisplayID display = CGMainDisplayID();
-    CGOpenGLDisplayMask myDisplayMask = CGDisplayIDToOpenGLDisplayMask(display);
-    CGLPixelFormatAttribute attribs[] = {
-        kCGLPFADisplayMask,
-        (CGLPixelFormatAttribute)myDisplayMask,
-        (CGLPixelFormatAttribute)0
-    };
-    CGLPixelFormatObj pixelFormat = NULL;
-    GLint numPixelFormats = 0;
-    CGLContextObj myCGLContext = 0;
-    CGLChoosePixelFormat(attribs, &pixelFormat, &numPixelFormats);
-    CGLCreateContext(pixelFormat, self->mMainGlContext, &myCGLContext);
-    CGLSetCurrentContext(myCGLContext);
-    
     while (!self->mExiting) {
         self->physicsLoop(midi);
     }
@@ -265,13 +260,57 @@ void CircleEngineApp::physicsLoop(midi::Hub &midi)
     for (unsigned i = kStepsPerMeasurement; i; i--) {
         mWorld.mColorChooser.update();
         mWorld.update(midi);
-        if (mPhysicsHz > mTargetPhysicsHz) {
+        if (mPhysicsFps > mTargetPhysicsFps) {
             mWorld.particleBurst();
         }
+        mPhysicsFrameDoneMutex.lock();
+        mPhysicsFrameDone.notify_all();
+        mPhysicsFrameDoneMutex.unlock();
+    }
+    
+    mPhysicsFps = kStepsPerMeasurement / stepTimer.getSeconds();
+    mPhysicsMutex.unlock();
+}
+
+void CircleEngineApp::fadecandyThreadFn(CircleEngineApp *self)
+{
+    cerr << "Fadecandy thread started" << endl;
+
+    // New OpenGL context with shared resources
+    
+    CGDirectDisplayID display = CGMainDisplayID();
+    CGOpenGLDisplayMask myDisplayMask = CGDisplayIDToOpenGLDisplayMask(display);
+    CGLPixelFormatAttribute attribs[] = {
+        kCGLPFADisplayMask,
+        (CGLPixelFormatAttribute)myDisplayMask,
+        (CGLPixelFormatAttribute)0
+    };
+    CGLPixelFormatObj pixelFormat = NULL;
+    GLint numPixelFormats = 0;
+    CGLContextObj myCGLContext = 0;
+    CGLChoosePixelFormat(attribs, &pixelFormat, &numPixelFormats);
+    CGLCreateContext(pixelFormat, self->mMainGlContext, &myCGLContext);
+    CGLSetCurrentContext(myCGLContext);
+    
+    while (!self->mExiting) {
+        self->fadecandyLoop();
+    }
+}
+
+void CircleEngineApp::fadecandyLoop()
+{
+    const unsigned kStepsPerMeasurement = 10;
+    
+    ci::Timer stepTimer(true);
+    
+    for (unsigned i = kStepsPerMeasurement; i; i--) {
+        // Wait for the next physics frame
+        std::unique_lock<std::mutex> lk(mPhysicsFrameDoneMutex);
+        mPhysicsFrameDone.wait(lk);
 
         if (mFeedbackMaskFbo) {
             mParticleRender.render(*mWorld.mParticleSystem, mFeedbackMaskFbo.getTexture());
-        
+            
             if (!mDisableLedUpdates) {
                 mFadecandy.update(mParticleRender.getTexture(),
                                   Matrix33f::createScale( Vec2f(1.0f / mParticleRect.getWidth(),
@@ -280,20 +319,20 @@ void CircleEngineApp::physicsLoop(midi::Hub &midi)
         }
     }
     
-    mPhysicsHz = kStepsPerMeasurement / stepTimer.getSeconds();
-    mPhysicsMutex.unlock();
+    mFadecandyFps = kStepsPerMeasurement / stepTimer.getSeconds();
 }
 
 void CircleEngineApp::shutdown()
 {
     mExiting = true;
     mPhysicsThread.join();
+    mFadecandyThread.join();
     Cinder::AppNap::EndActivity();
 }
 
 void CircleEngineApp::update()
 {
-    mAverageFps = getAverageFps();
+    mDisplayFps = getAverageFps();
     mNumParticles = mWorld.mParticleSystem->GetParticleCount();
 }
 
