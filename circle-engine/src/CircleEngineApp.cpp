@@ -88,16 +88,21 @@ void CircleEngineApp::prepareSettings( Settings *settings )
 
 void CircleEngineApp::setup()
 {
+    cerr << "Begin setup" << endl;
     Cinder::AppNap::BeginActivity("CircleEngine LED rendering");
 
     mWorld.setup(svg::Doc::create(loadResource("world.svg")));
+    cerr << "World loaded" << endl;
+
     mObstaclesVbo = gl::VboMesh::create(mWorld.mObstacles);
     mFrontLayerVbo = gl::VboMesh::create(mWorld.mFrontLayer);
 
     reloadColorTable();
+    cerr << "Color table loaded" << endl;
 
     mFadecandy.setup(*this);
     mFadecandy.setModel(mWorld.mLedPoints);
+    cerr << "LED model setup" << endl;
     
     float scale = 2;
     mParticleRect = Rectf(0, 0, getWindowWidth(), getWindowHeight());
@@ -105,7 +110,8 @@ void CircleEngineApp::setup()
     mParticleRender.setForceGrid(mWorld.mForceGridSurface,
                                  Rectf(mWorld.mForceGridExtent.getUpperLeft() / mParticleRect.getSize(),
                                        mWorld.mForceGridExtent.getLowerRight() / mParticleRect.getSize()));
-    
+    cerr << "Particle renderer setup" << endl;
+
     mParams = params::InterfaceGl::create( getWindow(), "Engine parameters", toPixels(Vec2i(240, 600)) );
     mParams->minimize();
     
@@ -163,6 +169,7 @@ void CircleEngineApp::setup()
     
     mMainGlContext = CGLGetCurrentContext();
     mPhysicsThread = thread(physicsThreadFn, this);
+    cerr << "Complete setup" << endl;
 }
 
 void CircleEngineApp::keyDown(KeyEvent event)
@@ -216,6 +223,8 @@ void CircleEngineApp::seekForward()
 
 void CircleEngineApp::physicsThreadFn(CircleEngineApp *self)
 {
+    cerr << "Physics thread started" << endl;
+
     midi::Hub midi;
     
     // Physics thread does its own OpenGL rendering on a
