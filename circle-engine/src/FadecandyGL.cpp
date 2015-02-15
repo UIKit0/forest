@@ -13,7 +13,7 @@ void FadecandyGL::setup(ci::app::App &app)
     opc.connectErrorEventHandler(&OPCClient::onError, &opc);
 
     samplingRadius = 8.0;
-    mProg = gl::GlslProg( app.loadAsset("fadecandy.glslv"), app.loadAsset("fadecandy.glslf") );
+    mProg = gl::GlslProg( app.loadResource("fadecandy.glslv"), app.loadResource("fadecandy.glslf") );
 }
 
 void FadecandyGL::setModel(const vector<Vec2f>& points)

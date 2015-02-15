@@ -90,7 +90,7 @@ void CircleEngineApp::setup()
 {
     Cinder::AppNap::BeginActivity("CircleEngine LED rendering");
 
-    mWorld.setup(svg::Doc::create(loadAsset("world.svg")));
+    mWorld.setup(svg::Doc::create(loadResource("world.svg")));
     mObstaclesVbo = gl::VboMesh::create(mWorld.mObstacles);
     mFrontLayerVbo = gl::VboMesh::create(mWorld.mFrontLayer);
 
@@ -178,7 +178,7 @@ void CircleEngineApp::keyDown(KeyEvent event)
 void CircleEngineApp::reloadColorTable()
 {
     // Do this with the lock held, since we're reallocating the image
-    ci::ImageSourceRef table = loadImage(loadAsset("forest-palette.png"));
+    ci::ImageSourceRef table = loadImage(loadResource("forest-palette.png"));
     mPhysicsMutex.lock();
     mWorld.initColors(table);
     mPhysicsMutex.unlock();

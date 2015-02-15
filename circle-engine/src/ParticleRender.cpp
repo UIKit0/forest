@@ -21,13 +21,13 @@ void ParticleRender::setup(ci::app::App &app, unsigned width, unsigned height, f
     mSecondPassFbo[0] = gl::Fbo(width, height);
     mSecondPassFbo[1] = gl::Fbo(width, height);
 
-    mFirstPassProg = gl::GlslProg( app.loadAsset("particle.pass1.glslv"),
-                                   app.loadAsset("particle.pass1.glslf") );
+    mFirstPassProg = gl::GlslProg( app.loadResource("particle.pass1.glslv"),
+                                   app.loadResource("particle.pass1.glslf") );
 
-    mSecondPassProg = gl::GlslProg( app.loadAsset("particle.pass2.glslv"),
-                                    app.loadAsset("particle.pass2.glslf") );
+    mSecondPassProg = gl::GlslProg( app.loadResource("particle.pass2.glslv"),
+                                    app.loadResource("particle.pass2.glslf") );
 
-    mPointTexture = loadImage(app.loadAsset("particle.png"));
+    mPointTexture = loadImage(app.loadResource("particle.png"));
 }
 
 gl::Texture& ParticleRender::getTexture()

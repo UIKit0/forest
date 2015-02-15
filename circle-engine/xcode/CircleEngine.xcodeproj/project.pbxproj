@@ -75,12 +75,7 @@
 		755B62C41A81E4F2008FF892 /* MidiMessage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 755B62BC1A81E4F2008FF892 /* MidiMessage.cpp */; };
 		755B62C51A81E4F2008FF892 /* RtMidi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 755B62C01A81E4F2008FF892 /* RtMidi.cpp */; };
 		755B62C71A81EBBF008FF892 /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 755B62C61A81EBBF008FF892 /* CoreMIDI.framework */; };
-		756E5C7A1A77FC59008EA93E /* world.svg in Resources */ = {isa = PBXBuildFile; fileRef = 756E5C761A77FC59008EA93E /* world.svg */; };
 		756E5C7D1A780642008EA93E /* ParticleRender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 756E5C7B1A780642008EA93E /* ParticleRender.cpp */; };
-		756E5C821A780C11008EA93E /* particle.pass1.glslf in Resources */ = {isa = PBXBuildFile; fileRef = 756E5C7E1A780C11008EA93E /* particle.pass1.glslf */; };
-		756E5C831A780C11008EA93E /* particle.pass1.glslv in Resources */ = {isa = PBXBuildFile; fileRef = 756E5C7F1A780C11008EA93E /* particle.pass1.glslv */; };
-		756E5C841A780C11008EA93E /* particle.pass2.glslf in Resources */ = {isa = PBXBuildFile; fileRef = 756E5C801A780C11008EA93E /* particle.pass2.glslf */; };
-		756E5C851A780C11008EA93E /* particle.pass2.glslv in Resources */ = {isa = PBXBuildFile; fileRef = 756E5C811A780C11008EA93E /* particle.pass2.glslv */; };
 		757675CA1A82CD87003C6702 /* chkder.c in Sources */ = {isa = PBXBuildFile; fileRef = 757675901A82CD87003C6702 /* chkder.c */; };
 		757675CB1A82CD87003C6702 /* chkder_.c in Sources */ = {isa = PBXBuildFile; fileRef = 757675911A82CD87003C6702 /* chkder_.c */; };
 		757675CD1A82CD87003C6702 /* covar.c in Sources */ = {isa = PBXBuildFile; fileRef = 757675951A82CD87003C6702 /* covar.c */; };
@@ -145,10 +140,18 @@
 		75DF8DAB1A788E00000E5A8E /* UdpSession.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 75DF8D9B1A788E00000E5A8E /* UdpSession.cpp */; };
 		75DF8DAC1A788E00000E5A8E /* WaitTimer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 75DF8D9E1A788E00000E5A8E /* WaitTimer.cpp */; };
 		75DF8DAF1A788FA7000E5A8E /* FadecandyGL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 75DF8DAD1A788FA7000E5A8E /* FadecandyGL.cpp */; };
-		75DF8DB21A78B078000E5A8E /* fadecandy.glslf in Resources */ = {isa = PBXBuildFile; fileRef = 75DF8DB01A78B078000E5A8E /* fadecandy.glslf */; };
-		75DF8DB31A78B078000E5A8E /* fadecandy.glslv in Resources */ = {isa = PBXBuildFile; fileRef = 75DF8DB11A78B078000E5A8E /* fadecandy.glslv */; };
 		75DF8DBF1A797A66000E5A8E /* Cinder-AppNap.mm in Sources */ = {isa = PBXBuildFile; fileRef = 75DF8DBA1A797A66000E5A8E /* Cinder-AppNap.mm */; };
 		75E2F2541A8C1BC7002EEBD6 /* ColorChooser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 75E2F2521A8C1BC7002EEBD6 /* ColorChooser.cpp */; };
+		75EE4A9D1A90723D003C80BC /* world.svg in Resources */ = {isa = PBXBuildFile; fileRef = 75EE4A931A90723D003C80BC /* world.svg */; };
+		75EE4A9E1A90723D003C80BC /* particle.png in Resources */ = {isa = PBXBuildFile; fileRef = 75EE4A941A90723D003C80BC /* particle.png */; };
+		75EE4A9F1A90723D003C80BC /* particle.pass2.glslv in Resources */ = {isa = PBXBuildFile; fileRef = 75EE4A951A90723D003C80BC /* particle.pass2.glslv */; };
+		75EE4AA01A90723D003C80BC /* particle.pass2.glslf in Resources */ = {isa = PBXBuildFile; fileRef = 75EE4A961A90723D003C80BC /* particle.pass2.glslf */; };
+		75EE4AA11A90723D003C80BC /* particle.pass1.glslv in Resources */ = {isa = PBXBuildFile; fileRef = 75EE4A971A90723D003C80BC /* particle.pass1.glslv */; };
+		75EE4AA21A90723D003C80BC /* particle.pass1.glslf in Resources */ = {isa = PBXBuildFile; fileRef = 75EE4A981A90723D003C80BC /* particle.pass1.glslf */; };
+		75EE4AA31A90723D003C80BC /* gen_fadecandy_glslf.py in Resources */ = {isa = PBXBuildFile; fileRef = 75EE4A991A90723D003C80BC /* gen_fadecandy_glslf.py */; };
+		75EE4AA41A90723D003C80BC /* forest-palette.png in Resources */ = {isa = PBXBuildFile; fileRef = 75EE4A9A1A90723D003C80BC /* forest-palette.png */; };
+		75EE4AA51A90723D003C80BC /* fadecandy.glslv in Resources */ = {isa = PBXBuildFile; fileRef = 75EE4A9B1A90723D003C80BC /* fadecandy.glslv */; };
+		75EE4AA61A90723D003C80BC /* fadecandy.glslf in Resources */ = {isa = PBXBuildFile; fileRef = 75EE4A9C1A90723D003C80BC /* fadecandy.glslf */; };
 		8685E9DD25B24ED3BA384259 /* CircleEngineApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D37DA78CBBF64CAAB6E7E9AF /* CircleEngineApp.cpp */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 /* End PBXBuildFile section */
@@ -294,13 +297,8 @@
 		755B62C01A81E4F2008FF892 /* RtMidi.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RtMidi.cpp; sourceTree = "<group>"; };
 		755B62C11A81E4F2008FF892 /* RtMidi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RtMidi.h; sourceTree = "<group>"; };
 		755B62C61A81EBBF008FF892 /* CoreMIDI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMIDI.framework; path = System/Library/Frameworks/CoreMIDI.framework; sourceTree = SDKROOT; };
-		756E5C761A77FC59008EA93E /* world.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = world.svg; sourceTree = "<group>"; };
 		756E5C7B1A780642008EA93E /* ParticleRender.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ParticleRender.cpp; path = ../src/ParticleRender.cpp; sourceTree = "<group>"; };
 		756E5C7C1A780642008EA93E /* ParticleRender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ParticleRender.h; path = ../src/ParticleRender.h; sourceTree = "<group>"; };
-		756E5C7E1A780C11008EA93E /* particle.pass1.glslf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = particle.pass1.glslf; sourceTree = "<group>"; };
-		756E5C7F1A780C11008EA93E /* particle.pass1.glslv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = particle.pass1.glslv; sourceTree = "<group>"; };
-		756E5C801A780C11008EA93E /* particle.pass2.glslf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = particle.pass2.glslf; sourceTree = "<group>"; };
-		756E5C811A780C11008EA93E /* particle.pass2.glslv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = particle.pass2.glslv; sourceTree = "<group>"; };
 		757675901A82CD87003C6702 /* chkder.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = chkder.c; sourceTree = "<group>"; };
 		757675911A82CD87003C6702 /* chkder_.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = chkder_.c; sourceTree = "<group>"; };
 		757675921A82CD87003C6702 /* cminpack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cminpack.h; sourceTree = "<group>"; };
@@ -393,12 +391,20 @@
 		75DF8DA01A788E00000E5A8E /* WaitTimerEventHandlerInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WaitTimerEventHandlerInterface.h; sourceTree = "<group>"; };
 		75DF8DAD1A788FA7000E5A8E /* FadecandyGL.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FadecandyGL.cpp; path = ../src/FadecandyGL.cpp; sourceTree = "<group>"; };
 		75DF8DAE1A788FA7000E5A8E /* FadecandyGL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FadecandyGL.h; path = ../src/FadecandyGL.h; sourceTree = "<group>"; };
-		75DF8DB01A78B078000E5A8E /* fadecandy.glslf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = fadecandy.glslf; sourceTree = "<group>"; };
-		75DF8DB11A78B078000E5A8E /* fadecandy.glslv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = fadecandy.glslv; sourceTree = "<group>"; };
 		75DF8DB91A797A66000E5A8E /* Cinder-AppNap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Cinder-AppNap.h"; sourceTree = "<group>"; };
 		75DF8DBA1A797A66000E5A8E /* Cinder-AppNap.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "Cinder-AppNap.mm"; sourceTree = "<group>"; };
 		75E2F2521A8C1BC7002EEBD6 /* ColorChooser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ColorChooser.cpp; path = ../src/ColorChooser.cpp; sourceTree = "<group>"; };
 		75E2F2531A8C1BC7002EEBD6 /* ColorChooser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ColorChooser.h; path = ../src/ColorChooser.h; sourceTree = "<group>"; };
+		75EE4A931A90723D003C80BC /* world.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = world.svg; path = ../resources/world.svg; sourceTree = "<group>"; };
+		75EE4A941A90723D003C80BC /* particle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = particle.png; path = ../resources/particle.png; sourceTree = "<group>"; };
+		75EE4A951A90723D003C80BC /* particle.pass2.glslv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = particle.pass2.glslv; path = ../resources/particle.pass2.glslv; sourceTree = "<group>"; };
+		75EE4A961A90723D003C80BC /* particle.pass2.glslf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = particle.pass2.glslf; path = ../resources/particle.pass2.glslf; sourceTree = "<group>"; };
+		75EE4A971A90723D003C80BC /* particle.pass1.glslv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = particle.pass1.glslv; path = ../resources/particle.pass1.glslv; sourceTree = "<group>"; };
+		75EE4A981A90723D003C80BC /* particle.pass1.glslf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = particle.pass1.glslf; path = ../resources/particle.pass1.glslf; sourceTree = "<group>"; };
+		75EE4A991A90723D003C80BC /* gen_fadecandy_glslf.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; name = gen_fadecandy_glslf.py; path = ../resources/gen_fadecandy_glslf.py; sourceTree = "<group>"; };
+		75EE4A9A1A90723D003C80BC /* forest-palette.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "forest-palette.png"; path = "../resources/forest-palette.png"; sourceTree = "<group>"; };
+		75EE4A9B1A90723D003C80BC /* fadecandy.glslv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = fadecandy.glslv; path = ../resources/fadecandy.glslv; sourceTree = "<group>"; };
+		75EE4A9C1A90723D003C80BC /* fadecandy.glslf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = fadecandy.glslf; path = ../resources/fadecandy.glslf; sourceTree = "<group>"; };
 		7C98B10AF0FB40A49AD3EA7C /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* CircleEngine.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CircleEngine.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D37DA78CBBF64CAAB6E7E9AF /* CircleEngineApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = CircleEngineApp.cpp; path = ../src/CircleEngineApp.cpp; sourceTree = "<group>"; };
@@ -516,6 +522,16 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				75EE4A931A90723D003C80BC /* world.svg */,
+				75EE4A941A90723D003C80BC /* particle.png */,
+				75EE4A951A90723D003C80BC /* particle.pass2.glslv */,
+				75EE4A961A90723D003C80BC /* particle.pass2.glslf */,
+				75EE4A971A90723D003C80BC /* particle.pass1.glslv */,
+				75EE4A981A90723D003C80BC /* particle.pass1.glslf */,
+				75EE4A991A90723D003C80BC /* gen_fadecandy_glslf.py */,
+				75EE4A9A1A90723D003C80BC /* forest-palette.png */,
+				75EE4A9B1A90723D003C80BC /* fadecandy.glslv */,
+				75EE4A9C1A90723D003C80BC /* fadecandy.glslf */,
 				1D5CF249EEAA464CBC3747C2 /* CinderApp.icns */,
 				6CE3B07506A449DAA61CC0EE /* Info.plist */,
 			);
@@ -763,13 +779,6 @@
 		756E5C721A77FC59008EA93E /* assets */ = {
 			isa = PBXGroup;
 			children = (
-				75DF8DB01A78B078000E5A8E /* fadecandy.glslf */,
-				75DF8DB11A78B078000E5A8E /* fadecandy.glslv */,
-				756E5C7E1A780C11008EA93E /* particle.pass1.glslf */,
-				756E5C7F1A780C11008EA93E /* particle.pass1.glslv */,
-				756E5C801A780C11008EA93E /* particle.pass2.glslf */,
-				756E5C811A780C11008EA93E /* particle.pass2.glslv */,
-				756E5C761A77FC59008EA93E /* world.svg */,
 			);
 			name = assets;
 			path = ../assets;
@@ -956,15 +965,18 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				756E5C821A780C11008EA93E /* particle.pass1.glslf in Resources */,
-				75DF8DB31A78B078000E5A8E /* fadecandy.glslv in Resources */,
-				756E5C841A780C11008EA93E /* particle.pass2.glslf in Resources */,
-				75DF8DB21A78B078000E5A8E /* fadecandy.glslf in Resources */,
-				756E5C7A1A77FC59008EA93E /* world.svg in Resources */,
+				75EE4AA61A90723D003C80BC /* fadecandy.glslf in Resources */,
+				75EE4AA41A90723D003C80BC /* forest-palette.png in Resources */,
+				75EE4AA31A90723D003C80BC /* gen_fadecandy_glslf.py in Resources */,
 				6D3A4433FAE64C268CD40228 /* CinderApp.icns in Resources */,
-				756E5C831A780C11008EA93E /* particle.pass1.glslv in Resources */,
+				75EE4AA01A90723D003C80BC /* particle.pass2.glslf in Resources */,
+				75EE4A9D1A90723D003C80BC /* world.svg in Resources */,
 				757675FB1A82CD87003C6702 /* readme.txt in Resources */,
-				756E5C851A780C11008EA93E /* particle.pass2.glslv in Resources */,
+				75EE4AA21A90723D003C80BC /* particle.pass1.glslf in Resources */,
+				75EE4AA11A90723D003C80BC /* particle.pass1.glslv in Resources */,
+				75EE4A9F1A90723D003C80BC /* particle.pass2.glslv in Resources */,
+				75EE4AA51A90723D003C80BC /* fadecandy.glslv in Resources */,
+				75EE4A9E1A90723D003C80BC /* particle.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
