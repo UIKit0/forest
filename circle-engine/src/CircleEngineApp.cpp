@@ -16,6 +16,7 @@
 #include "CircleWorld.h"
 #include "ParticleRender.h"
 #include "FadecandyGL.h"
+#include <OpenGL/OpenGL.h>
 
 using namespace ci;
 using namespace ci::app;
@@ -45,6 +46,7 @@ private:
     static void physicsThreadFn(CircleEngineApp *self);
     void physicsLoop(ci::midi::Hub &midi);
     
+    CGLContextObj       mMainGlContext;
     FadecandyGL         mFadecandy;
     thread              mPhysicsThread;
     mutex               mPhysicsMutex;
@@ -82,7 +84,6 @@ private:
 void CircleEngineApp::prepareSettings( Settings *settings )
 {
     settings->setWindowSize( 1280, 720 );
-    settings->disableFrameRate();
 }
 
 void CircleEngineApp::setup()
@@ -108,8 +109,8 @@ void CircleEngineApp::setup()
     mParams = params::InterfaceGl::create( getWindow(), "Engine parameters", toPixels(Vec2i(240, 600)) );
     mParams->minimize();
     
-    mParams->addParam("FPS", &mAverageFps, "readonly=true");
-    mParams->addParam("Physics Hz", &mPhysicsHz, "readonly=true");
+    mParams->addParam("Display FPS", &mAverageFps, "readonly=true");
+    mParams->addParam("Physics / LED Hz", &mPhysicsHz, "readonly=true");
     mParams->addParam("Target physics hz", &mTargetPhysicsHz);
     mParams->addParam("# particles", &mNumParticles, "readonly=true");
     mParams->addParam("LED sampling radius", &mFadecandy.samplingRadius).min(0.f).max(500.f).step(0.1f);
@@ -143,7 +144,6 @@ void CircleEngineApp::setup()
     mParams->addButton("Clear all color cubes", bind( &CircleEngineApp::clearColorCubes, this ), "key=q");
     mParams->addButton("Log current spinner angle", bind( &CircleEngineApp::logCurrentSpinnerAngle, this ), "key=l");
     
-    gl::disableVerticalSync();
     gl::disable(GL_DEPTH_TEST);
     gl::disable(GL_CULL_FACE);
     
@@ -161,6 +161,7 @@ void CircleEngineApp::setup()
     mFrameCounter = 0;
     mTargetPhysicsHz = 90.0f;
     
+    mMainGlContext = CGLGetCurrentContext();
     mPhysicsThread = thread(physicsThreadFn, this);
 }
 
@@ -217,6 +218,23 @@ void CircleEngineApp::physicsThreadFn(CircleEngineApp *self)
 {
     midi::Hub midi;
     
+    // Physics thread does its own OpenGL rendering on a
+    // separate context which shares reesources with the main thread.
+    
+    CGDirectDisplayID display = CGMainDisplayID();
+    CGOpenGLDisplayMask myDisplayMask = CGDisplayIDToOpenGLDisplayMask(display);
+    CGLPixelFormatAttribute attribs[] = {
+        kCGLPFADisplayMask,
+        (CGLPixelFormatAttribute)myDisplayMask,
+        (CGLPixelFormatAttribute)0
+    };
+    CGLPixelFormatObj pixelFormat = NULL;
+    GLint numPixelFormats = 0;
+    CGLContextObj myCGLContext = 0;
+    CGLChoosePixelFormat(attribs, &pixelFormat, &numPixelFormats);
+    CGLCreateContext(pixelFormat, self->mMainGlContext, &myCGLContext);
+    CGLSetCurrentContext(myCGLContext);
+    
     while (!self->mExiting) {
         self->physicsLoop(midi);
     }
@@ -240,6 +258,16 @@ void CircleEngineApp::physicsLoop(midi::Hub &midi)
         mWorld.update(midi);
         if (mPhysicsHz > mTargetPhysicsHz) {
             mWorld.particleBurst();
+        }
+
+        if (mFeedbackMaskFbo) {
+            mParticleRender.render(*mWorld.mParticleSystem, mFeedbackMaskFbo.getTexture());
+        
+            if (!mDisableLedUpdates) {
+                mFadecandy.update(mParticleRender.getTexture(),
+                                  Matrix33f::createScale( Vec2f(1.0f / mParticleRect.getWidth(),
+                                                                1.0f / mParticleRect.getHeight()) ));
+            }
         }
     }
     
@@ -279,8 +307,6 @@ void CircleEngineApp::draw()
         mWorld.findNode("feedback").render(rGl);
         mFeedbackMaskFbo.unbindFramebuffer();
     }
-
-    mParticleRender.render(*mWorld.mParticleSystem, mFeedbackMaskFbo.getTexture());
 
     gl::setViewport(Area(Vec2f(0,0), getWindowSize()));
     gl::setMatricesWindowPersp( getWindowSize() );
@@ -404,18 +430,6 @@ void CircleEngineApp::draw()
     }
     
     mParams->draw();
-    
-    if (!mDisableLedUpdates) {
-        // Update LEDs from contents of the particle rendering FBO.
-        // Only runs if the simulation has produced a new step; if the physics
-        // sim is running slower, rely on FC to interpolate between its frames.
-        if (mWorld.mUpdatedSinceLastDraw) {
-            mWorld.mUpdatedSinceLastDraw = false;
-            mFadecandy.update(mParticleRender.getTexture(),
-                    Matrix33f::createScale( Vec2f(1.0f / mParticleRect.getWidth(),
-                                                  1.0f / mParticleRect.getHeight()) ));
-        }
-    }
 }
 
 void CircleEngineApp::drawObstacles()
