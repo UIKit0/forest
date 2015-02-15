@@ -75,6 +75,7 @@ private:
     bool                        mDrawParticles;
     bool                        mDrawFrontLayer;
     bool                        mSelectedSpinnerControlsAll;
+    bool                        mDisableLedUpdates;
 };
 
 void CircleEngineApp::prepareSettings( Settings *settings )
@@ -134,6 +135,7 @@ void CircleEngineApp::setup()
     mParams->addParam("Ambient light", &mAmbientLight).min(0.f).max(1.f).step(0.01f);
     mParams->addSeparator();
     mParams->addParam("Spin randomly", &mWorld.mMoveSpinnersRandomly, "key=r");
+    mParams->addParam("Disable LED updates", &mDisableLedUpdates);
     mParams->addParam("Spinner motor power", &mWorld.mSpinnerPower).min(0.f).max(100.f).step(.01f);
     mParams->addParam("Show color cube test", &mDrawSpinnerColorCube).min(-1).max(40).keyDecr("[").keyIncr("]");
     mParams->addParam("One spinner ctrl all", &mWorld.mOneSpinnerControlsAll);
@@ -153,6 +155,7 @@ void CircleEngineApp::setup()
     mDrawFrontLayer = true;
     mDrawColorTable = false;
     mExiting = false;
+    mDisableLedUpdates = false;
     mAmbientLight = 0.05f;
     mTargetPhysicsHz = 90.0f;
 
@@ -259,8 +262,6 @@ void CircleEngineApp::draw()
 {
     if (!mFeedbackMaskFbo) {
         mFeedbackMaskFbo = gl::Fbo(getWindowWidth(), getWindowHeight(), false);
-    }
-    if (true) {
         mFeedbackMaskFbo.bindFramebuffer();
         SvgRendererGl rGl;
         gl::setViewport(Area(Vec2f(0,0), mFeedbackMaskFbo.getSize()));
@@ -395,14 +396,16 @@ void CircleEngineApp::draw()
     
     mParams->draw();
     
-    // Update LEDs from contents of the particle rendering FBO.
-    // Only runs if the simulation has produced a new step; if the physics
-    // sim is running slower, rely on FC to interpolate between its frames.
-    if (mWorld.mUpdatedSinceLastDraw) {
-        mWorld.mUpdatedSinceLastDraw = false;
-        mFadecandy.update(mParticleRender.getTexture(),
-                Matrix33f::createScale( Vec2f(1.0f / mParticleRect.getWidth(),
-                                              1.0f / mParticleRect.getHeight()) ));
+    if (!mDisableLedUpdates) {
+        // Update LEDs from contents of the particle rendering FBO.
+        // Only runs if the simulation has produced a new step; if the physics
+        // sim is running slower, rely on FC to interpolate between its frames.
+        if (mWorld.mUpdatedSinceLastDraw) {
+            mWorld.mUpdatedSinceLastDraw = false;
+            mFadecandy.update(mParticleRender.getTexture(),
+                    Matrix33f::createScale( Vec2f(1.0f / mParticleRect.getWidth(),
+                                                  1.0f / mParticleRect.getHeight()) ));
+        }
     }
 }
 
