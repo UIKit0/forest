@@ -59,6 +59,7 @@ private:
 
     int                 mSeekPending;
     mutex               mSeekMutex;
+    uint64_t            mFrameCounter;
     
     params::InterfaceGlRef      mParams;
     float                       mAverageFps;
@@ -157,8 +158,9 @@ void CircleEngineApp::setup()
     mExiting = false;
     mDisableLedUpdates = false;
     mAmbientLight = 0.05f;
+    mFrameCounter = 0;
     mTargetPhysicsHz = 90.0f;
-
+    
     mPhysicsThread = thread(physicsThreadFn, this);
 }
 
@@ -260,13 +262,20 @@ void CircleEngineApp::update()
 
 void CircleEngineApp::draw()
 {
+    mFrameCounter++;
+
+    // Pre-render feedback mask into an FBO from the SVG source
+    // HACK: Re-render for the first N frames, possible GL state management bug or driver bug
     if (!mFeedbackMaskFbo) {
         mFeedbackMaskFbo = gl::Fbo(getWindowWidth(), getWindowHeight(), false);
+    }
+    if (mFrameCounter < 30) {
         mFeedbackMaskFbo.bindFramebuffer();
         SvgRendererGl rGl;
         gl::setViewport(Area(Vec2f(0,0), mFeedbackMaskFbo.getSize()));
         gl::setMatricesWindow(mFeedbackMaskFbo.getSize(), false);
         gl::clear();
+        gl::color(1.0f, 1.0f, 1.0f);
         mWorld.findNode("feedback").render(rGl);
         mFeedbackMaskFbo.unbindFramebuffer();
     }
