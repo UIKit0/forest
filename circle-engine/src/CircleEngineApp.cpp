@@ -176,7 +176,7 @@ void CircleEngineApp::setup()
     mDisableLedUpdates = false;
     mAmbientLight = 0.05f;
     mFrameCounter = 0;
-    mTargetPhysicsFps = 90.0f;
+    mTargetPhysicsFps = 120.0f;
     
     mMainGlContext = CGLGetCurrentContext();
     mPhysicsThread = thread(physicsThreadFn, this);
