@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import random
 
-NUM_SAMPLES = 128
+NUM_SAMPLES = 32
 
 print """#version 120
 
