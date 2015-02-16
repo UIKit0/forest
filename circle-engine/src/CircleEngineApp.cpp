@@ -58,7 +58,8 @@ private:
     
     mutex               mPhysicsMutex;
     mutex               mPhysicsFrameDoneMutex;
-    condition_variable  mPhysicsFrameDone;
+    condition_variable  mPhysicsFrameDoneCond;
+    bool                mPhysicsFrameDoneFlag;
     bool                mExiting;
     CircleWorld         mWorld;
     ParticleRender      mParticleRender;
@@ -174,6 +175,7 @@ void CircleEngineApp::setup()
     mDrawColorTable = false;
     mExiting = false;
     mDisableLedUpdates = false;
+    mPhysicsFrameDoneFlag = false;
     mAmbientLight = 0.05f;
     mFrameCounter = 0;
     mTargetPhysicsFps = 120.0f;
@@ -264,7 +266,8 @@ void CircleEngineApp::physicsLoop(midi::Hub &midi)
             mWorld.particleBurst();
         }
         mPhysicsFrameDoneMutex.lock();
-        mPhysicsFrameDone.notify_all();
+        mPhysicsFrameDoneFlag = true;
+        mPhysicsFrameDoneCond.notify_all();
         mPhysicsFrameDoneMutex.unlock();
     }
     
@@ -304,10 +307,13 @@ void CircleEngineApp::fadecandyLoop()
     ci::Timer stepTimer(true);
     
     for (unsigned i = kStepsPerMeasurement; i; i--) {
-        // Wait for the next physics frame
+        // Wait for new data from the physics thread, if necessary
         std::unique_lock<std::mutex> lk(mPhysicsFrameDoneMutex);
-        mPhysicsFrameDone.wait(lk);
-
+        while (!mPhysicsFrameDoneFlag) {
+            mPhysicsFrameDoneCond.wait(lk);
+        }
+        mPhysicsFrameDoneFlag = false;
+            
         if (mFeedbackMaskFbo) {
             mParticleRender.render(*mWorld.mParticleSystem, mFeedbackMaskFbo.getTexture());
             
