@@ -54,6 +54,7 @@ OPCClient::~OPCClient( )
 }
 void OPCClient::update(){
     if (mIo) {
+        mIo->reset();
         mIo->poll();
     }
 }
@@ -76,7 +77,11 @@ bool OPCClient::connect(std::string pHost, int pPort){
         
         mIo = shared_ptr<boost::asio::io_service>( new boost::asio::io_service() );
         mClient = TcpClient::create( *mIo );
-
+        if (mSession) {
+            mSession->close();
+        }
+        mSession.reset();
+        
         mClient->connectResolveEventHandler( [ & ]() {} );
         connectConnectEventHandler(&OPCClient::onConnect, this);
         connectErrorEventHandler(&OPCClient::onError, this);
@@ -138,6 +143,10 @@ void OPCClient::onError( std::string err, size_t bytesTransferred )
 
 void OPCClient::onConnect( TcpSessionRef session ){
     ci::app::console()<< "OPCClient::onConnect "<< endl;
+
+    boost::asio::ip::tcp::no_delay noDelayOption(true);
+    session->getSocket()->set_option(noDelayOption);
+
     // Get the session from the argument and set callbacks.
     // Note that you can use lambdas.
     mSession = session;
