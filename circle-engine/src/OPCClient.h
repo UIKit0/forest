@@ -98,9 +98,11 @@ public:
     
     void						onConnect( TcpSessionRef session );
     void						onError( std::string err, size_t bytesTransferred );
+    
 private:
     TcpClientRef				mClient;
     TcpSessionRef				mSession;
+    ci::Timer                   mErrorTimer;
     std::string					mHost;
     int32_t						mPort;
     bool						mConnecting;

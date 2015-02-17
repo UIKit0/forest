@@ -9,9 +9,6 @@ using namespace std;
 
 void FadecandyGL::setup(ci::app::App &app)
 {
-    opc.connectConnectEventHandler(&OPCClient::onConnect, &opc);
-    opc.connectErrorEventHandler(&OPCClient::onError, &opc);
-
     samplingRadius = 8.0;
     mProg = gl::GlslProg( app.loadResource("fadecandy.glslv"), app.loadResource("fadecandy.glslf") );
 }

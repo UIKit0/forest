@@ -45,8 +45,6 @@ OPCClient::OPCClient( ) : mConnecting(false)
 {
     mHost		= "localhost";
     mPort		= 7890;
-    mIo = shared_ptr<boost::asio::io_service>( new boost::asio::io_service() );
-    mClient = TcpClient::create( *mIo );
 }
 OPCClient::~OPCClient( )
 {
@@ -55,7 +53,9 @@ OPCClient::~OPCClient( )
     }
 }
 void OPCClient::update(){
-    mIo->poll();
+    if (mIo) {
+        mIo->poll();
+    }
 }
 bool OPCClient::tryConnect()
 {
@@ -74,11 +74,15 @@ bool OPCClient::connect(std::string pHost, int pPort){
         mHost = pHost;
         mPort = pPort;
         
-        mClient->connectResolveEventHandler( [ & ]()
-                                            {
-                                                
-                                            } );
+        mIo = shared_ptr<boost::asio::io_service>( new boost::asio::io_service() );
+        mClient = TcpClient::create( *mIo );
+
+        mClient->connectResolveEventHandler( [ & ]() {} );
+        connectConnectEventHandler(&OPCClient::onConnect, this);
+        connectErrorEventHandler(&OPCClient::onError, this);
         mClient->connect( mHost, (uint16_t)mPort );
+
+        ci::app::console()<< "OPCClient::connect " << mHost << ":" << mPort << endl;
     }
     return false;
 }
@@ -92,7 +96,7 @@ void OPCClient::connectErrorEventHandler( const std::function<void( std::string,
 }
 void OPCClient::write(std::string strBuffer)
 {
-    if ( mSession && mSession->getSocket()->is_open() ) {
+    if ( isConnected() ) {
         // Write data is packaged as a ci::Buffer. This allows
         // you to send any kind of data. Because it's more common to
         // work with strings, the session object has static convenience
@@ -110,9 +114,11 @@ void OPCClient::write(std::vector<char> &data)
     if ( mSession && mSession->getSocket()->is_open()  ) {
         Buffer buffer = Buffer( &data[ 0 ], data.size() );
         mSession->write( buffer );
-    } else {
+
+    } else if (mErrorTimer.isStopped() || mErrorTimer.getSeconds() > 1.0f) {
         // Before we can write, we need to establish a connection
         // and create a session. Check out the onConnect method.
+        // If this fails, delay retries for 1 second.
         connect(mHost,mPort);
     }
 }
@@ -120,13 +126,16 @@ bool OPCClient::isConnected()
 {
     return ( mSession && mSession->getSocket()->is_open() );
 }
-void OPCClient::onError( std::string err, size_t bytesTransferred ){
+
+void OPCClient::onError( std::string err, size_t bytesTransferred )
+{
+    mErrorTimer.start();
     ci::app::console()<< "OPCClient::onError "<< err << endl;
-    //if(err == "An existing connection was forcibly closed by the remote host")
     mConnecting = false;
     if(isConnected())
         mSession->close();
 }
+
 void OPCClient::onConnect( TcpSessionRef session ){
     ci::app::console()<< "OPCClient::onConnect "<< endl;
     // Get the session from the argument and set callbacks.
@@ -141,7 +150,5 @@ void OPCClient::onConnect( TcpSessionRef session ){
                                               {
                                                   ci::app::console()<< "Read complete"<< endl;
                                               } );
-    //mSession->connectReadEventHandler( &OPCClient::onRead, this );
-    //mSession->connectWriteEventHandler( &OPCClient::onWrite, this );
     mConnecting = false;
 }
