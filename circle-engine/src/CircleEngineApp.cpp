@@ -183,7 +183,6 @@ void CircleEngineApp::setup()
     mMainGlContext = CGLGetCurrentContext();
     mPhysicsThread = thread(physicsThreadFn, this);
     mFadecandyThread = thread(fadecandyThreadFn, this);
-    cerr << "Complete setup" << endl;
 }
 
 void CircleEngineApp::keyDown(KeyEvent event)
@@ -237,8 +236,6 @@ void CircleEngineApp::seekForward()
 
 void CircleEngineApp::physicsThreadFn(CircleEngineApp *self)
 {
-    cerr << "Physics thread started" << endl;
-
     midi::Hub midi;
     
     while (!self->mExiting) {
@@ -277,8 +274,6 @@ void CircleEngineApp::physicsLoop(midi::Hub &midi)
 
 void CircleEngineApp::fadecandyThreadFn(CircleEngineApp *self)
 {
-    cerr << "Fadecandy thread started" << endl;
-
     // New OpenGL context with shared resources
     
     CGDirectDisplayID display = CGMainDisplayID();
