@@ -339,7 +339,6 @@ void CircleEngineApp::shutdown()
     mPhysicsThread.join();
     mFadecandyThread.join();
     mMidiHotplug.stop();
-    Cinder::AppNap::EndActivity();
 }
 
 void CircleEngineApp::update()
