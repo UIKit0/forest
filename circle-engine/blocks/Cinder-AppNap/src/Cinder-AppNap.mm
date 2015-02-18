@@ -43,8 +43,8 @@ void EndActivity() {
     }
 
     @autoreleasepool {
-        [[NSProcessInfo processInfo] endActivity:activity];
         [activity release];
+        [[NSProcessInfo processInfo] endActivity:activity];
         activity = nil;
     }
 }
