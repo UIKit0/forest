@@ -16,6 +16,7 @@
 #include "CircleWorld.h"
 #include "ParticleRender.h"
 #include "FadecandyGL.h"
+#include "MacMidiHotplug.h"
 #include <OpenGL/OpenGL.h>
 #include <mutex>
 #include <condition_variable>
@@ -53,6 +54,7 @@ private:
     
     CGLContextObj       mMainGlContext;
     FadecandyGL         mFadecandy;
+    MacMidiHotplug      mMidiHotplug;
     thread              mPhysicsThread;
     thread              mFadecandyThread;
     
@@ -183,6 +185,7 @@ void CircleEngineApp::setup()
     mMainGlContext = CGLGetCurrentContext();
     mPhysicsThread = thread(physicsThreadFn, this);
     mFadecandyThread = thread(fadecandyThreadFn, this);
+    mMidiHotplug.start();
 }
 
 void CircleEngineApp::keyDown(KeyEvent event)
@@ -328,6 +331,7 @@ void CircleEngineApp::shutdown()
     mExiting = true;
     mPhysicsThread.join();
     mFadecandyThread.join();
+    mMidiHotplug.stop();
     Cinder::AppNap::EndActivity();
 }
 

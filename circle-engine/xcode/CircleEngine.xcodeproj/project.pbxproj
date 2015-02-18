@@ -127,6 +127,8 @@
 		757675FC1A82CD87003C6702 /* rwupdt.c in Sources */ = {isa = PBXBuildFile; fileRef = 757675C51A82CD87003C6702 /* rwupdt.c */; };
 		757675FD1A82CD87003C6702 /* rwupdt_.c in Sources */ = {isa = PBXBuildFile; fileRef = 757675C61A82CD87003C6702 /* rwupdt_.c */; };
 		75D4A4611A81F70800B533EE /* ColorCubePoints.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 75D4A45F1A81F70800B533EE /* ColorCubePoints.cpp */; };
+		75D98ECA1A942C8C00981FD3 /* MacMidiHotplug.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 75D98EC81A942C8C00981FD3 /* MacMidiHotplug.cpp */; };
+		75D98ECC1A9436A100981FD3 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 75D98ECB1A9436A100981FD3 /* IOKit.framework */; };
 		75DF8D7C1A788D40000E5A8E /* OPCClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 75DF8D7B1A788D40000E5A8E /* OPCClient.cpp */; };
 		75DF8DA21A788E00000E5A8E /* ClientInterface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 75DF8D811A788E00000E5A8E /* ClientInterface.cpp */; };
 		75DF8DA31A788E00000E5A8E /* DispatcherInterface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 75DF8D841A788E00000E5A8E /* DispatcherInterface.cpp */; };
@@ -354,6 +356,9 @@
 		757675C61A82CD87003C6702 /* rwupdt_.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = rwupdt_.c; sourceTree = "<group>"; };
 		75D4A45F1A81F70800B533EE /* ColorCubePoints.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ColorCubePoints.cpp; path = ../src/ColorCubePoints.cpp; sourceTree = "<group>"; };
 		75D4A4601A81F70800B533EE /* ColorCubePoints.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ColorCubePoints.h; path = ../src/ColorCubePoints.h; sourceTree = "<group>"; };
+		75D98EC81A942C8C00981FD3 /* MacMidiHotplug.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MacMidiHotplug.cpp; path = ../src/MacMidiHotplug.cpp; sourceTree = "<group>"; };
+		75D98EC91A942C8C00981FD3 /* MacMidiHotplug.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MacMidiHotplug.h; path = ../src/MacMidiHotplug.h; sourceTree = "<group>"; };
+		75D98ECB1A9436A100981FD3 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		75DF8D7A1A788D3B000E5A8E /* OPCClient.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OPCClient.h; path = ../src/OPCClient.h; sourceTree = "<group>"; };
 		75DF8D7B1A788D40000E5A8E /* OPCClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OPCClient.cpp; path = ../src/OPCClient.cpp; sourceTree = "<group>"; };
 		75DF8D801A788E00000E5A8E /* ClientEventHandlerInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClientEventHandlerInterface.h; sourceTree = "<group>"; };
@@ -419,6 +424,7 @@
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				0091D8F90E81B9330029341E /* OpenGL.framework in Frameworks */,
 				5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */,
+				75D98ECC1A9436A100981FD3 /* IOKit.framework in Frameworks */,
 				5323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */,
 				00B784B30FF439BC000DE1D7 /* Accelerate.framework in Frameworks */,
 				00B784B40FF439BC000DE1D7 /* AudioToolbox.framework in Frameworks */,
@@ -447,6 +453,8 @@
 			isa = PBXGroup;
 			children = (
 				75D4A45F1A81F70800B533EE /* ColorCubePoints.cpp */,
+				75D98EC81A942C8C00981FD3 /* MacMidiHotplug.cpp */,
+				75D98EC91A942C8C00981FD3 /* MacMidiHotplug.h */,
 				75E2F2521A8C1BC7002EEBD6 /* ColorChooser.cpp */,
 				75DF8DAD1A788FA7000E5A8E /* FadecandyGL.cpp */,
 				75DF8D7B1A788D40000E5A8E /* OPCClient.cpp */,
@@ -460,6 +468,7 @@
 		1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				75D98ECB1A9436A100981FD3 /* IOKit.framework */,
 				755B62C61A81EBBF008FF892 /* CoreMIDI.framework */,
 				00B784AF0FF439BC000DE1D7 /* Accelerate.framework */,
 				00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */,
@@ -1052,6 +1061,7 @@
 				751542B61A74B7A60012009D /* b2PolygonShape.cpp in Sources */,
 				75DF8DAF1A788FA7000E5A8E /* FadecandyGL.cpp in Sources */,
 				751542B31A74B7A60012009D /* b2ChainShape.cpp in Sources */,
+				75D98ECA1A942C8C00981FD3 /* MacMidiHotplug.cpp in Sources */,
 				751542C11A74B7A60012009D /* b2ContactManager.cpp in Sources */,
 				757675F71A82CD87003C6702 /* r1mpyq.c in Sources */,
 				757675E11A82CD87003C6702 /* hybrj_.c in Sources */,
