@@ -315,7 +315,10 @@ void CircleEngineApp::fadecandyLoop()
         if (mFeedbackMaskFbo) {
             mParticleRender.render(*mWorld.mParticleSystem, mFeedbackMaskFbo.getTexture());
             
-            if (!mDisableLedUpdates) {
+            if (mDisableLedUpdates) {
+                // Without LED readback there are no natural sync points, so GPU interaction gets laggy
+                glFinish();
+            } else {
                 mFadecandy.update(mParticleRender.getTexture(),
                                   Matrix33f::createScale( Vec2f(1.0f / mParticleRect.getWidth(),
                                                                 1.0f / mParticleRect.getHeight()) ));
