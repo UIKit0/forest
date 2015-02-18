@@ -8,6 +8,7 @@
 #include "cinder/CinderMath.h"
 #include "cinder/Vector.h"
 #include "cinder/Matrix44.h"
+#include "cinder/Timer.h"
 #include <vector>
 
 
@@ -32,6 +33,8 @@ public:
     bool isAngleReliable() const;
 
     float getAngleForPoint(ci::Vec3f point) const;
+    
+    float getTimeSinceLastPoint() const;
     
 private:
     // Solver for locating a 3D line that passes through the rotational axis in RGB space
@@ -64,6 +67,7 @@ private:
     unsigned mMaxPoints;
     
     LineSolver mLineSolver;
+    ci::Timer mActivityTimer;
 
     ci::Vec3f mCurrentPoint;
     std::vector<ci::Vec3f> mPoints;

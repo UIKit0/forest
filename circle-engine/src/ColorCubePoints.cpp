@@ -14,10 +14,12 @@ ColorCubePoints::ColorCubePoints(unsigned maxPoints)
 {
     mZLimit = 7.0f;
     mXYThreshold = 5.0f;
+    mActivityTimer.start();
 }
 
 void ColorCubePoints::push(Vec3f v)
 {
+    mActivityTimer.start();
     mCurrentPoint = v;
     mPoints.push_back(v);
 
@@ -264,4 +266,9 @@ int ColorCubePoints::LineSolver::minFunc(void *p, int m, int n, const float *x, 
     }
 
     return flag;
+}
+
+float ColorCubePoints::getTimeSinceLastPoint() const
+{
+    return mActivityTimer.getSeconds();
 }

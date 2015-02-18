@@ -37,6 +37,7 @@ public:
 private:
     void drawObstacles();
     void drawFrontLayer();
+    void drawSpinnerActivity();
     void drawSpinners();
     void drawForceGrid();
     void reloadColorTable();
@@ -92,6 +93,7 @@ private:
     bool                        mDrawFrontLayer;
     bool                        mSelectedSpinnerControlsAll;
     bool                        mDisableLedUpdates;
+    bool                        mDrawSensorActivity;
 };
 
 void CircleEngineApp::prepareSettings( Settings *settings )
@@ -154,6 +156,7 @@ void CircleEngineApp::setup()
     mParams->addParam("Draw particles", &mDrawParticles, "key=5");
     mParams->addParam("Draw front layer", &mDrawFrontLayer, "key=6");
     mParams->addParam("Draw color table", &mDrawColorTable, "key=7");
+    mParams->addParam("Draw sensor activity", &mDrawSensorActivity, "key=8");
     mParams->addParam("Ambient light", &mAmbientLight).min(0.f).max(1.f).step(0.01f);
     mParams->addSeparator();
     mParams->addParam("Spin randomly", &mWorld.mMoveSpinnersRandomly, "key=r");
@@ -174,6 +177,7 @@ void CircleEngineApp::setup()
     mDrawLedModel = false;
     mDrawParticles = true;
     mDrawFrontLayer = true;
+    mDrawSensorActivity = false;
     mDrawColorTable = false;
     mExiting = false;
     mDisableLedUpdates = false;
@@ -391,6 +395,10 @@ void CircleEngineApp::draw()
             drawSpinners();
         }
     }
+    
+    if (mDrawSensorActivity) {
+        drawSpinnerActivity();
+    }
 
     if (mDrawLedModel) {
         mFadecandy.drawModel();
@@ -533,6 +541,26 @@ void CircleEngineApp::drawSpinners()
     for (unsigned i = 0; i < mWorld.mSpinners.size(); i++) {
         b2Body *body = mWorld.mSpinners[i].mBody;
         TriMesh2d &mesh = mWorld.mSpinners[i].mMesh;
+
+        gl::pushMatrices();
+        gl::translate(mWorld.vecFromBox(body->GetPosition()));
+        gl::rotate(body->GetAngle() * 180 / M_PI);
+        gl::draw(mesh);
+        gl::popMatrices();
+    }
+}
+                      
+void CircleEngineApp::drawSpinnerActivity()
+{
+    gl::enableAdditiveBlending();
+    
+    for (unsigned i = 0; i < mWorld.mSpinners.size(); i++) {
+        auto& spinner = mWorld.mSpinners[i];
+        b2Body *body = spinner.mBody;
+        TriMesh2d &mesh = spinner.mMesh;
+        
+        float a = 1.0f / (1.0f + 5.0f * spinner.mColorCube.getTimeSinceLastPoint());
+        gl::color(0.5f * a, 2.0f * a, 0.5f * a, a);
 
         gl::pushMatrices();
         gl::translate(mWorld.vecFromBox(body->GetPosition()));

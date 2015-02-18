@@ -240,7 +240,6 @@ void CircleWorld::update(ci::midi::Hub& midi)
     mColorChooser.update();
     
     mB2World->Step( 1 / 60.0f, 1, 1, 2 );
-    mUpdatedSinceLastDraw = true;
 
     b2Transform xf;
     xf.SetIdentity();

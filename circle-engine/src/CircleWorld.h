@@ -81,7 +81,6 @@ public:
     b2Vec2              mVelocityBuffer[kMaxParticles];
     b2ParticleColor     mColorBuffer[kMaxParticles];
     int32               mExpirationTimeBuffer[kMaxParticles];
-    bool                mUpdatedSinceLastDraw;
     
     class ExcNodeNotFound : public cinder::Exception {
     public:
