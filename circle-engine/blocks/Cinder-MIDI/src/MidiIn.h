@@ -31,6 +31,7 @@
 #include <deque>
 #include <string>
 #include <iostream>
+#include <mutex>
 
 #include "RtMidi.h"
 
@@ -79,7 +80,7 @@ protected:
 	std::vector<std::string>    mPortNames;
 	std::string                 mName;
 	std::deque<Message*>        mMessages;
-
+    std::mutex                  mMessageMutex;
 
 };
 

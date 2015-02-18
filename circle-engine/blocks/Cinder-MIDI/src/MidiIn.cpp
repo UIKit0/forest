@@ -82,8 +82,10 @@ namespace cinder { namespace midi {
 			
 			//mSignal(msg);
 			
+            mMessageMutex.lock();
 			mMessages.push_back(msg);
-		}
+            mMessageMutex.unlock();
+        }
 		
 	}
 	
@@ -93,15 +95,18 @@ namespace cinder { namespace midi {
 	}
 	
 	bool Input::getNextMessage(Message* message){
-		if (mMessages.size() == 0){
-			return false;
+        mMessageMutex.lock();
+
+        if (mMessages.size() == 0){
+            mMessageMutex.unlock();
+            return false;
 		}
 		
 		Message* src_message = mMessages.front();
 		message->copy(*src_message);
 		delete src_message;
 		mMessages.pop_front();
-		
+        mMessageMutex.unlock();
 		return true;
 	}
 	
