@@ -30,6 +30,7 @@ void MacMidiHotplug::threadFunc()
     io_iterator_t deviceAdded;
 
     mRunLoop = CFRunLoopGetCurrent();
+    CFRetain(mRunLoop);
     port = IONotificationPortCreate(kIOMasterPortDefault);
     source = IONotificationPortGetRunLoopSource(port);
     CFRunLoopAddSource(mRunLoop, source, kCFRunLoopDefaultMode);
