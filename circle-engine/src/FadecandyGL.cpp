@@ -9,7 +9,7 @@ using namespace std;
 
 void FadecandyGL::setup(ci::app::App &app)
 {
-    samplingRadius = 8.0;
+    samplingRadius = 16.0;
     mProg = gl::GlslProg( app.loadResource("fadecandy.glslv"), app.loadResource("fadecandy.glslf") );
 }
 
