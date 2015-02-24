@@ -559,6 +559,27 @@ static CFStringRef ConnectedEndpointName( MIDIEndpointRef endpoint )
   return EndpointName( endpoint, false );
 }
 
+static CFStringRef ConnectedEndpointNameWithUniqueId( MIDIEndpointRef endpoint )
+{
+    // Hack for compatibility with many identically-named devices.
+    // This adds the object ID to the string also, so that MidiHub can tell them apart.
+    // -micah scott
+    
+    CFMutableStringRef result = CFStringCreateMutable( NULL, 0 );
+
+    CFStringRef name = ConnectedEndpointName( endpoint );
+    CFStringAppend( result, name );
+    CFRelease( name );
+
+    MIDIUniqueID id;
+    char buf[64];
+    MIDIObjectGetIntegerProperty( endpoint, kMIDIPropertyUniqueID, &id);
+    snprintf( buf, sizeof buf, " #%x", id );
+    CFStringAppendCString( result, buf, kCFStringEncodingASCII );
+    
+    return result;
+}
+
 std::string RtMidiIn :: getPortName( unsigned int portNumber )
 {
   CFStringRef nameRef;
@@ -573,9 +594,7 @@ std::string RtMidiIn :: getPortName( unsigned int portNumber )
   }
   portRef = MIDIGetSource( portNumber );
 
-  nameRef = ConnectedEndpointName(portRef);
-  //MIDIObjectGetStringProperty( portRef, kMIDIPropertyName, &nameRef );
-  // modified by D. Casey Tucker 2009-03-10
+  nameRef = ConnectedEndpointNameWithUniqueId(portRef);
 
   CFStringGetCString( nameRef, name, sizeof(name), 0);
   CFRelease( nameRef );
