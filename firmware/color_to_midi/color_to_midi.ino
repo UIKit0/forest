@@ -25,7 +25,7 @@ void setup()
     spin2.setup();
     spin3.setup();
 
- 	pinMode(LED, OUTPUT);
+    pinMode(LED, OUTPUT);
 }
 
 void loop()
@@ -34,9 +34,9 @@ void loop()
     spin2.loop();
     spin3.loop();
 
-	// Read and ignore incoming MIDI messages
-	while (usbMIDI.read());
+    // Read and ignore incoming MIDI messages
+    while (usbMIDI.read());
 
- 	// Blink the LED
- 	digitalWrite(LED, (millis() % 1000) < 100);
+    // Blink the LED
+    digitalWrite(LED, (millis() % 1000) < 100);
 }

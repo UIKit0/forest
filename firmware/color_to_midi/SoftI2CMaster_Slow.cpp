@@ -296,7 +296,7 @@ uint8_t SoftI2CMaster::i2c_read( uint8_t ack )
 // FIXME: this isn't right, surely
 uint8_t SoftI2CMaster::read( uint8_t ack )
 {
-  return i2c_read( ack );
+    return i2c_read( ack );
 }
 
 //
