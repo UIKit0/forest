@@ -15,16 +15,17 @@ void ColorChooser::setup(ImageSourceRef image, Perlin* perlin, int numPoints)
     mPaletteTexture = mPaletteImage;
     mNumPoints = numPoints;
     mParameter = 0.0;
+    mSpeed = 3.0;
 }
 
 void ColorChooser::update()
 {
-    mParameter += 1.0;
+    mParameter += mSpeed;
 }
 
 void ColorChooser::seek(int steps)
 {
-    mParameter += 400.0 * steps;
+    mParameter += mSpeed * steps * 100.0;
 }
 
 void ColorChooser::draw()

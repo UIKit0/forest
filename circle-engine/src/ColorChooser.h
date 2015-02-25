@@ -22,6 +22,8 @@ public:
     ci::Vec2f getSamplePoint(int index);
     ci::ColorA getSample(ci::Vec2f vec);
 
+    double mSpeed;
+
 private:
     ci::Surface8u mPaletteImage;
     ci::gl::Texture mPaletteTexture;

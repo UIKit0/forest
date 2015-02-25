@@ -139,6 +139,7 @@ void CircleEngineApp::setup()
     mParams->addSeparator();
     mParams->addButton("Reload color table", bind( &CircleEngineApp::reloadColorTable, this ), "key=c");
     mParams->addButton("Delete all particles", bind( &CircleEngineApp::deleteAllParticles, this ), "key=d");
+    mParams->addParam("Color change rate", &mWorld.mColorChooser.mSpeed).min(0.f).max(100.f).step(0.1f);
     mParams->addButton("Seek backward", bind( &CircleEngineApp::seekBackward, this ), "key=,");
     mParams->addButton("Seek forward", bind( &CircleEngineApp::seekForward, this ), "key=.");
     mParams->addSeparator();
