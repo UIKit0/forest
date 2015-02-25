@@ -59,6 +59,7 @@ public:
     float               mMaxParticleLifetime;
     bool                mOneSpinnerControlsAll;
     bool                mMoveSpinnersRandomly;
+    bool                mLogMidiMessages;
     float               mSpinnerPower;
     
     std::vector<ci::Vec2f>  mLedPoints;

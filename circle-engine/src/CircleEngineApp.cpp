@@ -166,6 +166,7 @@ void CircleEngineApp::setup()
     mParams->addParam("One spinner ctrl all", &mWorld.mOneSpinnerControlsAll);
     mParams->addButton("Clear all color cubes", bind( &CircleEngineApp::clearColorCubes, this ), "key=q");
     mParams->addButton("Log current spinner angle", bind( &CircleEngineApp::logCurrentSpinnerAngle, this ), "key=l");
+    mParams->addParam("Log MIDI messages", &mWorld.mLogMidiMessages);
     
     gl::disable(GL_DEPTH_TEST);
     gl::disable(GL_CULL_FACE);

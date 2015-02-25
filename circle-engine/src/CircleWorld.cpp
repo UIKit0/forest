@@ -78,6 +78,7 @@ void CircleWorld::setup(svg::DocRef doc)
     mMaxParticleLifetime = 300.0;
     mMoveSpinnersRandomly = false;
     mOneSpinnerControlsAll = false;
+    mLogMidiMessages = false;
     mSpinnerPower = 10.0f;
     mForceGridStrength = 5.0f;
     
@@ -252,6 +253,10 @@ void CircleWorld::updateSpinners(midi::Hub& midi)
     ci::midi::Message msg;
     while (midi.getNextMessage(&msg)) {
 
+        if (mLogMidiMessages) {
+            printf("[MIDI] port=%d channel=%d status=0x%02x byte1=%d byte2=%d\n",
+                   msg.port, msg.channel, msg.status, msg.byteOne, msg.byteTwo);
+        }
         if (mOneSpinnerControlsAll) {
             // MIDI messages go to all spinners, for debug / simulation
             for (unsigned controller = 0; controller < mSpinners.size(); controller++) {
