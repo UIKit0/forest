@@ -9,7 +9,7 @@
 
 Spinner::Spinner(int scl, int sda, int controller, int channel) :
   i2c(scl, sda),
-  sensor(i2c, TCS34725_INTEGRATIONTIME_24MS, TCS34725_GAIN_60X),
+  sensor(i2c, TCS34725_INTEGRATIONTIME_24MS, TCS34725_GAIN_16X),
   controller(controller),
   channel(channel)
 {
