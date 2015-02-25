@@ -14,8 +14,8 @@
 
 //             SCL  SDA  Spinner # (0-31)
 Spinner spin1( 0,   1,   0  );
-Spinner spin2( 2,   3,   8  );
-Spinner spin3( 4,   5,   16 );
+Spinner spin2( 2,   3,   1  );
+Spinner spin3( 4,   5,   2  );
 
 const int LED = 13;
 
