@@ -309,7 +309,9 @@ void CircleWorld::Spinner::handleMidi(const midi::Message &msg)
                 float g = mColorPacket[2] | (mColorPacket[3] << 7);
                 float b = mColorPacket[4] | (mColorPacket[5] << 7);
                 float c = mColorPacket[6] | (mColorPacket[7] << 7);
-                mColorCube.push(r*s/c, g*s/c, b*s/c);
+                if (r > 0 && g > 0 && b > 0 && c > 0) {
+                    mColorCube.push(r*s/c, g*s/c, b*s/c);
+                }
             }
         }
     }
