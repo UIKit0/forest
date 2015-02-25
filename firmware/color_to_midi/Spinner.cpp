@@ -23,7 +23,7 @@ void Spinner::setup()
 
 void Spinner::loop()
 {
-    uint16_t raw_r, raw_g, raw_b, raw_c;
+    uint16_t raw_r = 0, raw_g = 0, raw_b = 0, raw_c = 0;
     sensor.getRawData(&raw_r, &raw_g, &raw_b, &raw_c);
 
     if (raw_r != last_r || raw_g != last_g || raw_b != last_b) {

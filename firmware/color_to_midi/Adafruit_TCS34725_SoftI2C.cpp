@@ -203,10 +203,12 @@ void Adafruit_TCS34725::getRawData (uint16_t *r, uint16_t *g, uint16_t *b, uint1
 {
   if (!_tcs34725Initialised) begin();
 
-  *c = read16(TCS34725_CDATAL);
-  *r = read16(TCS34725_RDATAL);
-  *g = read16(TCS34725_GDATAL);
-  *b = read16(TCS34725_BDATAL);
+  if (_tcs34725Initialised) {
+    *r = read16(TCS34725_RDATAL);
+    *g = read16(TCS34725_GDATAL);
+    *b = read16(TCS34725_BDATAL);
+    *c = read16(TCS34725_CDATAL);
+  }
 }
 
 /**************************************************************************/
