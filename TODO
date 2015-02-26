@@ -1,7 +1,9 @@
 - Midi usb hotplug bug?
-- Persistent colorcube storage
+- Persistent spinner cal:
+   - default colorcube
+   - zero angle
+
 - tuning!
-- Fix strips
 - Edge trim
 - Fudge mapping on top half to be less gappy
 - Particle-spinner magnetism?
