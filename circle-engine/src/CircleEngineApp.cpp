@@ -75,6 +75,7 @@ private:
     int                 mSeekPending;
     mutex               mSeekMutex;
     uint64_t            mFrameCounter;
+    Vec2i               mLastMousePos;  // For access from the FadecandyThread
     
     params::InterfaceGlRef      mParams;
     float                       mDisplayFps;
@@ -94,6 +95,7 @@ private:
     bool                        mSelectedSpinnerControlsAll;
     bool                        mDisableLedUpdates;
     bool                        mDrawSensorActivity;
+    bool                        mMappingTestMode;
 };
 
 void CircleEngineApp::prepareSettings( Settings *settings )
@@ -127,7 +129,7 @@ void CircleEngineApp::setup()
                                        mWorld.mForceGridExtent.getLowerRight() / mParticleRect.getSize()));
     cerr << "Particle renderer setup" << endl;
 
-    mParams = params::InterfaceGl::create( getWindow(), "Engine parameters", toPixels(Vec2i(240, 600)) );
+    mParams = params::InterfaceGl::create( getWindow(), "Engine parameters", toPixels(Vec2i(240, 680)) );
     mParams->minimize();
     
     mParams->addParam("Display FPS", &mDisplayFps, "readonly=true");
@@ -162,6 +164,7 @@ void CircleEngineApp::setup()
     mParams->addSeparator();
     mParams->addParam("Spin randomly", &mWorld.mMoveSpinnersRandomly, "key=r");
     mParams->addParam("Disable LED updates", &mDisableLedUpdates);
+    mParams->addParam("Mapping test mode", &mMappingTestMode, "key=m");
     mParams->addParam("Spinner angle offset", &mWorld.mSpinnerOffset).min(-180).max(180).step(.1f);
     mParams->addParam("Spinner motor power", &mWorld.mSpinnerPower).min(0.f).max(100.f).step(.01f);
     mParams->addParam("Show color cube test", &mDrawSpinnerColorCube).min(-1).max(40).keyDecr("[").keyIncr("]");
@@ -185,6 +188,7 @@ void CircleEngineApp::setup()
     mExiting = false;
     mDisableLedUpdates = false;
     mPhysicsFrameDoneFlag = false;
+    mMappingTestMode = false;
     mAmbientLight = 0.05f;
     mFrameCounter = 0;
     mTargetPhysicsFps = 120.0f;
@@ -320,8 +324,13 @@ void CircleEngineApp::fadecandyLoop()
         mPhysicsFrameDoneFlag = false;
             
         if (mFeedbackMaskFbo) {
-            mParticleRender.render(*mWorld.mParticleSystem, mFeedbackMaskFbo.getTexture());
             
+            if (mMappingTestMode) {
+                mParticleRender.renderSingle(mWorld.vecToBox(mLastMousePos), mFeedbackMaskFbo.getTexture());
+            } else {
+                mParticleRender.render(*mWorld.mParticleSystem, mFeedbackMaskFbo.getTexture());
+            }
+                
             if (mDisableLedUpdates) {
                 // Without LED readback there are no natural sync points, so GPU interaction gets laggy
                 glFinish();
@@ -348,6 +357,7 @@ void CircleEngineApp::update()
 {
     mDisplayFps = getAverageFps();
     mNumParticles = mWorld.mParticleSystem->GetParticleCount();
+    mLastMousePos = getMousePos() - getWindowPos();
 }
 
 void CircleEngineApp::draw()

@@ -48,6 +48,14 @@ void ParticleRender::render(const b2ParticleSystem &system, const ci::gl::Textur
     secondPass(feedbackMask);
 }
 
+void ParticleRender::renderSingle(b2Vec2 pos, const ci::gl::Texture& feedbackMask)
+{
+    mFrame = !mFrame;
+    firstPassSingle(pos);
+    secondPass(feedbackMask);
+}
+
+
 void ParticleRender::firstPass(const b2ParticleSystem &system)
 {
     mFirstPassFbo.bindFramebuffer();
@@ -87,6 +95,53 @@ void ParticleRender::firstPass(const b2ParticleSystem &system)
 
     glDrawArrays(GL_POINTS, 0, particleCount);
 
+    glDisableVertexAttribArray(position);
+    glDisableVertexAttribArray(color);
+    glDisableVertexAttribArray(expiration);
+    glPopMatrix();
+    
+    mFirstPassProg.unbind();
+    mFirstPassFbo.unbindFramebuffer();
+    gl::disable(GL_POINT_SPRITE);
+}
+
+void ParticleRender::firstPassSingle(b2Vec2 pos)
+{
+    mFirstPassFbo.bindFramebuffer();
+    mFirstPassProg.bind();
+    
+    gl::setViewport(Area(Vec2f(0,0), mFirstPassFbo.getSize()));
+    gl::setMatricesWindow(mFirstPassFbo.getSize());
+    gl::clear();
+    gl::enableAdditiveBlending();
+    gl::enable(GL_POINT_SPRITE);
+    
+    uint32_t colorVal = 0xFFFFFFFF;
+    uint32_t expirationVal = 0x10000;
+    float radius = 1000.0f;
+    
+    GLint position = mFirstPassProg.getAttribLocation("position");
+    GLint color = mFirstPassProg.getAttribLocation("color");
+    GLint expiration = mFirstPassProg.getAttribLocation("expiration");
+    
+    mFirstPassProg.uniform("currentTime", 0);
+    mFirstPassProg.uniform("fadeDuration", 1);
+
+    mFirstPassProg.uniform("texture", 0);
+    mPointTexture.bind();
+    
+    glPointSize(radius * mScale);
+    glPushMatrix();
+    glScalef(mScale, mScale, mScale);
+    glVertexAttribPointer(position, 2, GL_FLOAT, GL_FALSE, 0, &pos.x);
+    glVertexAttribPointer(color, 4, GL_UNSIGNED_BYTE, GL_TRUE, 0, &colorVal);
+    glVertexAttribPointer(expiration, 4, GL_UNSIGNED_BYTE, GL_FALSE, 0, &expirationVal);
+    glEnableVertexAttribArray(position);
+    glEnableVertexAttribArray(color);
+    glEnableVertexAttribArray(expiration);
+    
+    glDrawArrays(GL_POINTS, 0, 1);
+    
     glDisableVertexAttribArray(position);
     glDisableVertexAttribArray(color);
     glDisableVertexAttribArray(expiration);

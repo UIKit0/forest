@@ -23,6 +23,9 @@ public:
     // Render particle system and video feedback to texture
     void render(const b2ParticleSystem &system, const ci::gl::Texture& feedbackMask);
 
+    // Render a single particle, for mapping tests
+    void renderSingle(b2Vec2 pos, const ci::gl::Texture& feedbackMask);
+    
     // Read results of last render()
     ci::gl::Texture& getTexture();
     
@@ -44,5 +47,6 @@ private:
     ci::gl::Texture  mPointTexture;
 
     void firstPass(const b2ParticleSystem &system);
+    void firstPassSingle(b2Vec2 pos);
     void secondPass(const ci::gl::Texture& feedbackMask);
 };
