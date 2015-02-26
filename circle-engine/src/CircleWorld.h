@@ -61,6 +61,7 @@ public:
     bool                mMoveSpinnersRandomly;
     bool                mLogMidiMessages;
     float               mSpinnerPower;
+    float               mSpinnerOffset;
     
     std::vector<ci::Vec2f>  mLedPoints;
     std::vector<Spinner>    mSpinners;

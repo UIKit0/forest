@@ -74,13 +74,14 @@ void CircleWorld::setup(svg::DocRef doc)
     mParticleSystem->SetColorBuffer(mColorBuffer, kMaxParticles);
     mParticleSystem->SetExpirationTimeBuffer(mExpirationTimeBuffer, kMaxParticles);
 
-    mMaxParticleRate = 5;
-    mMaxParticleLifetime = 300.0;
+    mMaxParticleRate = 10;
+    mMaxParticleLifetime = 50;
     mMoveSpinnersRandomly = false;
     mOneSpinnerControlsAll = false;
     mLogMidiMessages = false;
-    mSpinnerPower = 10.0f;
-    mForceGridStrength = 5.0f;
+    mSpinnerPower = 15.0f;
+    mSpinnerOffset = 131.2f;
+    mForceGridStrength = 2.1f;
     
     setupObstacles(findShape("obstacles"));
     setupFrontLayer(findShape("front-layer"));
@@ -282,7 +283,7 @@ void CircleWorld::updateSpinners(midi::Hub& midi)
         
         } else if (spinner.mColorCube.isAngleReliable()) {
             // Real sensor data
-            spinner.sensorAngle(spinner.mColorCube.getCurrentAngle(), mSpinnerPower);
+            spinner.sensorAngle(mSpinnerOffset + spinner.mColorCube.getCurrentAngle(), mSpinnerPower);
 
         } else {
             // Disable the motor, just spin freely
