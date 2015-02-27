@@ -77,8 +77,8 @@ Parts
 * `circle-engine` – Cinder app for interactive animation.
 * `firmware` – Teensyduino firmware for the sensor boards
 
-Dependencies
-------------
+Build Dependencies
+------------------
 
-* Cinder
-* Node.js
+* Cinder – `circle-engine` and `growth-sim` look for this in a `cinder_0.8.6_mac` directory alongside `forest` by default
+* Node.js – Required for the `fabricator` tools
