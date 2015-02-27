@@ -80,7 +80,6 @@ void CircleWorld::setup(svg::DocRef doc)
     mOneSpinnerControlsAll = false;
     mLogMidiMessages = false;
     mSpinnerPower = 15.0f;
-    mSpinnerOffset = 131.2f;
     mForceGridStrength = 2.1f;
     
     setupObstacles(findShape("obstacles"));
@@ -283,7 +282,7 @@ void CircleWorld::updateSpinners(midi::Hub& midi)
         
         } else if (spinner.mColorCube.isAngleReliable()) {
             // Real sensor data
-            spinner.sensorAngle(mSpinnerOffset + spinner.mColorCube.getCurrentAngle(), mSpinnerPower);
+            spinner.sensorAngle(spinner.mColorCube.getCalibratedAngle(), mSpinnerPower);
 
         } else {
             // Disable the motor, just spin freely
@@ -346,13 +345,6 @@ void CircleWorld::Spinner::sensorAngle(float angle, float motorPower)
         // Lots of rotation to catch up, warp there instantly
         mJoint->EnableMotor(false);
         mBody->SetTransform(mBody->GetPosition(), mTargetAngle);
-    }
-}
-
-void CircleWorld::clearColorCubes()
-{
-    for (unsigned i = 0; i < mSpinners.size(); i++) {
-        mSpinners[i].mColorCube.clear();
     }
 }
 
@@ -437,4 +429,21 @@ void CircleWorld::newParticle()
     pd.color.Set(pix.r * 255.0f, pix.g * 255.0f, pix.b * 255.0f, 255);
 
     mParticleSystem->CreateParticle(pd);
+}
+
+void CircleWorld::colorCubesToJson(ci::JsonTree& tree)
+{
+    for (unsigned i = 0; i < mSpinners.size(); i++) {
+        JsonTree spinner;
+        mSpinners[i].mColorCube.toJson(spinner);
+        tree.addChild(spinner);
+    }
+}
+
+void CircleWorld::colorCubesFromJson(const ci::JsonTree& tree)
+{
+    for (unsigned i = 0; i < tree.getNumChildren(); i++) {
+        const JsonTree& spinner = tree.getChild(i);
+        mSpinners[i].mColorCube.fromJson(spinner);
+    }    
 }

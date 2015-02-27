@@ -1,11 +1,5 @@
-- Midi usb hotplug bug?
-- Persistent spinner cal:
-   - default colorcube
-   - zero angle
-
 - tuning!
 - Edge trim
 - Fudge mapping on top half to be less gappy
 - Particle-spinner magnetism?
-- Make sure it's still aligned when headless
 

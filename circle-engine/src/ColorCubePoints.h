@@ -9,6 +9,7 @@
 #include "cinder/Vector.h"
 #include "cinder/Matrix44.h"
 #include "cinder/Timer.h"
+#include "cinder/Json.h"
 #include <vector>
 
 
@@ -31,10 +32,15 @@ public:
     ci::Vec3f getCurrentPoint() const;
     float getCurrentAngle() const;
     bool isAngleReliable() const;
+    float getTimeSinceLastPoint() const;
 
     float getAngleForPoint(ci::Vec3f point) const;
-    
-    float getTimeSinceLastPoint() const;
+
+    float getCalibratedAngle() const;
+    void resetCalibratedOrigin();
+
+    void toJson(ci::JsonTree &tree);
+    void fromJson(const ci::JsonTree &tree);
     
 private:
     // Solver for locating a 3D line that passes through the rotational axis in RGB space
@@ -70,9 +76,12 @@ private:
     ci::Timer mActivityTimer;
 
     ci::Vec3f mCurrentPoint;
-    std::vector<ci::Vec3f> mPoints;
     ci::AxisAlignedBox3f mRangeRGB;
     ci::AxisAlignedBox3f mRangeXYZ;
+
+    // Persistent values, saved to JSON
+    std::vector<ci::Vec3f> mPoints;
+    float mOrigin;
 
     void drawColorPoint(const ci::AxisAlignedBox3f& range, ci::Vec3f p);
     void balance(int numParts = 16);

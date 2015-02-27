@@ -9,6 +9,7 @@
 #include "cinder/Triangulate.h"
 #include "cinder/TriMesh.h"
 #include "cinder/Timer.h"
+#include "cinder/Json.h"
 #include "Box2D/Box2D.h"
 #include "MidiHub.h"
 #include "ColorCubePoints.h"
@@ -20,9 +21,12 @@ public:
     void setup(ci::svg::DocRef doc);
     void initColors(ci::ImageSourceRef colorTable);
     void update(ci::midi::Hub& midi);
+
     void newParticle();
     void particleBurst();
-    void clearColorCubes();
+
+    void colorCubesToJson(ci::JsonTree& tree);
+    void colorCubesFromJson(const ci::JsonTree& tree);
     
     const ci::svg::Node& findNode(const std::string &name);
     ci::Shape2d findShape(const std::string &name);
@@ -61,7 +65,6 @@ public:
     bool                mMoveSpinnersRandomly;
     bool                mLogMidiMessages;
     float               mSpinnerPower;
-    float               mSpinnerOffset;
     
     std::vector<ci::Vec2f>  mLedPoints;
     std::vector<Spinner>    mSpinners;

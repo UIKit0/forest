@@ -19,6 +19,7 @@
 #include "MacMidiHotplug.h"
 #include <OpenGL/OpenGL.h>
 #include <mutex>
+#include <fstream>
 #include <condition_variable>
 
 using namespace ci;
@@ -42,10 +43,12 @@ private:
     void drawForceGrid();
     void reloadColorTable();
     void deleteAllParticles();
-    void clearColorCubes();
+    void clearCurrentColorCube();
     void logCurrentSpinnerAngle();
     void seekBackward();
     void seekForward();
+    void setCurrentColorCubeOrigin();
+    void exportColorCubes();
     
     static void physicsThreadFn(CircleEngineApp *self);
     void physicsLoop(ci::midi::Hub &midi);
@@ -111,6 +114,9 @@ void CircleEngineApp::setup()
     mWorld.setup(svg::Doc::create(loadResource("world.svg")));
     cerr << "World loaded" << endl;
 
+    mWorld.colorCubesFromJson(JsonTree(loadResource("init-color-cubes.json")));
+    cerr << "Spinner color cubes loaded" << endl;
+    
     mObstaclesVbo = gl::VboMesh::create(mWorld.mObstacles);
     mFrontLayerVbo = gl::VboMesh::create(mWorld.mFrontLayer);
 
@@ -165,12 +171,13 @@ void CircleEngineApp::setup()
     mParams->addParam("Spin randomly", &mWorld.mMoveSpinnersRandomly, "key=r");
     mParams->addParam("Disable LED updates", &mDisableLedUpdates);
     mParams->addParam("Mapping test mode", &mMappingTestMode, "key=m");
-    mParams->addParam("Spinner angle offset", &mWorld.mSpinnerOffset).min(-180).max(180).step(.1f);
     mParams->addParam("Spinner motor power", &mWorld.mSpinnerPower).min(0.f).max(100.f).step(.01f);
     mParams->addParam("Show color cube test", &mDrawSpinnerColorCube).min(-1).max(40).keyDecr("[").keyIncr("]");
     mParams->addParam("One spinner ctrl all", &mWorld.mOneSpinnerControlsAll);
-    mParams->addButton("Clear all color cubes", bind( &CircleEngineApp::clearColorCubes, this ), "key=q");
+    mParams->addButton("Clear current color cube", bind( &CircleEngineApp::clearCurrentColorCube, this ), "key=q");
     mParams->addButton("Log current spinner angle", bind( &CircleEngineApp::logCurrentSpinnerAngle, this ), "key=l");
+    mParams->addButton("Set current cube origin", bind( &CircleEngineApp::setCurrentColorCubeOrigin, this ));
+    mParams->addButton("Export color cubes", bind( &CircleEngineApp::exportColorCubes, this ));
     mParams->addParam("Log MIDI messages", &mWorld.mLogMidiMessages);
     
     gl::disable(GL_DEPTH_TEST);
@@ -212,26 +219,26 @@ void CircleEngineApp::keyDown(KeyEvent event)
 void CircleEngineApp::reloadColorTable()
 {
     // Do this with the lock held, since we're reallocating the image
+    lock_guard<mutex> lock(mPhysicsMutex);
     ci::ImageSourceRef table = loadImage(loadResource("forest-palette.png"));
-    mPhysicsMutex.lock();
     mWorld.initColors(table);
-    mPhysicsMutex.unlock();
 }
 
 void CircleEngineApp::deleteAllParticles()
 {
-    mPhysicsMutex.lock();
+    lock_guard<mutex> lock(mPhysicsMutex);
     for (unsigned i = 0 ; i < mWorld.mParticleSystem->GetParticleCount(); i++) {
         mWorld.mParticleSystem->DestroyParticle(i);
     }
-    mPhysicsMutex.unlock();
 }
 
-void CircleEngineApp::clearColorCubes()
+void CircleEngineApp::clearCurrentColorCube()
 {
-    mPhysicsMutex.lock();
-    mWorld.clearColorCubes();
-    mPhysicsMutex.unlock();
+    lock_guard<mutex> lock(mPhysicsMutex);
+    if (mDrawSpinnerColorCube >= 0 && mDrawSpinnerColorCube < mWorld.mSpinners.size()) {
+        auto& cube = mWorld.mSpinners[mDrawSpinnerColorCube].mColorCube;
+        cube.clear();
+    }
 }
 
 void CircleEngineApp::seekBackward()
@@ -602,6 +609,31 @@ void CircleEngineApp::logCurrentSpinnerAngle()
     } else {
         printf("No spinner selected in color cube debug view\n");
     }
+}
+
+void CircleEngineApp::setCurrentColorCubeOrigin()
+{
+    lock_guard<mutex> lock(mPhysicsMutex);
+    if (mDrawSpinnerColorCube >= 0 && mDrawSpinnerColorCube < mWorld.mSpinners.size()) {
+        auto& cube = mWorld.mSpinners[mDrawSpinnerColorCube].mColorCube;
+        cube.resetCalibratedOrigin();
+    }
+}
+
+void CircleEngineApp::exportColorCubes()
+{
+    const char *filename = "exported-color-cubes.json";
+
+    lock_guard<mutex> lock(mPhysicsMutex);
+
+    JsonTree tree;
+    mWorld.colorCubesToJson(tree);
+    
+    ofstream f(filename);
+    f << tree.serialize();
+    f.close();
+    
+    printf("Saved %s\n", filename);
 }
 
 CINDER_APP_NATIVE( CircleEngineApp, RendererGl )

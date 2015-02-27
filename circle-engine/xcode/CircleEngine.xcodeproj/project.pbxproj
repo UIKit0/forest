@@ -154,6 +154,7 @@
 		75EE4AA41A90723D003C80BC /* forest-palette.png in Resources */ = {isa = PBXBuildFile; fileRef = 75EE4A9A1A90723D003C80BC /* forest-palette.png */; };
 		75EE4AA51A90723D003C80BC /* fadecandy.glslv in Resources */ = {isa = PBXBuildFile; fileRef = 75EE4A9B1A90723D003C80BC /* fadecandy.glslv */; };
 		75EE4AA61A90723D003C80BC /* fadecandy.glslf in Resources */ = {isa = PBXBuildFile; fileRef = 75EE4A9C1A90723D003C80BC /* fadecandy.glslf */; };
+		75F2E51E1A9FE82800F74E58 /* init-color-cubes.json in Resources */ = {isa = PBXBuildFile; fileRef = 75F2E51D1A9FE82800F74E58 /* init-color-cubes.json */; };
 		8685E9DD25B24ED3BA384259 /* CircleEngineApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D37DA78CBBF64CAAB6E7E9AF /* CircleEngineApp.cpp */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 /* End PBXBuildFile section */
@@ -410,6 +411,7 @@
 		75EE4A9A1A90723D003C80BC /* forest-palette.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "forest-palette.png"; path = "../resources/forest-palette.png"; sourceTree = "<group>"; };
 		75EE4A9B1A90723D003C80BC /* fadecandy.glslv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = fadecandy.glslv; path = ../resources/fadecandy.glslv; sourceTree = "<group>"; };
 		75EE4A9C1A90723D003C80BC /* fadecandy.glslf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = fadecandy.glslf; path = ../resources/fadecandy.glslf; sourceTree = "<group>"; };
+		75F2E51D1A9FE82800F74E58 /* init-color-cubes.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = "init-color-cubes.json"; path = "../resources/init-color-cubes.json"; sourceTree = "<group>"; };
 		7C98B10AF0FB40A49AD3EA7C /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* CircleEngine.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CircleEngine.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D37DA78CBBF64CAAB6E7E9AF /* CircleEngineApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = CircleEngineApp.cpp; path = ../src/CircleEngineApp.cpp; sourceTree = "<group>"; };
@@ -532,6 +534,7 @@
 			isa = PBXGroup;
 			children = (
 				75EE4A931A90723D003C80BC /* world.svg */,
+				75F2E51D1A9FE82800F74E58 /* init-color-cubes.json */,
 				75EE4A941A90723D003C80BC /* particle.png */,
 				75EE4A951A90723D003C80BC /* particle.pass2.glslv */,
 				75EE4A961A90723D003C80BC /* particle.pass2.glslf */,
@@ -982,6 +985,7 @@
 				75EE4A9D1A90723D003C80BC /* world.svg in Resources */,
 				757675FB1A82CD87003C6702 /* readme.txt in Resources */,
 				75EE4AA21A90723D003C80BC /* particle.pass1.glslf in Resources */,
+				75F2E51E1A9FE82800F74E58 /* init-color-cubes.json in Resources */,
 				75EE4AA11A90723D003C80BC /* particle.pass1.glslv in Resources */,
 				75EE4A9F1A90723D003C80BC /* particle.pass2.glslv in Resources */,
 				75EE4AA51A90723D003C80BC /* fadecandy.glslv in Resources */,

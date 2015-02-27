@@ -14,6 +14,8 @@ ColorCubePoints::ColorCubePoints(unsigned maxPoints)
 {
     mZLimit = 7.0f;
     mXYThreshold = 5.0f;
+
+    mOrigin = 0.0f;
     mActivityTimer.start();
 }
 
@@ -115,6 +117,17 @@ float ColorCubePoints::getCurrentAngle() const
 {
     return getAngleForPoint(getCurrentPoint());
 }
+
+float ColorCubePoints::getCalibratedAngle() const
+{
+    return getCurrentAngle() - mOrigin;
+}
+
+void ColorCubePoints::resetCalibratedOrigin()
+{
+    mOrigin = getCurrentAngle();
+}
+
 
 float ColorCubePoints::getAngleForPoint(Vec3f point) const
 {
@@ -271,4 +284,34 @@ int ColorCubePoints::LineSolver::minFunc(void *p, int m, int n, const float *x, 
 float ColorCubePoints::getTimeSinceLastPoint() const
 {
     return mActivityTimer.getSeconds();
+}
+
+void ColorCubePoints::toJson(JsonTree &tree)
+{
+    JsonTree points = JsonTree::makeArray("points");
+ 
+    for (unsigned i = 0; i < mPoints.size(); i++) {
+        JsonTree point;
+        point.addChild(JsonTree("", mPoints[i].x));
+        point.addChild(JsonTree("", mPoints[i].y));
+        point.addChild(JsonTree("", mPoints[i].z));
+        points.addChild(point);
+    }
+
+    tree.addChild(JsonTree("origin", mOrigin));
+    tree.addChild(points);
+}
+
+void ColorCubePoints::fromJson(const JsonTree &tree)
+{
+    clear();
+    mOrigin = tree.getValueForKey<float>("origin");
+
+    const JsonTree& points = tree.getChild("points");
+    for (unsigned i = 0; i < points.getNumChildren(); i++) {
+        const JsonTree& point = points.getChild(i);
+        push(point.getValueAtIndex<float>(0),
+             point.getValueAtIndex<float>(1),
+             point.getValueAtIndex<float>(2));
+    }
 }
