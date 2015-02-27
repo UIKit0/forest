@@ -72,7 +72,6 @@ Vec2f ColorChooser::getSamplePoint(int index)
     float f = mParameter * 3e-5;
     
     Vec2f center = Vec2f(mPerlin->fBm(f, 1.5f), mPerlin->fBm(f, 3.5f));
-    center *= 1.33f;
     center += Vec2f(0.5f, 0.5f);
     
     float g = mPerlin->fBm(f, 5.5f) * M_PI;
