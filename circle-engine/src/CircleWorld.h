@@ -46,7 +46,9 @@ public:
         float             mTargetAngle;
         ColorCubePoints   mColorCube;
         uint8_t           mColorPacket[8];
-
+        float             mRadius;
+        float             mRadiusSquared;
+        
         void handleMidi(const ci::midi::Message& msg);
         void sensorAngle(float angle, float motorPower);
     };
@@ -72,10 +74,13 @@ public:
     
     ci::Rectf               mForceGridExtent;
     float                   mForceGridResolution;
-    float                   mForceGridStrength;
     unsigned                mForceGridWidth;
     std::vector<ci::Vec2f>  mForceGrid;
     ci::Surface32f          mForceGridSurface;
+
+    float                   mForceGridStrength;
+    float                   mForceGridSpeed;
+    float                   mSpinnerMagnetism;
     
     b2World				*mB2World;
     b2Body              *mGround;
@@ -107,5 +112,7 @@ private:
     void setShapeAsConvexHull(b2PolygonShape &poly, const ci::Shape2d& shape);
     void addFixturesForMesh(b2Body *body, ci::TriMesh2d &mesh, float density = 1.0f);
     void updateSpinners(ci::midi::Hub& midi);
-    void applyGridForces();
+    void applyParticleForces();
+    
+    Spinner *findSpinnerAt(b2Vec2 pos);
 };

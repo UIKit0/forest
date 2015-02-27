@@ -54,14 +54,14 @@ void CircleWorld::setup(svg::DocRef doc)
 
     mTimer.start();
 
-    b2Vec2 gravity( 0.0f, vecToBox(findMetric("gravity")).y );
+    b2Vec2 gravity( 0.0f, 0.0f );
     mB2World = new b2World(gravity);
 
     Vec2f metricParticleRadius = findMetric("particle-radius");
     mTriangulatePrecision = 2.0f / metricParticleRadius.y;
     
     b2ParticleSystemDef particleSystemDef;
-    particleSystemDef.colorMixingStrength = 0.05f;
+    particleSystemDef.colorMixingStrength = 0.03f;
     mParticleSystem = mB2World->CreateParticleSystem(&particleSystemDef);
     mParticleSystem->SetGravityScale(0.4f);
     mParticleSystem->SetDensity(1.2f);
@@ -74,13 +74,15 @@ void CircleWorld::setup(svg::DocRef doc)
     mParticleSystem->SetColorBuffer(mColorBuffer, kMaxParticles);
     mParticleSystem->SetExpirationTimeBuffer(mExpirationTimeBuffer, kMaxParticles);
 
-    mMaxParticleRate = 10;
-    mMaxParticleLifetime = 50;
+    mMaxParticleRate = 4;
+    mMaxParticleLifetime = 600;
     mMoveSpinnersRandomly = false;
     mOneSpinnerControlsAll = false;
     mLogMidiMessages = false;
     mSpinnerPower = 15.0f;
-    mForceGridStrength = 2.1f;
+    mForceGridStrength = 8.0f;
+    mForceGridSpeed = 1.5f;
+    mSpinnerMagnetism = 10.0f;
     
     setupObstacles(findShape("obstacles"));
     setupFrontLayer(findShape("front-layer"));
@@ -172,23 +174,33 @@ void CircleWorld::setupSpinner(const ci::Shape2d& shape)
     mSpinners.emplace_back();
     Spinner &newSpinner = mSpinners.back();
 
+    // Build a triangle mesh from the shape
     Vec2f center = shape.calcPreciseBoundingBox().getCenter();
     Triangulator triangulator(shape.transformCopy(MatrixAffine2f::makeTranslate(-center)),
                               mTriangulatePrecision);
     newSpinner.mMesh = triangulator.calcMesh();
     
+    // Build a Box2D body with the right shape
     b2BodyDef bodyDef;
     bodyDef.type = b2_dynamicBody;
     bodyDef.position = vecToBox(center);
-
     newSpinner.mBody = mB2World->CreateBody(&bodyDef);
     addFixturesForMesh(newSpinner.mBody, newSpinner.mMesh);
 
+    // Set up motor joint
     b2RevoluteJointDef jointDef;
     jointDef.Initialize(newSpinner.mBody, mGround, bodyDef.position);
-    
     newSpinner.mTargetAngle = 0.0f;
     newSpinner.mJoint = dynamic_cast<b2RevoluteJoint*>(mB2World->CreateJoint(&jointDef));
+
+    // Calculate radius
+    auto& vertices = newSpinner.mMesh.getVertices();
+    newSpinner.mRadius = 0.0f;
+    for (unsigned i = 0; i < vertices.size(); i++) {
+        newSpinner.mRadius = max(newSpinner.mRadius,
+            (vecToBox(vertices[i] + center) - vecToBox(center)).Length());
+    }
+    newSpinner.mRadiusSquared = newSpinner.mRadius * newSpinner.mRadius;
 }
 
 void CircleWorld::setupSource(const ci::Shape2d& shape)
@@ -237,7 +249,7 @@ void CircleWorld::addFixturesForMesh(b2Body *body, ci::TriMesh2d &mesh, float de
 void CircleWorld::update(ci::midi::Hub& midi)
 {
     updateSpinners(midi);
-    applyGridForces();
+    applyParticleForces();
     mColorChooser.update();
     
     mB2World->Step( 1 / 60.0f, 1, 1, 2 );
@@ -348,23 +360,57 @@ void CircleWorld::Spinner::sensorAngle(float angle, float motorPower)
     }
 }
 
-void CircleWorld::applyGridForces()
+void CircleWorld::applyParticleForces()
 {
     b2Vec2* positions = mParticleSystem->GetPositionBuffer();
     b2Vec2* velocities = mParticleSystem->GetVelocityBuffer();
     unsigned numParticles = mParticleSystem->GetParticleCount();
+
     float scale = 1.0f / (mForceGridResolution * kMetersPerPoint);
     b2Vec2 gridCorner = vecToBox(mForceGridExtent.getUpperLeft());
-    float gain = mForceGridStrength * 1e-3;
+    float gain = mForceGridStrength * 1e-2;
+    float spinnerMagnetism = mSpinnerMagnetism * 1e-2;
+    float speed = mForceGridSpeed * 1e-2;
     
     for (unsigned i = 0; i < numParticles; i++) {
-        b2Vec2 pos = (positions[i] - gridCorner) * scale;
-        int ix = pos.x;
-        unsigned idx = ix + int(pos.y) * mForceGridWidth;
-        if (ix < mForceGridWidth && idx < mForceGrid.size()) {
-            velocities[i] += vecToBox(mForceGrid[idx]) * gain;
+        b2Vec2 position = positions[i];
+        b2Vec2& velocity = velocities[i];
+        Spinner* spinner = findSpinnerAt(position);
+
+        if (spinner) {
+            // Spinner magnetism, pushes to radius/2
+    
+            b2Vec2 center = spinner->mBody->GetPosition();
+            b2Vec2 dir = position - center;
+            dir.Normalize();
+            b2Vec2 target = center + dir * spinner->mRadius * 0.5f;
+
+            velocity += (target - position) * spinnerMagnetism;
+
+        } else {
+            // Force grid "current" sweeping particles along
+
+            b2Vec2 gridPos = (position - gridCorner) * scale;
+            unsigned ix = gridPos.x;
+            unsigned idx = ix + int(gridPos.y) * mForceGridWidth;
+            if (ix < mForceGridWidth && idx < mForceGrid.size()) {
+                b2Vec2 gridVelocity = vecToBox(mForceGrid[idx]) * speed;
+                velocity += (gridVelocity - velocity) * gain;
+            }
         }
     }
+}
+
+CircleWorld::Spinner* CircleWorld::findSpinnerAt(b2Vec2 pos)
+{
+    for (unsigned i = 0; i < mSpinners.size(); i++) {
+        Spinner& spinner = mSpinners[i];
+        b2Vec2 center = spinner.mBody->GetPosition();
+        if ((pos - center).LengthSquared() < spinner.mRadiusSquared) {
+            return &spinner;
+        }
+    }
+    return 0;
 }
 
 void CircleWorld::particleBurst()

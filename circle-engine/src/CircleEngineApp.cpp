@@ -172,6 +172,8 @@ void CircleEngineApp::setup()
     mParams->addParam("Max particle rate", &mWorld.mMaxParticleRate);
     mParams->addParam("Max particle lifetime", &mWorld.mMaxParticleLifetime);
     mParams->addParam("Force grid strength", &mWorld.mForceGridStrength).min(0.f).max(100.f).step(0.01f);
+    mParams->addParam("Force grid speed", &mWorld.mForceGridSpeed).min(0.f).max(100.f).step(0.01f);
+    mParams->addParam("Spinner magnetism", &mWorld.mSpinnerMagnetism).min(0.f).max(100.f).step(0.01f);
     mParams->addParam("Disable LED updates", &mDisableLedUpdates);
     mParams->addParam("Mapping test mode", &mMappingTestMode, "key=m");
     mParams->addButton("Delete all particles", bind( &CircleEngineApp::deleteAllParticles, this ), "key=d");
