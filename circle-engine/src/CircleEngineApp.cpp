@@ -141,23 +141,10 @@ void CircleEngineApp::setup()
     mParams->addParam("Display FPS", &mDisplayFps, "readonly=true");
     mParams->addParam("Physics FPS", &mPhysicsFps, "readonly=true");
     mParams->addParam("Fadecandy FPS", &mFadecandyFps, "readonly=true");
-    mParams->addParam("Target physics FPS", &mTargetPhysicsFps);
     mParams->addParam("# particles", &mNumParticles, "readonly=true");
-    mParams->addParam("LED sampling radius", &mFadecandy.samplingRadius).min(0.f).max(500.f).step(0.1f);
+    
     mParams->addSeparator();
-    mParams->addButton("Reload color table", bind( &CircleEngineApp::reloadColorTable, this ), "key=c");
-    mParams->addButton("Delete all particles", bind( &CircleEngineApp::deleteAllParticles, this ), "key=d");
-    mParams->addParam("Color change rate", &mWorld.mColorChooser.mSpeed).min(0.f).max(100.f).step(0.1f);
-    mParams->addButton("Seek backward", bind( &CircleEngineApp::seekBackward, this ), "key=,");
-    mParams->addButton("Seek forward", bind( &CircleEngineApp::seekForward, this ), "key=.");
-    mParams->addSeparator();
-    mParams->addParam("Particle brightness", &mParticleRender.mBrightness).min(0.f).max(5.f).step(0.01f);
-    mParams->addParam("Feedback gain", &mParticleRender.mFeedbackGain).min(0.f).max(100.f).step(0.001f);
-    mParams->addParam("Feedback flow", &mParticleRender.mFeedbackFlow).min(-10.f).max(100.f).step(0.001f);
-    mParams->addParam("Max particle rate", &mWorld.mMaxParticleRate);
-    mParams->addParam("Max particle lifetime", &mWorld.mMaxParticleLifetime);
-    mParams->addParam("Force grid strength", &mWorld.mForceGridStrength).min(0.f).max(100.f).step(0.01f);
-    mParams->addSeparator();
+    mParams->addText("Display options");
     mParams->addParam("Draw force grid", &mDrawForceGrid, "key=1");
     mParams->addParam("Draw LED model", &mDrawLedModel, "key=2");
     mParams->addParam("Draw LED buffer", &mDrawLedBuffer, "key=3");
@@ -167,18 +154,39 @@ void CircleEngineApp::setup()
     mParams->addParam("Draw color table", &mDrawColorTable, "key=7");
     mParams->addParam("Draw sensor activity", &mDrawSensorActivity, "key=8");
     mParams->addParam("Ambient light", &mAmbientLight).min(0.f).max(1.f).step(0.01f);
+
     mParams->addSeparator();
-    mParams->addParam("Spin randomly", &mWorld.mMoveSpinnersRandomly, "key=r");
+    mParams->addText("Colors");
+    mParams->addParam("Brightness", &mParticleRender.mBrightness).min(0.f).max(5.f).step(0.01f);
+    mParams->addParam("Color change rate", &mWorld.mColorChooser.mSpeed).min(0.f).max(100.f).step(0.1f);
+    mParams->addButton("Reload color table", bind( &CircleEngineApp::reloadColorTable, this ), "key=c");
+    mParams->addButton("Seek backward", bind( &CircleEngineApp::seekBackward, this ), "key=,");
+    mParams->addButton("Seek forward", bind( &CircleEngineApp::seekForward, this ), "key=.");
+
+    mParams->addSeparator();
+    mParams->addText("Particle system");
+    mParams->addParam("LED sampling radius", &mFadecandy.samplingRadius).min(0.f).max(500.f).step(0.1f);
+    mParams->addParam("Target physics FPS", &mTargetPhysicsFps);
+    mParams->addParam("Feedback gain", &mParticleRender.mFeedbackGain).min(0.f).max(100.f).step(0.001f);
+    mParams->addParam("Feedback flow", &mParticleRender.mFeedbackFlow).min(-10.f).max(100.f).step(0.001f);
+    mParams->addParam("Max particle rate", &mWorld.mMaxParticleRate);
+    mParams->addParam("Max particle lifetime", &mWorld.mMaxParticleLifetime);
+    mParams->addParam("Force grid strength", &mWorld.mForceGridStrength).min(0.f).max(100.f).step(0.01f);
     mParams->addParam("Disable LED updates", &mDisableLedUpdates);
     mParams->addParam("Mapping test mode", &mMappingTestMode, "key=m");
+    mParams->addButton("Delete all particles", bind( &CircleEngineApp::deleteAllParticles, this ), "key=d");
+    
+    mParams->addSeparator();
+    mParams->addText("Spinner controls");
+    mParams->addParam("Spin randomly", &mWorld.mMoveSpinnersRandomly, "key=r");
     mParams->addParam("Spinner motor power", &mWorld.mSpinnerPower).min(0.f).max(100.f).step(.01f);
     mParams->addParam("Show color cube test", &mDrawSpinnerColorCube).min(-1).max(40).keyDecr("[").keyIncr("]");
     mParams->addParam("One spinner ctrl all", &mWorld.mOneSpinnerControlsAll);
+    mParams->addParam("Log MIDI messages", &mWorld.mLogMidiMessages);
     mParams->addButton("Clear current color cube", bind( &CircleEngineApp::clearCurrentColorCube, this ), "key=q");
     mParams->addButton("Log current spinner angle", bind( &CircleEngineApp::logCurrentSpinnerAngle, this ), "key=l");
     mParams->addButton("Set current cube origin", bind( &CircleEngineApp::setCurrentColorCubeOrigin, this ));
     mParams->addButton("Export color cubes", bind( &CircleEngineApp::exportColorCubes, this ));
-    mParams->addParam("Log MIDI messages", &mWorld.mLogMidiMessages);
     
     gl::disable(GL_DEPTH_TEST);
     gl::disable(GL_CULL_FACE);
