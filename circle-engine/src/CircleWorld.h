@@ -22,7 +22,6 @@ public:
     void initColors(ci::ImageSourceRef colorTable);
     void update(ci::midi::Hub& midi);
 
-    void newParticle();
     void particleBurst();
 
     void colorCubesToJson(ci::JsonTree& tree);
@@ -61,7 +60,7 @@ public:
     ci::Rand            mRand;
     ci::Timer           mTimer;
     float               mTriangulatePrecision;
-    unsigned            mMaxParticleRate;
+    unsigned            mParticleBurstSize;
     float               mMaxParticleLifetime;
     bool                mOneSpinnerControlsAll;
     bool                mMoveSpinnersRandomly;

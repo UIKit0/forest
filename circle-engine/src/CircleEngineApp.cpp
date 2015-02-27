@@ -169,8 +169,8 @@ void CircleEngineApp::setup()
     mParams->addParam("Target physics FPS", &mTargetPhysicsFps);
     mParams->addParam("Feedback gain", &mParticleRender.mFeedbackGain).min(0.f).max(100.f).step(0.001f);
     mParams->addParam("Feedback flow", &mParticleRender.mFeedbackFlow).min(-10.f).max(100.f).step(0.001f);
-    mParams->addParam("Max particle rate", &mWorld.mMaxParticleRate);
-    mParams->addParam("Max particle lifetime", &mWorld.mMaxParticleLifetime);
+    mParams->addParam("Burst size", &mWorld.mParticleBurstSize);
+    mParams->addParam("Max lifetime", &mWorld.mMaxParticleLifetime);
     mParams->addParam("Force grid strength", &mWorld.mForceGridStrength).min(0.f).max(100.f).step(0.01f);
     mParams->addParam("Force grid speed", &mWorld.mForceGridSpeed).min(0.f).max(100.f).step(0.01f);
     mParams->addParam("Spinner magnetism", &mWorld.mSpinnerMagnetism).min(0.f).max(100.f).step(0.01f);

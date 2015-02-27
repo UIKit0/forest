@@ -74,7 +74,7 @@ void CircleWorld::setup(svg::DocRef doc)
     mParticleSystem->SetColorBuffer(mColorBuffer, kMaxParticles);
     mParticleSystem->SetExpirationTimeBuffer(mExpirationTimeBuffer, kMaxParticles);
 
-    mMaxParticleRate = 4;
+    mParticleBurstSize = 15;
     mMaxParticleLifetime = 600;
     mMoveSpinnersRandomly = false;
     mOneSpinnerControlsAll = false;
@@ -415,13 +415,6 @@ CircleWorld::Spinner* CircleWorld::findSpinnerAt(b2Vec2 pos)
 
 void CircleWorld::particleBurst()
 {
-    for (unsigned i = 0; i < mMaxParticleRate; i++) {
-        newParticle();
-    }
-}
-
-void CircleWorld::newParticle()
-{
     b2ParticleDef pd;
 
     // Choose the particle emitter that is closest to fewest existing particles
@@ -464,17 +457,20 @@ void CircleWorld::newParticle()
     Color pix = mColorChooser.sample(x);
     Rectf rect = mSourceRects[x];
     
-    // Random position within the source box
-    Vec2f pos(mRand.nextFloat(rect.getX1(), rect.getX2()),
-              mRand.nextFloat(rect.getY1(), rect.getY2()));
-
-    pd.position = vecToBox(pos);
     pd.flags = b2_colorMixingParticle | b2_tensileParticle;
     pd.lifetime = mMaxParticleLifetime;
 
     pd.color.Set(pix.r * 255.0f, pix.g * 255.0f, pix.b * 255.0f, 255);
 
-    mParticleSystem->CreateParticle(pd);
+    // Create a small burst of randomly-placed particles with the same color.
+    for (unsigned i = 0; i < mParticleBurstSize; i++) {
+        // Random position within the source box
+        Vec2f pos(mRand.nextFloat(rect.getX1(), rect.getX2()),
+                  mRand.nextFloat(rect.getY1(), rect.getY2()));
+        
+        pd.position = vecToBox(pos);
+        mParticleSystem->CreateParticle(pd);
+    }
 }
 
 void CircleWorld::colorCubesToJson(ci::JsonTree& tree)
