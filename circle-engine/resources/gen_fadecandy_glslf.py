@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 import random
 
-NUM_SAMPLES = 32
+NUM_SAMPLES = 64
+GAIN = 2.0
 
 print """#version 120
 
@@ -30,4 +31,4 @@ for i in range(NUM_SAMPLES):
 print """
     gl_FragColor = color * sampleLoc.z * %f;
 }
-""" % (1.0 / NUM_SAMPLES)
+""" % (GAIN / NUM_SAMPLES)
