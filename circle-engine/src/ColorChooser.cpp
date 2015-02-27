@@ -20,12 +20,20 @@ void ColorChooser::setup(ImageSourceRef image, Perlin* perlin, int numPoints)
 
 void ColorChooser::update()
 {
-    mParameter += mSpeed;
+    seek(1);
 }
 
 void ColorChooser::seek(int steps)
 {
-    mParameter += mSpeed * steps * 100.0;
+    // Adjust the parameter at a rate such that the fastest endpoint moves at mSpeed
+    mParameter += (mSpeed * steps * 1e-5) /
+    max(calcInstantaneousSpeedAt(0, mParameter),
+        calcInstantaneousSpeedAt(mNumPoints - 1, mParameter));
+    
+    if (!(fabs(mParameter) < 1e6)) {
+        // Reset to preserve numerical stability if param is large or NaN
+        mParameter = 0.0;
+    }
 }
 
 void ColorChooser::draw()
@@ -62,22 +70,42 @@ void ColorChooser::draw()
     gl::end();
 }
 
+double ColorChooser::getParameter()
+{
+    return mParameter;
+}
+
 ColorA ColorChooser::sample(int index)
 {
     return getSample(getSamplePoint(index));
 }
 
+double ColorChooser::calcInstantaneousSpeedAt(int index, double param)
+{
+    double h = 1e-4;
+    Vec2f v = getSamplePointAt(index, param + h) - getSamplePointAt(index, param - h);
+    return v.length() / (2.0 * h);
+}
+
 Vec2f ColorChooser::getSamplePoint(int index)
 {
-    float f = mParameter * 3e-5;
+    return getSamplePointAt(index, mParameter);
+}
+
+Vec2f ColorChooser::getSamplePointAt(int index, double param)
+{
+    // Lots of magic numbers... goal here is to use perlin noise to create
+    // a random walk for a line that tilts and moves around the sampling space.
+    // Speed isn't a concern here, since we use a numeric derivative to keep
+    // the speed constant by adjusting the parameter change rate.
     
-    Vec2f center = Vec2f(mPerlin->fBm(f, 1.5f), mPerlin->fBm(f, 3.5f));
+    Vec2f center = Vec2f(mPerlin->fBm(param, 1.5f) * 0.8f, mPerlin->fBm(param, 3.5f));
     center += Vec2f(0.5f, 0.5f);
     
-    float g = mPerlin->fBm(f, 5.5f) * M_PI;
-    float s = 0.15f + mPerlin->fBm(f, 7.5f) * 0.2f;
+    float g = mPerlin->fBm(param, 5.5f) * 1.5f;
+    float s = 0.15f + mPerlin->fBm(param, 7.5f) * 0.2f;
     Vec2f harmonic(cosf(g) * s, sinf(g) * s);
-
+    
     float t = index / float(mNumPoints - 1);
     return center + harmonic * (t * 2.0f - 1.0f);
 }

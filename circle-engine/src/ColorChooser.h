@@ -21,7 +21,8 @@ public:
 
     ci::Vec2f getSamplePoint(int index);
     ci::ColorA getSample(ci::Vec2f vec);
-
+    double getParameter();
+    
     double mSpeed;
 
 private:
@@ -30,5 +31,8 @@ private:
     ci::Perlin* mPerlin;
     int mNumPoints;
     double mParameter;
+
+    ci::Vec2f getSamplePointAt(int index, double param);
+    double calcInstantaneousSpeedAt(int index, double param);
 };
 

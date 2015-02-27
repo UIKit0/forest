@@ -158,7 +158,7 @@ void CircleEngineApp::setup()
     mParams->addSeparator();
     mParams->addText("Colors");
     mParams->addParam("Brightness", &mParticleRender.mBrightness).min(0.f).max(5.f).step(0.01f);
-    mParams->addParam("Color change rate", &mWorld.mColorChooser.mSpeed).min(0.f).max(100.f).step(0.1f);
+    mParams->addParam("Color change rate", &mWorld.mColorChooser.mSpeed).min(0.f).max(1000.f).step(0.1f);
     mParams->addButton("Reload color table", bind( &CircleEngineApp::reloadColorTable, this ), "key=c");
     mParams->addButton("Seek backward", bind( &CircleEngineApp::seekBackward, this ), "key=,");
     mParams->addButton("Seek forward", bind( &CircleEngineApp::seekForward, this ), "key=.");
@@ -279,7 +279,7 @@ void CircleEngineApp::physicsLoop(midi::Hub &midi)
     const unsigned kStepsPerMeasurement = 10;
     
     mSeekMutex.lock();
-    int seekSteps = mSeekPending;
+    int seekSteps = mSeekPending * 100;
     mSeekPending = 0;
     mSeekMutex.unlock();
     
@@ -446,6 +446,12 @@ void CircleEngineApp::draw()
         gl::pushModelView();
         gl::translate(getWindowWidth() * 0.75f, getWindowHeight() * 0.5f, 0.0f);
         float scale = getWindowHeight() * 0.66;
+
+        gl::enableAlphaBlending();
+        char str[128];
+        snprintf(str, sizeof str, "Parameter %f", mWorld.mColorChooser.getParameter());
+        gl::drawString(str, Vec2f(scale * -0.5f, scale * 0.6f));
+        
         gl::scale(scale, scale, scale);
         gl::translate(-0.5f, -0.5f, 0.0f);
         mWorld.mColorChooser.draw();
