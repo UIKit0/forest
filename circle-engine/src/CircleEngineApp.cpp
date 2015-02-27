@@ -200,7 +200,7 @@ void CircleEngineApp::setup()
     mDrawLedModel = false;
     mDrawParticles = true;
     mDrawFrontLayer = true;
-    mDrawSensorActivity = false;
+    mDrawSensorActivity = true;
     mDrawColorTable = false;
     mExiting = false;
     mDisableLedUpdates = false;

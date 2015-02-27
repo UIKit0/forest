@@ -32,8 +32,6 @@ Testing Sensors
 
 While running CircleEngine:
 
-* (optional) Press `tab` to bring up the parameter UI
-* Press `8` to draw sensor activity. Spinners will flash green every time CircleEngine receives a corresponding MIDI packet.
 * Inspect the spinners on-screen, be sure the angle is approximately right and that all spinners flash green.
 * If a spinner doesn't flash, try moving it. Spinners only send data when the color changes: typically the values change a lot due to measurement noise, but it's possible for the sensors to settle on a single value and stop talking unless you move them.
 
