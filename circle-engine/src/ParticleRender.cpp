@@ -11,7 +11,7 @@ void ParticleRender::setup(ci::app::App &app, unsigned width, unsigned height, f
 {
     mScale = scale;
     mBrightness = 1.6f;
-    mFeedbackGain = 0.33f;
+    mFeedbackGain = 0.2f;
     mFeedbackFlow = 5.0f;
     
     gl::Fbo::Format floatFormat;
