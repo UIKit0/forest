@@ -81,8 +81,8 @@ void CircleWorld::setup(svg::DocRef doc)
     mLogMidiMessages = false;
     mSpinnerPower = 15.0f;
     mForceGridStrength = 8.0f;
-    mForceGridSpeed = 1.5f;
-    mSpinnerMagnetism = 10.0f;
+    mForceGridSpeed = 3.5f;
+    mSpinnerMagnetism = 4.0f;
     
     setupObstacles(findShape("obstacles"));
     setupFrontLayer(findShape("front-layer"));
@@ -369,7 +369,7 @@ void CircleWorld::applyParticleForces()
     float scale = 1.0f / (mForceGridResolution * kMetersPerPoint);
     b2Vec2 gridCorner = vecToBox(mForceGridExtent.getUpperLeft());
     float gain = mForceGridStrength * 1e-2;
-    float spinnerMagnetism = mSpinnerMagnetism * 1e-2;
+    float spinnerMagnetism = mSpinnerMagnetism * 1e-1;
     float speed = mForceGridSpeed * 1e-2;
     
     for (unsigned i = 0; i < numParticles; i++) {
