@@ -187,8 +187,8 @@ void CircleEngineApp::setup()
     mParams->addParam("Log MIDI messages", &mWorld.mLogMidiMessages);
     mParams->addButton("Clear current color cube", bind( &CircleEngineApp::clearCurrentColorCube, this ), "key=q");
     mParams->addButton("Log current spinner angle", bind( &CircleEngineApp::logCurrentSpinnerAngle, this ), "key=l");
-    mParams->addButton("Set current cube origin", bind( &CircleEngineApp::setCurrentColorCubeOrigin, this ));
-    mParams->addButton("Export color cubes", bind( &CircleEngineApp::exportColorCubes, this ));
+    mParams->addButton("Set current cube origin", bind( &CircleEngineApp::setCurrentColorCubeOrigin, this ), "key=o");
+    mParams->addButton("Export color cubes", bind( &CircleEngineApp::exportColorCubes, this ), "key=x");
     
     gl::disable(GL_DEPTH_TEST);
     gl::disable(GL_CULL_FACE);
