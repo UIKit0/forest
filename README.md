@@ -41,12 +41,10 @@ Troubleshooting
 If a sensor isn't responding, lights stop updating, or lights show the wrong color:
 
 1. Unplug all USB cables from the Mac Mini
-2. One by one, reconnect them
-3. Give the software a few seconds to enumerate all devices
-4. Did this fix the problem?
-5. If not, unplug the USB cables again.
-6. This time, also unplug the AC power running to the USB hubs
-7. Plug the USB cables in one by one.
+2. Unplug the AC power cables running to the USB hubs
+3. Wait a few seconds
+4. Reconnect the AC power cables
+5. Reconnect the USB cables one by one, waiting a second or two between each
 
 Calibrating Sensors
 -------------------
