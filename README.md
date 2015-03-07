@@ -5,7 +5,7 @@ An interactive light art installation.
 
 2015, Micah Elizabeth Scott
 
-Portfolio link: misc.name/forest
+Portfolio link: [misc.name/forest](http://www.misc.name/forest)
 
 
 Running
